@@ -1,0 +1,58 @@
+services:
+
+  database:
+    image: postgres:latest
+    container_name: mtg_app_database
+    restart: always
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: stoffel
+      POSTGRES_PASSWORD: stoffel
+      POSTGRES_DB: mtgApp
+
+  server:
+    image: mtg_app_server:dev
+    build: 
+      context: ./server
+      dockerfile: ./docker/dockerfile
+    container_name: mtgApp_server
+    ports:
+      - "7001:8080"
+    volumes:
+      - ./server/src:/app/src
+      - ./server/logs:/app/logs
+    depends_on:
+      - database
+
+  client:
+    image: mtg_app_client:dev
+    build: 
+      context: ./client
+      dockerfile: ./docker/dockerfile
+    container_name: mtgApp_client
+    ports:
+      - "7000:5173"
+    volumes:
+      - ./client/public:/app/public
+      - ./client/src:/app/src
+      - ./client/node_modules:/app/node_modules
+    depends_on:
+      - server
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: mtg_app_pgadmin
+    ports:
+      - "7002:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: vdwstoffel@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: stoffel
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+
+volumes:
+  postgresdata:
+  pgadmindata:

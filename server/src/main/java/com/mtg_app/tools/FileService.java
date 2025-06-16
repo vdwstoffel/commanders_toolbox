@@ -1,0 +1,140 @@
+package com.mtg_app.tools;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import com.mtg_app.entity.MagicDeck;
+import com.mtg_app.entity.MagicDeckCard;
+
+public class FileService {
+    public File createDefaultDeckList(List<MagicDeckCard> deckList) throws IOException {
+        File file = new File("./deckTest.txt");
+
+        String deckString = "Commander\n";
+
+        // deckList.sort(Comparator.comparing(card -> card.getCard().getCardType()));
+        // for (MagicDeckCard cardEntry : deckList) {
+
+        // deckString += String.format("%s %s\n", cardEntry.getQuantity(),
+        // cardEntry.getCard().getCardName());
+        // }
+
+        // try (FileWriter writer = new FileWriter(file)) {
+        // writer.write(deckString);
+        // }
+
+        List<CardQuantity> commanders = new ArrayList<>();
+        List<CardQuantity> creatures = new ArrayList<>();
+        List<CardQuantity> artifacts = new ArrayList<>();
+        List<CardQuantity> enchantments = new ArrayList<>();
+        List<CardQuantity> battles = new ArrayList<>();
+        List<CardQuantity> planeswalkers = new ArrayList<>();
+        List<CardQuantity> instants = new ArrayList<>();
+        List<CardQuantity> sorceries = new ArrayList<>();
+        List<CardQuantity> lands = new ArrayList<>();
+
+        for (MagicDeckCard cardEntry : deckList) {
+            if (cardEntry.isCommander()) {
+                commanders.add(new CardQuantity(1, cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("creature")) {
+                creatures.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("artifact")) {
+                artifacts.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("enchantment")) {
+                enchantments.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("battle")) {
+                battles.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("plansewalker")) {
+                planeswalkers.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("instant")) {
+                instants.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("sorcery")) {
+                sorceries.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("land")) {
+                lands.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+            }
+        }
+
+        // Go through each list and add the card to the stringfile
+        for (CardQuantity card : commanders) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nCreatures\n";
+        for (CardQuantity card : creatures) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nArtifacts\n";
+        for (CardQuantity card : artifacts) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nEnchantments\n";
+        for (CardQuantity card : enchantments) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nBattles\n";
+        for (CardQuantity card : battles) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nPlansewalkers\n";
+        for (CardQuantity card : planeswalkers) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nInstants\n";
+        for (CardQuantity card : instants) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nSorceries\n";
+        for (CardQuantity card : sorceries) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        deckString += "\nLands\n";
+        for (CardQuantity card : lands) {
+            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+        }
+
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(deckString);
+        }
+
+        return file;
+    }
+}
+
+// Object to handle the card Quantity and card Mapping
+final class CardQuantity {
+    private int quantity;
+    private String cardName;
+
+    public CardQuantity(int quantity, String cardName) {
+        this.quantity = quantity;
+        this.cardName = cardName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+}
