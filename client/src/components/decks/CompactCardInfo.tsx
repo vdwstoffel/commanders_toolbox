@@ -5,10 +5,11 @@
 
 import { TiDelete } from "react-icons/ti";
 import { useCallback, useRef, useState, type ChangeEvent } from "react";
+import { useParams } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import type { DeckCardDetails } from "@/api/backendDeckApi";
 import { useRemoveCardFromDeck, useUpdateCardQuantity } from "./useDeckQuery";
-import { useParams } from "react-router-dom";
 import { useUser } from "../user/useUser";
 import FullCardInfo from "../cards/FullCardInfo";
 import OverlayWrapper from "../ui/OverlayWrapper";
@@ -21,8 +22,8 @@ interface CompactCardInfoProps {
 export default function CompactCardInfo({ cardDetails, quantity }: CompactCardInfoProps) {
   const { deckId } = useParams();
   const { idToken } = useUser();
-  const {  removeCard } = useRemoveCardFromDeck();
-  const {updateCardQty} = useUpdateCardQuantity()
+  const { removeCard } = useRemoveCardFromDeck();
+  const { updateCardQty } = useUpdateCardQuantity();
   const [showCardInfo, setShowCardInfo] = useState<boolean>(false);
   //State for editing quantity
   const [inEditMode, setInEditMode] = useState<boolean>(false);
@@ -57,7 +58,7 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
       return;
     }
 
-    updateCardQty({  cardId: cardDetails.card.id, quantity: tempQty });
+    updateCardQty({ cardId: cardDetails.card.id, quantity: tempQty });
     setInEditMode(false);
     setTempQty(tempQty);
   }, [cardDetails.commander, cardDetails.card.id, tempQty, updateCardQty]);

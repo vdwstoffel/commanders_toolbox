@@ -167,7 +167,10 @@ export function NewDeckForm() {
 
       {showUniquePrintings && (
         <OverlayWrapper hideFn={() => setShowUniquePrintings(false)}>
-          <ShowUniquePrintings printingData={uniquePrintings} setCardFn={setSelectedCommanderData} />
+          <div className="max-h-screen overflow-auto py-20">
+
+          <ShowUniquePrintings oracle_id={selectedCommanderData!.oracle_id} setCardFn={setSelectedCommanderData} />
+          </div>
         </OverlayWrapper>
       )}
     </>
