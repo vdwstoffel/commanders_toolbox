@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { ScryfallApi ,type MagicCard } from "@/api/scryfallApi";
+import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
 
 import CardInfoContainer from "./CardInfoContainer";
 

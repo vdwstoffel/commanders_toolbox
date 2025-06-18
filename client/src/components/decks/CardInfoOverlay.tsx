@@ -39,7 +39,6 @@ export default function CardInfoOverlay({ cardData, closeFn }: Props) {
           EUR: {cardData.prices.eur} USD: {cardData.prices.usd}
         </p>
 
-        {/* <Button text="Add to deck" submitHandler={addToDeckHandler} /> */}
         <Button onClick={addToDeckHandler}>Add to deck</Button>
       </div>
     </OverlayWrapper>

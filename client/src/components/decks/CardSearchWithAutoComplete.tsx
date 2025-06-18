@@ -8,13 +8,13 @@ import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
 import styles from "./CardSearchWithAutoComplete.module.css";
 
 interface Props {
-  label: string
+  label: string;
   setValue: Dispatch<SetStateAction<MagicCard | null>>;
 }
 
 const scryfallApi = new ScryfallApi();
 
-export default function CardSearchWithAutoComplete({label, setValue }: Props) {
+export default function CardSearchWithAutoComplete({ label, setValue }: Props) {
   const [query, setQuery] = useState<string>("");
   const [showList, setShowList] = useState(false);
   const [cardNameAutocompleteResults, setCardNameAutoCompleteResults] = useState<string[]>([]);

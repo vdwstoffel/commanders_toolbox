@@ -4,7 +4,7 @@ import CardInfoOverlay from "./CardInfoOverlay";
 import Tabs from "../ui/CustomTabs";
 
 import { useEdhRecCommanderStats, useGetDeckById } from "./useDeckQuery";
-import {ScryfallApi, type MagicCard} from "../../api/scryfallApi";
+import { ScryfallApi, type MagicCard } from "../../api/scryfallApi";
 import Loader from "../ui/Loader";
 
 interface Props {

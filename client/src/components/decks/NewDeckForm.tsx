@@ -1,4 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type Dispatch, type MouseEvent, type SetStateAction } from "react";
+import { PiCardsFill } from "react-icons/pi";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,13 +8,16 @@ import { Switch } from "@/components/ui/switch";
 import ThemeSelectDropdown from "./ThemeSelectDropdown";
 import CardSearchWithAutoComplete from "./CardSearchWithAutoComplete";
 
-import { type MagicCard } from "@/api/scryfallApi";
+import { type MagicCard, type PrintingData, ScryfallApi } from "@/api/scryfallApi";
 import { EdhRecApi, type Theme } from "../../api/edhRecApi";
-import { useUser } from "../user/useUser";
 import MagicCardImage from "../cards/MagicCardImage";
 import { useCreateDeck } from "./useDeckQuery";
+import ShowUniquePrintings from "../cards/ShowUniquePrintings";
+import CardInfoOverlay from "./CardInfoOverlay";
+import OverlayWrapper from "../ui/OverlayWrapper";
 
 const edhRecApi = new EdhRecApi();
+const scryfallApi = new ScryfallApi();
 
 export function NewDeckForm() {
   const [deckName, setDeckName] = useState<string>("");
@@ -23,11 +27,16 @@ export function NewDeckForm() {
   const [deckTheme, setDeckTheme] = useState<string>("");
   const [themes, setThemes] = useState<Theme[] | null>(null);
   const [error, setError] = useState<string>("");
-  const { idToken } = useUser();
   const { createDeck } = useCreateDeck();
+
+  // Card Printings information
+  const [uniquePrintings, setUniquePrintings] = useState<PrintingData[]>([]);
+  const [showUniquePrintings, setShowUniquePrintings] = useState<boolean>(false);
+  const [waitingForPrintings, setWaitingForPrintings] = useState<boolean>(false);
 
   const validPartnerDeck = selectedCommanderData?.keywords.includes("Partner");
 
+  // FUNCTIONS //
   useEffect(() => {
     if (!selectedCommanderData) return;
     async function getTheme() {
@@ -69,7 +78,6 @@ export function NewDeckForm() {
     }
 
     //handle partner commanders
-    // TODO: Need to handle partner with
     if (
       usePartner &&
       !partnerCommanderData?.type_line.includes("Legendary Creature") &&
@@ -88,10 +96,19 @@ export function NewDeckForm() {
     const commanders: MagicCard[] = [selectedCommanderData];
     if (partnerCommanderData && usePartner) commanders.push(partnerCommanderData);
 
-    createDeck({ deckName, commanders, deckTheme, idToken });
+    createDeck({ deckName, commanders, deckTheme });
     setError("");
   }
 
+  async function selectPrintingsHandler() {
+    setWaitingForPrintings(true);
+    const printings = await scryfallApi.getAllPrintings(selectedCommanderData!.oracle_id);
+    setUniquePrintings(printings);
+    setShowUniquePrintings(true)
+    setWaitingForPrintings(false);
+  }
+
+  // COMPONENT //
   return (
     <>
       <div className="w-72 sm:w-90 mx-auto">
@@ -122,13 +139,16 @@ export function NewDeckForm() {
           {usePartner && <CardSearchWithAutoComplete label="Partner" setValue={setPartnerCommanderData} />}
           {/* Card Image */}
           <div className="flex gap-2 flex-col md:flex-row">
-            <MagicCardImage
-              imageUrl={
-                selectedCommanderData?.card_faces
-                  ? selectedCommanderData.card_faces[0].image_uris.large
-                  : selectedCommanderData?.image_uris!.large
-              }
-            />
+            <div className="flex flex-col justify-center">
+              <MagicCardImage
+                imageUrl={
+                  selectedCommanderData?.card_faces
+                    ? selectedCommanderData.card_faces[0].image_uris.large
+                    : selectedCommanderData?.image_uris!.large
+                }
+              />
+              <PiCardsFill onClick={selectPrintingsHandler} />
+            </div>
             {usePartner && (
               <MagicCardImage
                 imageUrl={
@@ -144,6 +164,12 @@ export function NewDeckForm() {
         </div>
         <Button onClick={createDeckHandler}>Create Deck</Button>
       </div>
+
+      {showUniquePrintings && (
+        <OverlayWrapper hideFn={() => setShowUniquePrintings(false)}>
+          <ShowUniquePrintings printingData={uniquePrintings} setCardFn={setSelectedCommanderData} />
+        </OverlayWrapper>
+      )}
     </>
   );
 }

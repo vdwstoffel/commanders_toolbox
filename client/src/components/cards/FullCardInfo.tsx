@@ -7,15 +7,12 @@ import AdventureCard from "./AdventureCard";
 import MeldCard from "./MeldCard";
 import Rulings from "./Ruling";
 
-import { ScryfallApi ,type MagicCard } from "@/api/scryfallApi";
-
-
+import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
 
 interface Props {
   cardName: string;
   exitHandler: () => void;
 }
-
 
 const scryfallApi = new ScryfallApi();
 
@@ -63,11 +60,11 @@ export default function FullCardInfo({ cardName, exitHandler }: Readonly<Props>)
 
   return (
     <div ref={ref} className="max-h-screen overflow-auto rounded-lg bg-neutral-900/80 p-10 text-neutral-200">
-      {(card?.layout === "normal") && <SingleFacedCard card={card} />}
+      {card?.layout === "normal" && <SingleFacedCard card={card} />}
       {(card?.layout === "transform" || card?.layout === "modal_dfc") && <DoubleFacedCard card={card} />}
       {(card?.layout === "adventure" || card?.layout === "split") && <AdventureCard card={card} />}
       {card?.layout === "meld" && <MeldCard card={card} />}
-      
+
       <div>
         <div className="mt-4 text-right">
           <Rulings rulingUri={card!.rulings_uri} />

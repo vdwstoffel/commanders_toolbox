@@ -41,10 +41,11 @@ export function useGetDeckById() {
 
 export function useCreateDeck() {
   const queryClient = useQueryClient();
+  const { idToken } = useUser();
   const navigate = useNavigate();
 
   const { isPending: waitingToCreateDeck, mutate: createDeck } = useMutation({
-    mutationFn: ({ deckName, commanders, deckTheme, idToken }: CreateDeckArgs) =>
+    mutationFn: ({ deckName, commanders, deckTheme }: CreateDeckArgs) =>
       deckApi.createDeck(deckName, commanders, deckTheme, idToken),
     onSuccess: (e) => {
       queryClient.invalidateQueries({ queryKey: ["decks"] });
@@ -123,7 +124,7 @@ export function useUpdateCardQuantity() {
   const { idToken } = useUser();
 
   const { isPending, mutate: updateCardQty } = useMutation({
-    mutationFn: ({cardId, quantity}: {cardId: number, quantity: number}) =>
+    mutationFn: ({ cardId, quantity }: { cardId: number; quantity: number }) =>
       deckApi.updateCardQuantity(deckId!, cardId, quantity, idToken),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deckById"] });
@@ -193,7 +194,6 @@ interface CreateDeckArgs {
   deckName: string;
   commanders: MagicCard[];
   deckTheme: string;
-  idToken: string;
 }
 
 interface AddCardArgs {

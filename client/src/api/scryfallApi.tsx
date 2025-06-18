@@ -1,5 +1,4 @@
 import axios from "axios";
-
 // https://scryfall.com/docs/api/cards
 
 export class ScryfallApi {
@@ -24,10 +23,39 @@ export class ScryfallApi {
     return response.data;
   }
 
-  async  getCardRulings(rulingsUrl: string): Promise<CardRulings[]> {
-  const response = await axios.get<CardRulingsResponse>(rulingsUrl);
-  return response.data.data;
-}
+    async getCardByTcgId(tcgId: number | string): Promise<MagicCard> {
+    const response: MagicCardResponse = await axios.get(this.base_url + `/cards/tcgplayer/${tcgId}`);
+    return response.data;
+  }
+
+
+
+  async getCardRulings(rulingsUrl: string): Promise<CardRulings[]> {
+    const response = await axios.get<CardRulingsResponse>(rulingsUrl);
+    return response.data.data;
+  }
+
+  async getAllPrintings(oracleId: string): Promise<PrintingData[]> {
+    const response: { data: { data: MagicCard[] } } = await axios.get(
+      this.base_url + `/cards/search?order=released&q=oracleid%3A${oracleId}&unique=prints`
+    );
+
+    // {oracleId, setName, cardImage
+    const printings: PrintingData[] = [];
+    for (const card of response.data.data) {
+      if (!card.tcgplayer_id) continue;
+
+      const cardInfo = {
+        tcgplayer_id: card.tcgplayer_id,
+        setName: card.set_name,
+        imageUrl: card.image_uris ? card.image_uris.large : card.card_faces![0].image_uris.large,
+      };
+
+      printings.push(cardInfo);
+    }
+
+    return printings;
+  }
 }
 
 /** INTERFACES */
@@ -170,4 +198,10 @@ export interface CardRulings {
   source: string;
   published_at: string;
   comment: string;
+}
+
+export interface PrintingData {
+  tcgplayer_id: number;
+  setName: string;
+  imageUrl: string;
 }
