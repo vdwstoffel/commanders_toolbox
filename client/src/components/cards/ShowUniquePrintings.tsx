@@ -6,27 +6,28 @@ import Loader from "../ui/Loader";
 const scryfallApi = new ScryfallApi();
 
 interface Props {
-  oracle_id: string;
+  cardName: string;
   setCardFn: Dispatch<SetStateAction<MagicCard | null>>;
 }
 
-export default function ShowUniquePrintings({ oracle_id, setCardFn }: Props) {
+export default function ShowUniquePrintings({ cardName, setCardFn }: Props) {
   const [uniquePrintings, setUniquePrintings] = useState<PrintingData[]>([]);
   const [waitingForPrintings, setWaitingForPrintings] = useState<boolean>(false);
 
   useEffect(() => {
     async function getPrintings() {
       setWaitingForPrintings(true);
-      const printings = await scryfallApi.getAllPrintings(oracle_id);
+      const card = await scryfallApi.getCardByName(cardName);
+      const printings = await scryfallApi.getAllPrintings(card.oracle_id);
       setUniquePrintings(printings);
       setWaitingForPrintings(false);
     }
 
     getPrintings();
-  }, [oracle_id]);
+  }, [cardName]);
 
-  async function setPrintingHandler(tcgId: number) {
-    const card = await new ScryfallApi().getCardByTcgId(tcgId);
+  async function setPrintingHandler(cardName: number) {
+    const card = await scryfallApi.getCardByTcgId(cardName);
     setCardFn(card);
   }
 

@@ -210,8 +210,8 @@ export default function DeckDetails() {
                 Add card
               </Button>
               {showCardInfoOverlay && cardToSearch && (
-                <OverlayWrapper>
-                  <FullCardInfo cardName={cardToSearch!.name} exitHandler={toggleCardInfoOverlayHandler} />
+                <OverlayWrapper hideFn={toggleCardInfoOverlayHandler}>
+                  <FullCardInfo cardName={cardToSearch!.name} />
                 </OverlayWrapper>
               )}
             </div>

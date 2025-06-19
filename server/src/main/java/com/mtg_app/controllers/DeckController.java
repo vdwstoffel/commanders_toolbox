@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -29,6 +30,7 @@ import com.mtg_app.dto.DeckUpdateRequest;
 import com.mtg_app.dto.MagicCardRequest;
 import com.mtg_app.dto.NewDeckRequest;
 import com.mtg_app.dto.UpdateCardQuantityRequest;
+import com.mtg_app.dto.UpdatePrintingRequest;
 import com.mtg_app.dto.MagicCardRequest.AllParts;
 import com.mtg_app.entity.MagicCard;
 import com.mtg_app.entity.MagicDeckCard;
@@ -232,6 +234,46 @@ public class DeckController {
         this.magicDeckCardService.autoFillRemainingDeckWithBasicLands(deckId, userId);
 
         return ResponseEntity.ok("Basic decks updated");
+    }
+
+    @PutMapping("/{deckId}/update-printing")
+    public ResponseEntity<String> updateCardPrinting(@PathVariable int deckId,
+            @RequestBody UpdatePrintingRequest printingRequest, @AuthenticationPrincipal Jwt jwt) {
+
+        String userId = jwt.getSubject();
+        int originalId = printingRequest.getOriginalId();
+        int newCardId = printingRequest.getNewCard().getTcgplayer_id();
+
+        // Check if the card with the new Id already exists in the database, if not
+        // create it
+        Optional<MagicCard> exists = this.magicCardService.getCardById(newCardId);
+        if (!exists.isPresent()) {
+            MagicCardRequest newCard = printingRequest.getNewCard();
+            this.magicCardService.getOrCreateNewCard(newCard);
+        }
+
+        // Check if the card is the commander, if yes update the image in the deck
+        // entity
+        MagicDeck deck = this.magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
+        List<String> commanders = deck.getCommander();
+        List<String> deckImages = deck.getDeckImageUri();
+
+        if (commanders.contains(printingRequest.getNewCard().getName())) {
+            // Get the index of the commander and change the image at that index, this will correctly update dual commanders
+            int commanderIndex = commanders.indexOf(printingRequest.getNewCard().getName());
+            deckImages.set(commanderIndex, printingRequest.getNewCard().getDeckImage());
+            deck.setDeckImageUri(deckImages);
+            this.magicDeckService.updateDeck(deck);
+        }
+
+        // Update the card in the DeckCardMapping
+        this.magicDeckCardService.updateCardPrinting(originalId, newCardId);
+
+        // Check if the card has any tokens and update the value in the
+        // deckCardTokenMapping
+        this.magicDeckCardTokenService.updateCardIdThatTokensBelongTo(originalId, newCardId);
+
+        return ResponseEntity.ok("Printing Updated");
     }
 
     @GetMapping("/{deckId}/download")

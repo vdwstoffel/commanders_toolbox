@@ -4,15 +4,17 @@
  */
 
 import { TiDelete } from "react-icons/ti";
-import { useCallback, useRef, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import type { DeckCardDetails } from "@/api/backendDeckApi";
-import { useRemoveCardFromDeck, useUpdateCardQuantity } from "./useDeckQuery";
+import { useRemoveCardFromDeck, useUpdateCardPrinting, useUpdateCardQuantity } from "./useDeckQuery";
 import { useUser } from "../user/useUser";
 import FullCardInfo from "../cards/FullCardInfo";
 import OverlayWrapper from "../ui/OverlayWrapper";
+import Tabs from "../ui/CustomTabs";
+import ShowUniquePrintings from "../cards/ShowUniquePrintings";
+import { type MagicCard } from "@/api/scryfallApi";
 
 interface CompactCardInfoProps {
   cardDetails: DeckCardDetails;
@@ -22,13 +24,19 @@ interface CompactCardInfoProps {
 export default function CompactCardInfo({ cardDetails, quantity }: CompactCardInfoProps) {
   const { deckId } = useParams();
   const { idToken } = useUser();
+  const [showCardInfo, setShowCardInfo] = useState<boolean>(false);
+  // Custom Card Hooks
   const { removeCard } = useRemoveCardFromDeck();
   const { updateCardQty } = useUpdateCardQuantity();
-  const [showCardInfo, setShowCardInfo] = useState<boolean>(false);
+  const { updateCardPrinting } = useUpdateCardPrinting();
   //State for editing quantity
   const [inEditMode, setInEditMode] = useState<boolean>(false);
   const [tempQty, setTempQty] = useState<number>(quantity);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Selecting tabs
+  const [activeTab, setActiveTab] = useState<number>(0);
+  // Changing card Printing
+  const [cardPrinting, setCardPrinting] = useState<MagicCard | null>(null);
 
   const card = cardDetails.card;
 
@@ -73,6 +81,13 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
     }
   }
 
+  useEffect(() => {
+    if (!cardPrinting || cardPrinting.tcgplayer_id === cardDetails.card.id) return;
+
+    updateCardPrinting({ originalId: cardDetails.card.id, newCard: cardPrinting! });
+    setShowCardInfo(false);
+  }, [cardPrinting, cardDetails.card.id, updateCardPrinting]);
+
   return (
     <div className="grid gap-4 w-auto grid-cols-[0.5fr_10fr_5fr_0.5fr] hover:cursor-pointer items-center">
       {inEditMode ? (
@@ -99,8 +114,10 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
 
       {!cardDetails.commander && <TiDelete className="text-red-700" onClick={removeCardFromDeckHandler} />}
       {showCardInfo && (
-        <OverlayWrapper>
-          <FullCardInfo cardName={card.cardName} exitHandler={toggleShowCardInfoHandler} />
+        <OverlayWrapper hideFn={toggleShowCardInfoHandler}>
+          <Tabs tabs={["Info", "Printings"]} activeTab={activeTab} tabHandler={setActiveTab} />
+          {activeTab === 0 && <FullCardInfo cardName={card.cardName} />}
+          {activeTab === 1 && <ShowUniquePrintings cardName={cardDetails.card.cardName} setCardFn={setCardPrinting} />}
         </OverlayWrapper>
       )}
     </div>

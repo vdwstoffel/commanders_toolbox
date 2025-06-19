@@ -13,4 +13,6 @@ public interface MagicDeckCardTokenServiceInterface {
     void removeAllTokensFromDeck(int deckId);
 
     List<MagicToken> getAllTokensByDeck(int deckId);
+
+    public void updateCardIdThatTokensBelongTo(int oldId, int newId);
 }

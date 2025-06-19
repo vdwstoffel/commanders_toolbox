@@ -39,4 +39,9 @@ public class MagicDeckCardTokenService implements MagicDeckCardTokenServiceInter
         return this.magicDeckCardTokenRepository.getAllTokensByDeck(deckId);
     }
 
+    @Override
+    public void updateCardIdThatTokensBelongTo(int oldId, int newId) {
+        this.magicDeckCardTokenRepository.updateCardIdThatTokensBelongTo(oldId, newId);
+    }
+
 }

@@ -157,6 +157,21 @@ export class BackendDeckApi {
       throw new Error(`${error.response.status}:  ${error.response.statusText}`);
     }
   }
+
+  async updateCardPrinting(deckId: number | string, originalTcgId: number, newCard: MagicCard, idToken: string) {
+    try {
+      await axios.put(
+        this.base_url + `/${deckId}/update-printing`,
+        { originalId: originalTcgId, newCard: newCard },
+        {
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+        }
+      );
+    } catch (err) {
+      const error = err as ErrorResponse;
+      throw new Error(`${error.response.status}:  ${error.response.statusText}`);
+    }
+  }
 }
 
 /**

@@ -19,4 +19,6 @@ public interface MagicDeckCardServiceInterface {
     public void removeAllCardsFromDeck(int deckId);
 
     public void autoFillRemainingDeckWithBasicLands(int deckId, String userId);
+
+    public void updateCardPrinting(int oldId, int newId);
 }

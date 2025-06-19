@@ -125,4 +125,9 @@ public class MagicDeckCardService implements MagicDeckCardServiceInterface {
         }
     }
 
+    @Override
+    public void updateCardPrinting(int oldId, int newId) {
+        this.magicDeckCardRepository.updateCardPrinting(oldId, newId);
+    }
+
 }

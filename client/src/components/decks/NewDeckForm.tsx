@@ -104,7 +104,7 @@ export function NewDeckForm() {
     setWaitingForPrintings(true);
     const printings = await scryfallApi.getAllPrintings(selectedCommanderData!.oracle_id);
     setUniquePrintings(printings);
-    setShowUniquePrintings(true)
+    setShowUniquePrintings(true);
     setWaitingForPrintings(false);
   }
 
@@ -168,8 +168,9 @@ export function NewDeckForm() {
       {showUniquePrintings && (
         <OverlayWrapper hideFn={() => setShowUniquePrintings(false)}>
           <div className="max-h-screen overflow-auto py-20">
-
-          <ShowUniquePrintings oracle_id={selectedCommanderData!.oracle_id} setCardFn={setSelectedCommanderData} />
+            <div onClick={() => setShowUniquePrintings(false)}>
+              <ShowUniquePrintings cardName={selectedCommanderData!.name} setCardFn={setSelectedCommanderData} />
+            </div>
           </div>
         </OverlayWrapper>
       )}

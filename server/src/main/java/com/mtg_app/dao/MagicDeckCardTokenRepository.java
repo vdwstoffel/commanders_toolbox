@@ -27,4 +27,9 @@ public interface MagicDeckCardTokenRepository extends JpaRepository<MagicDeckCar
     @Transactional
     @Query("DELETE FROM MagicDeckCardToken d WHERE d.deckId = :deckId")
     void removeAllTokensFromDeck(@Param("deckId") int deckId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE MagicDeckCardToken m SET m.cardId = :newId WHERE m.cardId = :oldId")
+    void updateCardIdThatTokensBelongTo(@Param("oldId") int oldId, @Param("newId") int newId);
 }

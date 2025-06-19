@@ -38,8 +38,8 @@ export default function Rulings({ rulingUri }: Readonly<Props>) {
   return (
     <div className="flex flex-col w-72 md:w-auto">
       <h1 className="underline">Rules</h1>
-      {rules?.map((rule) => (
-        <div key={rule.oracle_id} className="my-2 py-1 text-xs">
+      {rules?.map((rule, idx) => (
+        <div key={rule.oracle_id + idx} className="my-2 py-1 text-xs">
           {rule.comment}
         </div>
       ))}

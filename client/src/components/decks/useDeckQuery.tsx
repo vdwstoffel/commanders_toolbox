@@ -135,6 +135,23 @@ export function useUpdateCardQuantity() {
   return { isPending, updateCardQty };
 }
 
+export function useUpdateCardPrinting() {
+  const queryClient = useQueryClient();
+  const { deckId } = useParams();
+  const { idToken } = useUser();
+
+  const { isPending, mutate: updateCardPrinting } = useMutation({
+    mutationFn: ({ originalId, newCard }: { originalId: number; newCard: MagicCard }) =>
+      deckApi.updateCardPrinting(deckId!, originalId, newCard, idToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deckById"] });
+    },
+    onError: (error) => toast("Error when updating card printing\n" + error),
+  });
+
+  return { isPending, updateCardPrinting };
+}
+
 // Function to get all the tokens for a given deck
 export function useGetTokens() {
   const { deckId } = useParams();
