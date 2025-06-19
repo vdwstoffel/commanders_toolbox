@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import CardInfoOverlay from "./CardInfoOverlay";
+
 import Tabs from "../ui/CustomTabs";
 
 import { useAddCardToDeck, useEdhRecCommanderStats, useGetDeckById } from "./useDeckQuery";
@@ -25,7 +25,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
   const [selectedCard, setSelectedCard] = useState<MagicCard | undefined>(undefined);
   const [showCardInfoOverlay, setShowCardInfoOverlay] = useState<boolean>(false);
   // Deck Hooks
-  const {addCard} = useAddCardToDeck()
+  const { addCard } = useAddCardToDeck();
 
   if (isPending) return <Loader />;
   if (error) {
@@ -70,7 +70,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
   function addCardToDeckHandler() {
     if (!selectedCard) return;
     addCard(selectedCard);
-    setShowCardInfoOverlay(false)
+    setShowCardInfoOverlay(false);
   }
 
   return (
@@ -97,10 +97,14 @@ export default function CardRecommendations({ commander, theme }: Props) {
       </div>
       {hoveredCardImageUrl && <img src={hoveredCardImageUrl} className="ml-12 h-96 min-w-72 rounded-lg" />}
       {/* {showCardInfoOverlay && <CardInfoOverlay cardData={selectedCard!} closeFn={onClickHandler} />} */}
-      {showCardInfoOverlay && <OverlayWrapper hideFn={onClickHandler}>
-        <Button variant="secondary" className="mx-auto" onClick={addCardToDeckHandler}>Add to Deck</Button>
-        <FullCardInfo cardName={selectedCard!.name} />
-      </OverlayWrapper> }
+      {showCardInfoOverlay && (
+        <OverlayWrapper hideFn={onClickHandler}>
+          <Button variant="secondary" className="mx-auto" onClick={addCardToDeckHandler}>
+            Add to Deck
+          </Button>
+          <FullCardInfo cardName={selectedCard!.name} />
+        </OverlayWrapper>
+      )}
     </div>
   );
 }

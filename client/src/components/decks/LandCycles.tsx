@@ -1,13 +1,16 @@
 import { useState } from "react";
 
-import CardInfoOverlay from "./CardInfoOverlay";
+
 import MagicCardImage from "../cards/MagicCardImage";
 import Loader from "../ui/Loader";
 
 import { landCycles } from "../../utils/landCycles";
 import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
-import { useGetDeckById } from "./useDeckQuery";
+import { useAddCardToDeck, useGetDeckById } from "./useDeckQuery";
 import getDeckColorIdentity from "../../utils/helperFunctions";
+import OverlayWrapper from "../ui/OverlayWrapper";
+import { Button } from "../ui/button";
+import FullCardInfo from "../cards/FullCardInfo";
 
 const TABS = landCycles.map((cycle) => cycle.label);
 
@@ -17,6 +20,8 @@ export default function LandCycles() {
   const { isWaitingForDeck, deckByIdError, deckById } = useGetDeckById();
   const [selectedCardScryfallDetails, setSelectedCardScryfallDetails] = useState<MagicCard | null>(null);
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
+  // Deck Hooks
+  const { addCard } = useAddCardToDeck();
 
   if (isWaitingForDeck) return <Loader />;
   if (deckByIdError) throw new Error("Could not load deck");
@@ -32,6 +37,12 @@ export default function LandCycles() {
   }
 
   function closeOveralyHandler() {
+    setShowOverlay(false);
+  }
+
+  function addCardToDeckHandler() {
+    if (!selectedCardScryfallDetails) return;
+    addCard(selectedCardScryfallDetails);
     setShowOverlay(false);
   }
 
@@ -72,7 +83,12 @@ export default function LandCycles() {
           );
         })}
       </div>
-      {showOverlay && <CardInfoOverlay cardData={selectedCardScryfallDetails!} closeFn={closeOveralyHandler} />}
+      {showOverlay && (
+        <OverlayWrapper hideFn={closeOveralyHandler}>
+          <Button onClick={addCardToDeckHandler} variant="secondary">Add to deck</Button>
+          <FullCardInfo cardName={selectedCardScryfallDetails!.name} />
+        </OverlayWrapper>
+      )}
     </div>
   );
 }

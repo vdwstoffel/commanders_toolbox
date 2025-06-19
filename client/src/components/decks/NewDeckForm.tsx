@@ -13,7 +13,6 @@ import { EdhRecApi, type Theme } from "../../api/edhRecApi";
 import MagicCardImage from "../cards/MagicCardImage";
 import { useCreateDeck } from "./useDeckQuery";
 import ShowUniquePrintings from "../cards/ShowUniquePrintings";
-import CardInfoOverlay from "./CardInfoOverlay";
 import OverlayWrapper from "../ui/OverlayWrapper";
 
 const edhRecApi = new EdhRecApi();
