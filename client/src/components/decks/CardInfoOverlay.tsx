@@ -19,7 +19,7 @@ export default function CardInfoOverlay({ cardData, closeFn }: Props) {
   }
 
   return (
-    <OverlayWrapper>
+    <OverlayWrapper hideFn={closeFn}>
       <div className="mx-auto mt-20 w-fit rounded-md bg-slate-200/80 p-5 text-center">
         <div className="w-full">
           <div className="mx-auto w-fit">

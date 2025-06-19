@@ -3,9 +3,12 @@ import { useState } from "react";
 import CardInfoOverlay from "./CardInfoOverlay";
 import Tabs from "../ui/CustomTabs";
 
-import { useEdhRecCommanderStats, useGetDeckById } from "./useDeckQuery";
+import { useAddCardToDeck, useEdhRecCommanderStats, useGetDeckById } from "./useDeckQuery";
 import { ScryfallApi, type MagicCard } from "../../api/scryfallApi";
 import Loader from "../ui/Loader";
+import OverlayWrapper from "../ui/OverlayWrapper";
+import FullCardInfo from "../cards/FullCardInfo";
+import { Button } from "../ui/button";
 
 interface Props {
   commander: string[];
@@ -21,6 +24,8 @@ export default function CardRecommendations({ commander, theme }: Props) {
   const [hoveredCardImageUrl, setHoveredCardImageUrl] = useState<string>("");
   const [selectedCard, setSelectedCard] = useState<MagicCard | undefined>(undefined);
   const [showCardInfoOverlay, setShowCardInfoOverlay] = useState<boolean>(false);
+  // Deck Hooks
+  const {addCard} = useAddCardToDeck()
 
   if (isPending) return <Loader />;
   if (error) {
@@ -62,6 +67,12 @@ export default function CardRecommendations({ commander, theme }: Props) {
     setShowCardInfoOverlay(!showCardInfoOverlay);
   }
 
+  function addCardToDeckHandler() {
+    if (!selectedCard) return;
+    addCard(selectedCard);
+    setShowCardInfoOverlay(false)
+  }
+
   return (
     <div className="3xl:w-1/3 mx-auto mt-10 grid w-2/3 grid-cols-3">
       <Tabs tabs={tabs} direction="col" tabHandler={activeTabHandler} activeTab={activeTabIndex} />
@@ -85,7 +96,11 @@ export default function CardRecommendations({ commander, theme }: Props) {
           })}
       </div>
       {hoveredCardImageUrl && <img src={hoveredCardImageUrl} className="ml-12 h-96 min-w-72 rounded-lg" />}
-      {showCardInfoOverlay && <CardInfoOverlay cardData={selectedCard!} closeFn={onClickHandler} />}
+      {/* {showCardInfoOverlay && <CardInfoOverlay cardData={selectedCard!} closeFn={onClickHandler} />} */}
+      {showCardInfoOverlay && <OverlayWrapper hideFn={onClickHandler}>
+        <Button variant="secondary" className="mx-auto" onClick={addCardToDeckHandler}>Add to Deck</Button>
+        <FullCardInfo cardName={selectedCard!.name} />
+      </OverlayWrapper> }
     </div>
   );
 }

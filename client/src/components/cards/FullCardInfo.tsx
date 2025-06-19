@@ -41,6 +41,11 @@ export default function FullCardInfo({ cardName }: Readonly<Props>) {
       {(card?.layout === "adventure" || card?.layout === "split") && <AdventureCard card={card} />}
       {card?.layout === "meld" && <MeldCard card={card} />}
 
+      <div className="flex gap-3">
+        <p>EUR: {card?.prices.eur}</p>
+        <p>USD: {card?.prices.usd}</p>
+      </div>
+
       <div>
         <div className="mt-4 text-right">
           <Rulings rulingUri={card!.rulings_uri} />
