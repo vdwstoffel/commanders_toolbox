@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-import com.mtg_app.entity.MagicDeck;
+
 import com.mtg_app.entity.MagicDeckCard;
 
 public class FileService {
@@ -15,17 +14,6 @@ public class FileService {
         File file = new File("./deckTest.txt");
 
         String deckString = "Commander\n";
-
-        // deckList.sort(Comparator.comparing(card -> card.getCard().getCardType()));
-        // for (MagicDeckCard cardEntry : deckList) {
-
-        // deckString += String.format("%s %s\n", cardEntry.getQuantity(),
-        // cardEntry.getCard().getCardName());
-        // }
-
-        // try (FileWriter writer = new FileWriter(file)) {
-        // writer.write(deckString);
-        // }
 
         List<CardQuantity> commanders = new ArrayList<>();
         List<CardQuantity> creatures = new ArrayList<>();

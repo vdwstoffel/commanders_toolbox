@@ -61,7 +61,6 @@ public class MagicCardParser {
 
         List<String> manaSymbolUris = new ArrayList<>();
         for (String card : splitSymbols) {
-            // TODO: Checkout Java lambdas
 
             // Iterate through each manaSymbol from scryfall and check if they match
             for (ManaSymbolData symbol : manaSymbols) {

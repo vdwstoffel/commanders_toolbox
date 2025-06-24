@@ -12,22 +12,15 @@ import com.mtg_app.dto.MagicCardRequest.AllParts;
 import com.mtg_app.entity.MagicCard;
 import com.mtg_app.tools.MagicCardParser;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
-
 @Service
 public class MagicCardService implements MagicCardServiceInterface {
     private MagicCardRepository magicCardRepository;
-    private EntityManager entityManager;
     private MagicTokenService magicTokenService;
 
     @Autowired
-    public MagicCardService(MagicCardRepository magicCardRepository, EntityManager entityManager,
+    public MagicCardService(MagicCardRepository magicCardRepository,
             MagicTokenService magicTokenService) {
         this.magicCardRepository = magicCardRepository;
-        this.entityManager = entityManager;
         this.magicTokenService = magicTokenService;
     }
 
@@ -56,7 +49,8 @@ public class MagicCardService implements MagicCardServiceInterface {
         // First check if the card already exists, otherwise create it
         Optional<MagicCard> exists = this.getCardById(id);
         if (!exists.isPresent()) {
-            MagicCard cardToCreate = new MagicCard(id, cardName, identity, manaSymbolUris, cmc, parser.formattedType(cardType), layout,
+            MagicCard cardToCreate = new MagicCard(id, cardName, identity, manaSymbolUris, cmc,
+                    parser.formattedType(cardType), layout,
                     imageUrl);
             MagicCard savedCard = this.magicCardRepository.save(cardToCreate);
 

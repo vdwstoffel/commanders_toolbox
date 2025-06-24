@@ -10,13 +10,9 @@ import com.mtg_app.dao.MagicDeckRepository;
 import com.mtg_app.dto.ColorDistributionResponse;
 import com.mtg_app.dto.MagicCardRequest;
 import com.mtg_app.dto.NewDeckRequest;
-import com.mtg_app.entity.MagicCard;
 import com.mtg_app.entity.MagicDeck;
 import com.mtg_app.entity.MagicDeckCard;
 import com.mtg_app.tools.MagicCardParser;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 
 @Service
 public class MagicDeckService implements MagicDeckServiceInterface {
