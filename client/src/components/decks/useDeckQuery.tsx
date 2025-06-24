@@ -64,7 +64,10 @@ export function useAddCardToDeck() {
 
   const { isPending: addingCard, mutate: addCard } = useMutation({
     mutationFn: (cardData: MagicCard) => deckApi.addCardToDeck(deckId!, cardData, idToken),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["deckById"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deckById"] });
+      toast("Card added to deck");
+    },
     onError: (error) => toast(`Could not add card\n` + error),
   });
 
@@ -145,6 +148,7 @@ export function useUpdateCardPrinting() {
       deckApi.updateCardPrinting(deckId!, originalId, newCard, idToken),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deckById"] });
+      toast("Printing updated");
     },
     onError: (error) => toast("Error when updating card printing\n" + error),
   });
