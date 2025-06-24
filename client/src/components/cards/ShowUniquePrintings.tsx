@@ -35,10 +35,10 @@ export default function ShowUniquePrintings({ cardName, setCardFn }: Props) {
 
   return (
     <div className="flex gap-2 justify-center flex-wrap my-10 overflow-auto">
-      {uniquePrintings.map((card) => {
+      {uniquePrintings.map((card, idx) => {
         return (
           <div onClick={() => setPrintingHandler(card.tcgplayer_id)}>
-            <MagicCardImage key={card.tcgplayer_id} imageUrl={card.imageUrl} />
+            <MagicCardImage key={card.tcgplayer_id + idx} imageUrl={card.imageUrl} />
           </div>
         );
       })}

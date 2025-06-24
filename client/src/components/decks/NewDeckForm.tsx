@@ -29,9 +29,7 @@ export function NewDeckForm() {
   const { createDeck } = useCreateDeck();
 
   // Card Printings information
-  const [uniquePrintings, setUniquePrintings] = useState<PrintingData[]>([]);
   const [showUniquePrintings, setShowUniquePrintings] = useState<boolean>(false);
-  const [waitingForPrintings, setWaitingForPrintings] = useState<boolean>(false);
 
   const validPartnerDeck = selectedCommanderData?.keywords.includes("Partner");
 
@@ -100,11 +98,7 @@ export function NewDeckForm() {
   }
 
   async function selectPrintingsHandler() {
-    setWaitingForPrintings(true);
-    const printings = await scryfallApi.getAllPrintings(selectedCommanderData!.oracle_id);
-    setUniquePrintings(printings);
     setShowUniquePrintings(true);
-    setWaitingForPrintings(false);
   }
 
   // COMPONENT //
