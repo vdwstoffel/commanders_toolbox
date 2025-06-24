@@ -169,7 +169,7 @@ export default function DeckDetails() {
             className="capitalize mx-auto mt-3 w-fit rounded-xl bg-slate-100/30 px-3"
           >
             <option className="bg-neutral-900 text-neutral-200">Select Theme</option>
-            <option key={"custom"} value={""} className="bg-neutral-900 text-neutral-200">
+            <option key={"custom"} value={"custom"} className="bg-neutral-900 text-neutral-200">
               Custom
             </option>
 

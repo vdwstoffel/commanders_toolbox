@@ -15,7 +15,7 @@ public interface MagicDeckRepository extends JpaRepository<MagicDeck, Integer> {
     // basic crud operation extends from the JPA Repository
 
     
-    @Query("FROM MagicDeck md WHERE md.userId = :userId")
+    @Query("FROM MagicDeck md WHERE md.userId = :userId ORDER BY md.deckName ASC")
     List<MagicDeck> getAllDecksByUserId(@Param("userId") String userId);
 
     /**
