@@ -23,12 +23,10 @@ export class ScryfallApi {
     return response.data;
   }
 
-    async getCardByTcgId(tcgId: number | string): Promise<MagicCard> {
+  async getCardByTcgId(tcgId: number | string): Promise<MagicCard> {
     const response: MagicCardResponse = await axios.get(this.base_url + `/cards/tcgplayer/${tcgId}`);
     return response.data;
   }
-
-
 
   async getCardRulings(rulingsUrl: string): Promise<CardRulings[]> {
     const response = await axios.get<CardRulingsResponse>(rulingsUrl);
@@ -56,6 +54,20 @@ export class ScryfallApi {
 
     return printings;
   }
+
+  async getCollection(identifiers: string[]): Promise<MagicCard[]> {
+    // Create the expected body first
+    const expectedBody: { name: string }[] = [];
+    for (const cardName of identifiers) {
+      expectedBody.push({ name: cardName });
+    }
+
+    const body = { identifiers: expectedBody };
+
+    const response: { data: Collections } = await axios.post(`${this.base_url}/cards/collection`, body);
+
+    return response.data.data;
+  }
 }
 
 /** INTERFACES */
@@ -63,6 +75,10 @@ interface CardAutocompleteResponse {
   data: {
     data: string[];
   };
+}
+
+interface Collections {
+  data: MagicCard[];
 }
 
 interface MagicCardResponse {

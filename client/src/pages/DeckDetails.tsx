@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
+import { FaFileUpload } from "react-icons/fa";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -22,6 +23,7 @@ import FullCardInfo from "@/components/cards/FullCardInfo";
 import { EdhRecApi } from "@/api/edhRecApi";
 import PlayTest from "@/components/playtest/Playtest";
 import toast from "react-hot-toast";
+import FileUpload from "@/components/decks/FileUpload";
 
 const edhRecApi = new EdhRecApi();
 
@@ -33,7 +35,6 @@ export default function DeckDetails() {
   const { deleteDeck } = useDeleteDeck();
   const { updateDeck } = useUpdateDeck();
   const [showCardInfoOverlay, setShowCardInfoOverlay] = useState<boolean>(false);
-
   // When clicking on the deck name edit the deck name
   const [isEditDeckName, setIsEditDeckName] = useState<boolean>(false);
   const [newDeckName, setNewDeckName] = useState<string>("");
@@ -41,6 +42,8 @@ export default function DeckDetails() {
   const [themes, setThemes] = useState<string[]>([""]);
   const deckNameInputRef = useRef<HTMLTextAreaElement>(null);
   const themeSelectRef = useRef<HTMLSelectElement>(null);
+  // State for showing the fileupload
+  const [showFileUIpload, setShowFileUpload] = useState<boolean>(false);
 
   // Check if the click happened on the deckName input ref
   useEffect(() => {
@@ -156,7 +159,8 @@ export default function DeckDetails() {
               {deckName}
             </button>
           )}
-          <div>
+          <div className="flex flex-col justify-center justify-items-center gap-1">
+            <FaFileUpload className="text-sm hover:cursor-pointer" onClick={() => setShowFileUpload(true)} />
             <MdDeleteForever className="text-red-700 hover:cursor-pointer text-xl" onClick={deleteDeckHandler} />
           </div>
         </div>
@@ -234,6 +238,12 @@ export default function DeckDetails() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {showFileUIpload && (
+        <OverlayWrapper hideFn={() => setShowFileUpload(false)}>
+          <FileUpload />
+        </OverlayWrapper>
+      )}
     </>
   );
 }

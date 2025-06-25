@@ -103,6 +103,25 @@ export function useUpdateDeck() {
   return { waitingForUpdateDeck, updateDeck };
 }
 
+export function useUploadDeckText() {
+  const queryClient = useQueryClient();
+  const { deckId } = useParams();
+  const { idToken } = useUser();
+
+  const { isPending: waitingForUpload, mutate: uploadCards } = useMutation({
+    mutationFn: (cards: MagicCard[]) => deckApi.deckUploadText(deckId!, cards, idToken),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deckById"] });
+      toast.success("Cards Imported");
+    },
+    onError: (err) => {
+      toast.error("Error Uploading cards\n" + err);
+    },
+  });
+
+  return { waitingForUpload, uploadCards };
+}
+
 export function useDeleteDeck() {
   const queryClient = useQueryClient();
   const { idToken } = useUser();

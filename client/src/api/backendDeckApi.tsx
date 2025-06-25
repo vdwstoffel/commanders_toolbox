@@ -172,6 +172,16 @@ export class BackendDeckApi {
       throw new Error(`${error.response.status}:  ${error.response.statusText}`);
     }
   }
+
+  async deckUploadText(deckId: number | string, cards: MagicCard[], idToken: string) {
+    console.log(cards)
+    try {
+      await axios.post(`${this.base_url}/${deckId}/import-deck-text`, {cards}, { headers: { Authorization: `Bearer ${idToken}` } });
+    } catch (err) {
+      const error = err as ErrorResponse;
+      throw new Error(`${error.response.status}:  ${error.response.statusText}`);
+    }
+  }
 }
 
 /**

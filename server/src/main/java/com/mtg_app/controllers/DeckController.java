@@ -27,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 
 import com.mtg_app.dto.ColorDistributionResponse;
 import com.mtg_app.dto.DeckUpdateRequest;
+import com.mtg_app.dto.DeckUploadTextRequest;
 import com.mtg_app.dto.MagicCardRequest;
 import com.mtg_app.dto.NewDeckRequest;
 import com.mtg_app.dto.UpdateCardQuantityRequest;
@@ -259,7 +260,8 @@ public class DeckController {
         List<String> deckImages = deck.getDeckImageUri();
 
         if (commanders.contains(printingRequest.getNewCard().getName())) {
-            // Get the index of the commander and change the image at that index, this will correctly update dual commanders
+            // Get the index of the commander and change the image at that index, this will
+            // correctly update dual commanders
             int commanderIndex = commanders.indexOf(printingRequest.getNewCard().getName());
             deckImages.set(commanderIndex, printingRequest.getNewCard().getDeckImage());
             deck.setDeckImageUri(deckImages);
@@ -293,5 +295,31 @@ public class DeckController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @PostMapping("/{deckId}/import-deck-text")
+    public ResponseEntity<String> importDeckText(@AuthenticationPrincipal Jwt jwt, @PathVariable int deckId,
+            @RequestBody DeckUploadTextRequest upload) {
+
+        // Add all the card names to a list
+        List<String> cardsToCheck = new ArrayList<>();
+
+        for (MagicCardRequest card: upload.getCards()) {
+            cardsToCheck.add(card.getName());
+        }
+        
+        //Check which cards are already in the db
+        List<String> existingCards = magicCardService.batchCheckIfCardsExist(cardsToCheck);
+
+        // Create the cards that are not already in the deck
+        for(MagicCardRequest card: upload.getCards()) {
+            if (!existingCards.contains(card.getName())) {
+                this.magicCardService.getOrCreateNewCard(card);
+            }
+        }
+
+        
+
+        return ResponseEntity.ok("Thansk");
     }
 }
