@@ -284,26 +284,28 @@ public class DeckController {
         String userId = jwt.getSubject();
         MagicDeck deck = this.magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
 
-        // Add all the card names to a list
-        List<String> cardsToCheck = new ArrayList<>();
+        // // Add all the card names to a list
+        // List<String> cardsToCheck = new ArrayList<>();
 
-        for (MagicCardRequest card: upload.getCards()) {
-            cardsToCheck.add(card.getName());
-        }
+        // for (MagicCardRequest card: upload.getCards()) {
+        //     cardsToCheck.add(card.getName());
+        // }
         
         // Check which cards are already in the db
-        List<String> existingCards = magicCardService.batchCheckIfCardsExist(cardsToCheck);
+        // List<String> existingCards = magicCardService.batchCheckIfCardsExist(cardsToCheck);
 
-        // TODO: Do a batch insert
+        // Create the cards that are not already in the deck
         for(MagicCardRequest card: upload.getCards()) {
             // Create the cards that are not already in the deck
-            if (!existingCards.contains(card.getName())) {
-                this.magicCardService.getOrCreateNewCard(card);
-            }
+            // if (!existingCards.contains(card.getName())) {
+            //     this.magicCardService.getOrCreateNewCard(card);
+            // }
 
             // Add the card to the deck TODO: It is currnetly just on copy fix this
             this.magicDeckService.addCardToDeck(deck, card);
         }
+
+        // Do a batch insert of all the cards
 
         
 
