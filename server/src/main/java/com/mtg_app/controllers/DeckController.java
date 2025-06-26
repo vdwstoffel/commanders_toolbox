@@ -181,28 +181,7 @@ public class DeckController {
         if (deck == null)
             throw new RuntimeException("No Deck found");
 
-        // get the card request id
-        MagicCard newCard = this.magicCardService.getOrCreateNewCard(cardRequest);
-        // add the card to the deck/card mapping
-        this.magicDeckCardService.createOrUpdateDeckCardMapping(newCard, deck, false, 1);
-
-        // get the tokens associated with the card
-        Map<String, Integer> possibleTokens = new HashMap<>();
-        if (cardRequest.getAll_parts() != null) {
-            for (AllParts token : cardRequest.getAll_parts()) {
-                if (token.getType_line().contains("Token")) {
-                    possibleTokens.put(token.getId(), newCard.getId());
-                }
-            }
-            // add the token to the deck/card/token mapping
-            if (possibleTokens.size() > 0) {
-                for (Map.Entry<String, Integer> entry : possibleTokens.entrySet()) {
-                    magicDeckCardTokenService.createDeckCardTokenMapping(
-                            new MagicDeckCardToken(deckId, entry.getValue(), entry.getKey()));
-                }
-            }
-        }
-
+        this.magicDeckService.addCardToDeck(deck, cardRequest);
         return ResponseEntity.ok("Card added to deck");
     }
 
@@ -300,6 +279,10 @@ public class DeckController {
     @PostMapping("/{deckId}/import-deck-text")
     public ResponseEntity<String> importDeckText(@AuthenticationPrincipal Jwt jwt, @PathVariable int deckId,
             @RequestBody DeckUploadTextRequest upload) {
+            
+
+        String userId = jwt.getSubject();
+        MagicDeck deck = this.magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
 
         // Add all the card names to a list
         List<String> cardsToCheck = new ArrayList<>();
@@ -308,14 +291,18 @@ public class DeckController {
             cardsToCheck.add(card.getName());
         }
         
-        //Check which cards are already in the db
+        // Check which cards are already in the db
         List<String> existingCards = magicCardService.batchCheckIfCardsExist(cardsToCheck);
 
-        // Create the cards that are not already in the deck
+        // TODO: Do a batch insert
         for(MagicCardRequest card: upload.getCards()) {
+            // Create the cards that are not already in the deck
             if (!existingCards.contains(card.getName())) {
                 this.magicCardService.getOrCreateNewCard(card);
             }
+
+            // Add the card to the deck TODO: It is currnetly just on copy fix this
+            this.magicDeckService.addCardToDeck(deck, card);
         }
 
         

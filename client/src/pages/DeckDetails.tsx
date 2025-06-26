@@ -43,7 +43,7 @@ export default function DeckDetails() {
   const deckNameInputRef = useRef<HTMLTextAreaElement>(null);
   const themeSelectRef = useRef<HTMLSelectElement>(null);
   // State for showing the fileupload
-  const [showFileUIpload, setShowFileUpload] = useState<boolean>(false);
+  const [showFileUpload, setShowFileUpload] = useState<boolean>(false);
 
   // Check if the click happened on the deckName input ref
   useEffect(() => {
@@ -96,6 +96,7 @@ export default function DeckDetails() {
 
     addCard(cardToSearch);
     toast.success(`${cardToSearch.name} added to deck`);
+    setCardToSearch(null);
   }
 
   function deleteDeckHandler() {
@@ -239,9 +240,9 @@ export default function DeckDetails() {
         </Tabs>
       </div>
 
-      {showFileUIpload && (
+      {showFileUpload && (
         <OverlayWrapper hideFn={() => setShowFileUpload(false)}>
-          <FileUpload />
+          <FileUpload closeFn={() => setShowFileUpload(false)} />
         </OverlayWrapper>
       )}
     </>

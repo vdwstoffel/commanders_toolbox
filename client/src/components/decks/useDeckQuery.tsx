@@ -108,14 +108,20 @@ export function useUploadDeckText() {
   const { deckId } = useParams();
   const { idToken } = useUser();
 
+  const upload = (cards: MagicCard[]) => {
+    // Show a loading toast will processing the cards
+    return toast.promise(deckApi.deckUploadText(deckId!, cards, idToken), {
+      loading: "Uploading cards...",
+      success: "Cards Imported",
+      error: (err) => "Error Uploading cards\n" + (err.message || err),
+    });
+  };
+
   const { isPending: waitingForUpload, mutate: uploadCards } = useMutation({
-    mutationFn: (cards: MagicCard[]) => deckApi.deckUploadText(deckId!, cards, idToken),
+    mutationFn: upload,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deckById"] });
-      toast.success("Cards Imported");
-    },
-    onError: (err) => {
-      toast.error("Error Uploading cards\n" + err);
+      // toast.success("Cards Imported");
     },
   });
 

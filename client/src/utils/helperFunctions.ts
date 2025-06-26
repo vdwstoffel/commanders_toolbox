@@ -19,7 +19,7 @@ export function parseImportDeckList(deckList: string) {
   for (const card of splitDecklist) {
     const spaceIndex = card.indexOf(" ")
     const quantity = card.substring(0, spaceIndex);
-    const cardName = card.substring(spaceIndex)
+    const cardName = card.substring(spaceIndex).trim()
     cards.push(cardName)
   }
 
