@@ -46,7 +46,7 @@ public class ScryfallApi {
                     ScryfallCollectionResponse.class);
 
             body.clear();
-            body.put("identifiers", cardBody.subList(76, cardBody.size()));
+            body.put("identifiers", cardBody.subList(75, cardBody.size()));
             ScryfallCollectionResponse batchTwoResponse = restTemplate.postForObject(uri, body,
                     ScryfallCollectionResponse.class);
 

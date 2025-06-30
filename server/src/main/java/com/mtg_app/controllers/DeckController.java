@@ -307,7 +307,6 @@ public class DeckController {
         for (MagicCardRequest card : queriedCards) {
             // If there are any double faced cards, just make sure the get the front side
             int qty = cardAndQuantity.get(card.getName().split("//")[0].trim());
-            System.out.println(card.getName() + " " + qty);
             this.magicDeckService.addCardToDeck(deck, card, qty);    
         }
 
