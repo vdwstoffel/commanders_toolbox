@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpHeaders;
 
+import com.mtg_app.dto.CardQuantityAndName;
 import com.mtg_app.dto.ColorDistributionResponse;
+import com.mtg_app.dto.DeckTextUploadRequest;
 import com.mtg_app.dto.DeckUpdateRequest;
 import com.mtg_app.dto.DeckUploadTextRequest;
 import com.mtg_app.dto.MagicCardRequest;
@@ -43,6 +45,7 @@ import com.mtg_app.service.MagicCardService;
 import com.mtg_app.service.MagicDeckCardTokenService;
 import com.mtg_app.service.MagicDeckService;
 import com.mtg_app.tools.FileService;
+import com.mtg_app.tools.ScryfallApi;
 
 @RestController
 @RequestMapping("/api/v1/decks")
@@ -278,34 +281,25 @@ public class DeckController {
 
     @PostMapping("/{deckId}/import-deck-text")
     public ResponseEntity<String> importDeckText(@AuthenticationPrincipal Jwt jwt, @PathVariable int deckId,
-            @RequestBody DeckUploadTextRequest upload) {
+            @RequestBody DeckTextUploadRequest upload) {
             
 
         String userId = jwt.getSubject();
         MagicDeck deck = this.magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
 
-        // // Add all the card names to a list
-        // List<String> cardsToCheck = new ArrayList<>();
 
-        // for (MagicCardRequest card: upload.getCards()) {
-        //     cardsToCheck.add(card.getName());
-        // }
-        
-        // Check which cards are already in the db
-        // List<String> existingCards = magicCardService.batchCheckIfCardsExist(cardsToCheck);
+        List<String> cardsToQuery = new ArrayList<>();
+        List<CardQuantityAndName> cardQuantityAndName =  upload.getCardQuantityAndName();;
+        cardQuantityAndName.forEach(card -> cardsToQuery.add(card.getCardName()));
+
+        List<MagicCardRequest> queriedCards = new ScryfallApi().getCardCollections(cardsToQuery);
+        System.out.println(queriedCards);
+
 
         // Create the cards that are not already in the deck
-        for(MagicCardRequest card: upload.getCards()) {
-            // Create the cards that are not already in the deck
-            // if (!existingCards.contains(card.getName())) {
-            //     this.magicCardService.getOrCreateNewCard(card);
-            // }
-
-            // Add the card to the deck TODO: It is currnetly just on copy fix this
+        for(MagicCardRequest card: queriedCards) {
             this.magicDeckService.addCardToDeck(deck, card);
         }
-
-        // Do a batch insert of all the cards
 
         
 

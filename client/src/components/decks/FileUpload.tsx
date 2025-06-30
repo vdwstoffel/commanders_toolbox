@@ -7,7 +7,7 @@ import { useState, type ChangeEvent } from "react";
 
 import { parseImportDeckList } from "@/utils/helperFunctions";
 import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
-import { useUploadDeckText } from "./useDeckQuery";
+import { useSendTextToBackEnd, useUploadDeckText } from "./useDeckQuery";
 
 const scyfallApi = new ScryfallApi();
 
@@ -18,6 +18,7 @@ interface Props {
 export default function FileUpload({ closeFn }: Props) {
   // Deck hooks
   const { uploadCards } = useUploadDeckText();
+  const {sendCardText} = useSendTextToBackEnd()
 
   const [deckValue, setDeckValue] = useState<string>("");
   const [isBusy, setIsBusy] = useState<boolean>(false);
@@ -34,31 +35,33 @@ export default function FileUpload({ closeFn }: Props) {
       return;
     }
 
-    let batch: MagicCard[];
-    // A maximum of 75 cards can be query at once from scryfall, so if there are more than 75 cards do it in batches
+    sendCardText(parsed)
 
-    setIsBusy(true);
-    const loadingToast = toast.loading("Gathering info");
-    if (parsed.length > 75) {
-      const firstBatch = await scyfallApi.getCollection(parsed.slice(0, 75));
-      const secondBatch = await scyfallApi.getCollection(parsed.slice(75));
-      batch = [...firstBatch, ...secondBatch];
-    } else {
-      batch = await scyfallApi.getCollection(parsed);
-    }
-    toast.dismiss(loadingToast);
+    // let batch: MagicCard[];
+    // // A maximum of 75 cards can be query at once from scryfall, so if there are more than 75 cards do it in batches
 
-    try {
-      uploadCards(batch);
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      } else {
-        toast.error("An unknown error occurred");
-      }
-    } finally {
-      setIsBusy(false);
-    }
+    // setIsBusy(true);
+    // const loadingToast = toast.loading("Gathering info");
+    // if (parsed.length > 75) {
+    //   const firstBatch = await scyfallApi.getCollection(parsed.slice(0, 75));
+    //   const secondBatch = await scyfallApi.getCollection(parsed.slice(75));
+    //   batch = [...firstBatch, ...secondBatch];
+    // } else {
+    //   batch = await scyfallApi.getCollection(parsed);
+    // }
+    // toast.dismiss(loadingToast);
+
+    // try {
+    //   uploadCards(batch);
+    // } catch (err) {
+    //   if (err instanceof Error) {
+    //     toast.error(err.message);
+    //   } else {
+    //     toast.error("An unknown error occurred");
+    //   }
+    // } finally {
+    //   setIsBusy(false);
+    // }
 
     if (closeFn) {
       closeFn();

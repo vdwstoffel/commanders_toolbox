@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useUser } from "../user/useUser";
-import { BackendDeckApi } from "@/api/backendDeckApi";
+import { BackendDeckApi, type cardQuantityAndName } from "@/api/backendDeckApi";
 import { EdhRecApi } from "@/api/edhRecApi";
 import type { MagicCard } from "@/api/scryfallApi";
 
@@ -121,11 +121,34 @@ export function useUploadDeckText() {
     mutationFn: upload,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deckById"] });
-      // toast.success("Cards Imported");
     },
   });
 
   return { waitingForUpload, uploadCards };
+}
+
+export function useSendTextToBackEnd() {
+  const queryClient = useQueryClient();
+  const { deckId } = useParams();
+  const { idToken } = useUser();
+
+  const upload = (uploadDetails: cardQuantityAndName[]) => {
+    // Show a loading toast will processing the cards
+    return toast.promise(deckApi.sendEnterTextToBackEnd(deckId!, uploadDetails, idToken), {
+      loading: "Uploading cards...",
+      success: "Cards Imported",
+      error: (err) => "Error Uploading cards\n" + (err.message || err),
+    });
+  };
+
+  const { isPending: waitingForUpload, mutate: sendCardText } = useMutation({
+    mutationFn: upload,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deckById"] });
+    },
+  });
+
+  return { waitingForUpload, sendCardText };
 }
 
 export function useDeleteDeck() {

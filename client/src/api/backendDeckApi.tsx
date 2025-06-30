@@ -173,10 +173,40 @@ export class BackendDeckApi {
     }
   }
 
+  /**
+   * Send an array of magicCard details to the backend
+   * @param deckId
+   * @param cards
+   * @param idToken
+   */
   async deckUploadText(deckId: number | string, cards: MagicCard[], idToken: string) {
-    console.log(cards)
     try {
-      await axios.post(`${this.base_url}/${deckId}/import-deck-text`, {cards}, { headers: { Authorization: `Bearer ${idToken}` } });
+      await axios.post(
+        `${this.base_url}/${deckId}/import-deck-text`,
+        { cards },
+        { headers: { Authorization: `Bearer ${idToken}` } }
+      );
+    } catch (err) {
+      const error = err as ErrorResponse;
+      throw new Error(`${error.response.status}:  ${error.response.statusText}`);
+    }
+  }
+
+  /**
+   * @description Takes a big string of cards with quantity and the cards name each card followed by a new line and sends it to the backend.
+   * @param deckId deckId found in the url
+   * @param text String of qty and card name followed by a newline per card
+   * @param idToken logged in userID
+   * @example 1 Muldrotha, the Gravetide
+   */
+  async sendEnterTextToBackEnd(deckId: number | string, cardQuantityAndName: cardQuantityAndName[], idToken: string) {
+    console.log(cardQuantityAndName)
+    try {
+      await axios.post(
+        `${this.base_url}/${deckId}/import-deck-text`,
+        { cardQuantityAndName },
+        { headers: { Authorization: `Bearer ${idToken}` } }
+      );
     } catch (err) {
       const error = err as ErrorResponse;
       throw new Error(`${error.response.status}:  ${error.response.statusText}`);
@@ -229,4 +259,9 @@ interface ColorDistribution {
   black: number;
   red: number;
   green: number;
+}
+
+export interface cardQuantityAndName {
+  quantity: number;
+  cardName: string;
 }

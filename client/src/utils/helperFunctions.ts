@@ -1,4 +1,4 @@
-import { type DeckCardDetails } from "@/api/backendDeckApi";
+import { type cardQuantityAndName, type DeckCardDetails } from "@/api/backendDeckApi";
 
 export function getDeckColorIdentity(deck: DeckCardDetails[]) {
   return [
@@ -14,13 +14,15 @@ export function getDeckColorIdentity(deck: DeckCardDetails[]) {
 export function parseImportDeckList(deckList: string) {
   const splitDecklist = deckList.split("\n");
 
-  const cards: string[] = []
+
+  const cards: cardQuantityAndName[] = []
 
   for (const card of splitDecklist) {
+    if (card.trim() =="") continue;
     const spaceIndex = card.indexOf(" ")
-    const quantity = card.substring(0, spaceIndex);
+    const quantity = Number(card.substring(0, spaceIndex));
     const cardName = card.substring(spaceIndex).trim()
-    cards.push(cardName)
+    cards.push({quantity, cardName})
   }
 
   return cards;
