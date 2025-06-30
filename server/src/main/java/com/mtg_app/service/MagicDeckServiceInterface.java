@@ -20,5 +20,5 @@ public interface MagicDeckServiceInterface {
 
     ColorDistributionResponse colorDistribution(int deckId, String userId);
 
-    void addCardToDeck(MagicDeck deck, MagicCardRequest card);
+    void addCardToDeck(MagicDeck deck, MagicCardRequest card, int quantity);
 }

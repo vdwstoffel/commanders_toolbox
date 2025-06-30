@@ -184,7 +184,7 @@ public class DeckController {
         if (deck == null)
             throw new RuntimeException("No Deck found");
 
-        this.magicDeckService.addCardToDeck(deck, cardRequest);
+        this.magicDeckService.addCardToDeck(deck, cardRequest, 1);
         return ResponseEntity.ok("Card added to deck");
     }
 
@@ -282,26 +282,35 @@ public class DeckController {
     @PostMapping("/{deckId}/import-deck-text")
     public ResponseEntity<String> importDeckText(@AuthenticationPrincipal Jwt jwt, @PathVariable int deckId,
             @RequestBody DeckTextUploadRequest upload) {
-            
 
         String userId = jwt.getSubject();
         MagicDeck deck = this.magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
 
-
         List<String> cardsToQuery = new ArrayList<>();
-        List<CardQuantityAndName> cardQuantityAndName =  upload.getCardQuantityAndName();;
-        cardQuantityAndName.forEach(card -> cardsToQuery.add(card.getCardName()));
+        List<CardQuantityAndName> cardQuantityAndName = upload.getCardQuantityAndName();
+
+        // Make a mapping of the name and quantity, so we can later get the correct valuew
+        Map<String, Integer> cardAndQuantity = new HashMap<>();
+
+        cardQuantityAndName.forEach(card -> {
+            // Make sure not to add the commander to the deck
+            if (!deck.getCommander().contains(card.getCardName())) {
+                cardsToQuery.add(card.getCardName());
+                cardAndQuantity.put(card.getCardName(), card.getQuantity());
+            }
+        });
 
         List<MagicCardRequest> queriedCards = new ScryfallApi().getCardCollections(cardsToQuery);
 
-
+        System.out.println(cardAndQuantity);
         // Create the cards that are not already in the deck
-        for(MagicCardRequest card: queriedCards) {
-            this.magicDeckService.addCardToDeck(deck, card);
+        for (MagicCardRequest card : queriedCards) {
+            // If there are any double faced cards, just make sure the get the front side
+            int qty = cardAndQuantity.get(card.getName().split("//")[0].trim());
+            System.out.println(card.getName() + " " + qty);
+            this.magicDeckService.addCardToDeck(deck, card, qty);    
         }
 
-        
-
-        return ResponseEntity.ok("Thansk");
+        return ResponseEntity.ok("Deck updated");
     }
 }

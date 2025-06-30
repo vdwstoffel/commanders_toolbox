@@ -36,7 +36,6 @@ public class ScryfallApi {
 
         // if the total amount is 75 or less send one batch
         if (cardBody.size() <= 75) {
-            System.out.println(cardBody);
             body.put("identifiers", cardBody);
             ScryfallCollectionResponse cardResponse = restTemplate.postForObject(uri, body,
                     ScryfallCollectionResponse.class);

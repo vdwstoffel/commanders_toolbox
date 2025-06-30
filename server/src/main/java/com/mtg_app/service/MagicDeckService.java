@@ -105,11 +105,11 @@ public class MagicDeckService implements MagicDeckServiceInterface {
      * @param card the {@link MagicCardRequest} containing card details and possible token parts
      */
     @Override
-    public void addCardToDeck(MagicDeck deck, MagicCardRequest card) {
+    public void addCardToDeck(MagicDeck deck, MagicCardRequest card, int quantity) {
         // get the card request id
         MagicCard newCard = this.magicCardService.getOrCreateNewCard(card);
         // add the card to the deck/card mapping
-        this.magicDeckCardService.createOrUpdateDeckCardMapping(newCard, deck, false, 1);
+        this.magicDeckCardService.createOrUpdateDeckCardMapping(newCard, deck, false, quantity);
 
         // get the tokens associated with the card
         Map<String, Integer> possibleTokens = new HashMap<>();
