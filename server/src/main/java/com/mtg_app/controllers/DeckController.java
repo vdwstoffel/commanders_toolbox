@@ -293,7 +293,6 @@ public class DeckController {
         cardQuantityAndName.forEach(card -> cardsToQuery.add(card.getCardName()));
 
         List<MagicCardRequest> queriedCards = new ScryfallApi().getCardCollections(cardsToQuery);
-        System.out.println(queriedCards);
 
 
         // Create the cards that are not already in the deck

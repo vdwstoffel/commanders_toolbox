@@ -36,15 +36,20 @@ public class ScryfallApi {
 
         // if the total amount is 75 or less send one batch
         if (cardBody.size() <= 75) {
+            System.out.println(cardBody);
             body.put("identifiers", cardBody);
             ScryfallCollectionResponse cardResponse = restTemplate.postForObject(uri, body,
                     ScryfallCollectionResponse.class);
             return cardResponse.getCards();
         } else {
-            ScryfallCollectionResponse batchOneResponse = restTemplate.postForObject(uri, cardBody.subList(0, 76),
+            body.put("identifiers", cardBody.subList(0, 75));
+            ScryfallCollectionResponse batchOneResponse = restTemplate.postForObject(uri, body,
                     ScryfallCollectionResponse.class);
-            ScryfallCollectionResponse batchTwoResponse = restTemplate.postForObject(uri,
-                    cardBody.subList(76, cardBody.size()), ScryfallCollectionResponse.class);
+
+            body.clear();
+            body.put("identifiers", cardBody.subList(76, cardBody.size()));
+            ScryfallCollectionResponse batchTwoResponse = restTemplate.postForObject(uri, body,
+                    ScryfallCollectionResponse.class);
 
             List<MagicCardRequest> batchOne = batchOneResponse.getCards();
             List<MagicCardRequest> batchTwo = batchTwoResponse.getCards();
