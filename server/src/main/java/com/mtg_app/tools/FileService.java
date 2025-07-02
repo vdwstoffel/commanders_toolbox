@@ -133,7 +133,8 @@ public class FileService {
                 continue;
             }
             String[] qtyAndName = line.split("\\s", 2);
-            quantityAndCard.put(qtyAndName[1].trim(), Integer.parseInt(qtyAndName[0].trim()));
+            String frontCardName = qtyAndName[1].split("//")[0].trim();
+            quantityAndCard.put(frontCardName, Integer.parseInt(qtyAndName[0].trim()));
         }
 
         System.out.println(quantityAndCard);
