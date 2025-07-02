@@ -285,9 +285,9 @@ public class DeckController {
 
         String userId = jwt.getSubject();
         MagicDeck deck = this.magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
+        List<CardQuantityAndName> cardQuantityAndName = upload.getCardQuantityAndName();
 
         List<String> cardsToQuery = new ArrayList<>();
-        List<CardQuantityAndName> cardQuantityAndName = upload.getCardQuantityAndName();
 
         // Make a mapping of the name and quantity, so we can later get the correct valuew
         Map<String, Integer> cardAndQuantity = new HashMap<>();
@@ -302,7 +302,7 @@ public class DeckController {
 
         List<MagicCardRequest> queriedCards = new ScryfallApi().getCardCollections(cardsToQuery);
 
-        System.out.println(cardAndQuantity);
+  
         // Create the cards that are not already in the deck
         for (MagicCardRequest card : queriedCards) {
             // If there are any double faced cards, just make sure the get the front side

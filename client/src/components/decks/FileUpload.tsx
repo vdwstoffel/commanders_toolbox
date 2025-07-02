@@ -17,7 +17,6 @@ interface Props {
 
 export default function FileUpload({ closeFn }: Props) {
   // Deck hooks
-  const { uploadCards } = useUploadDeckText();
   const {sendCardText} = useSendTextToBackEnd()
 
   const [deckValue, setDeckValue] = useState<string>("");
@@ -37,32 +36,6 @@ export default function FileUpload({ closeFn }: Props) {
 
     sendCardText(parsed)
 
-    // let batch: MagicCard[];
-    // // A maximum of 75 cards can be query at once from scryfall, so if there are more than 75 cards do it in batches
-
-    // setIsBusy(true);
-    // const loadingToast = toast.loading("Gathering info");
-    // if (parsed.length > 75) {
-    //   const firstBatch = await scyfallApi.getCollection(parsed.slice(0, 75));
-    //   const secondBatch = await scyfallApi.getCollection(parsed.slice(75));
-    //   batch = [...firstBatch, ...secondBatch];
-    // } else {
-    //   batch = await scyfallApi.getCollection(parsed);
-    // }
-    // toast.dismiss(loadingToast);
-
-    // try {
-    //   uploadCards(batch);
-    // } catch (err) {
-    //   if (err instanceof Error) {
-    //     toast.error(err.message);
-    //   } else {
-    //     toast.error("An unknown error occurred");
-    //   }
-    // } finally {
-    //   setIsBusy(false);
-    // }
-
     if (closeFn) {
       closeFn();
     }
@@ -74,7 +47,13 @@ export default function FileUpload({ closeFn }: Props) {
         <TabsTrigger value="file">Upload file</TabsTrigger>
         <TabsTrigger value="text">Enter Text</TabsTrigger>
       </TabsList>
-      <TabsContent value="file">Make changes to your account here.</TabsContent>
+      <TabsContent value="file">
+        <>
+        <input type="file" accept=".txt" name="file" className="hover:cursor-pointer"/>
+        <Button>Submit</Button>
+        </>
+
+      </TabsContent>
       <TabsContent value="text">
         <>
           <p className="text-center font-bold my-4">Paste the deck list here. ex 1 Muldrotha</p>
