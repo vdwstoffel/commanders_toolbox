@@ -200,7 +200,7 @@ export class BackendDeckApi {
    * @example 1 Muldrotha, the Gravetide
    */
   async sendEnterTextToBackEnd(deckId: number | string, cardQuantityAndName: cardQuantityAndName[], idToken: string) {
-    console.log(cardQuantityAndName)
+    console.log(cardQuantityAndName);
     try {
       await axios.post(
         `${this.base_url}/${deckId}/import-deck-text`,
@@ -212,6 +212,18 @@ export class BackendDeckApi {
       throw new Error(`${error.response.status}:  ${error.response.statusText}`);
     }
   }
+
+  async sendDeckFileToBackend(deckId: number | string, formData: FormData, idToken: string) {
+    try {
+      await axios.post(`${this.base_url}/${deckId}/upload-deck-file`, formData, {
+        headers: { Authorization: `Bearer ${idToken}`, "Content-Type": "multipart/form-data" },
+      });
+    } catch (err) {
+      console.log(err)
+      const error = err as ErrorResponse;
+      throw new Error(`${error.response.status}:  ${error.response.data}`);
+    }
+  }
 }
 
 /**
@@ -221,6 +233,7 @@ interface ErrorResponse {
   response: {
     status: number;
     statusText: string;
+    data: string // seems to contain the actual error message
   };
 }
 

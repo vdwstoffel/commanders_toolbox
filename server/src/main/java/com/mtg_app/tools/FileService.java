@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Set;
 
 import com.mtg_app.entity.MagicDeckCard;
 
@@ -97,6 +98,46 @@ public class FileService {
         }
 
         return file;
+    }
+
+    /**
+     * Parses the content of an uploaded deck list and extracts card names with
+     * their quantities.
+     * <p>
+     * The input string is expected to contain one card per line, with each line
+     * starting with the quantity
+     * followed by the card name (e.g., "4 Lightning Bolt"). Section headers such as
+     * "Commander", "Creatures",
+     * and empty lines are ignored.
+     * </p>
+     *
+     * @param fileContent the raw content of the uploaded deck list file as a single
+     *                    string
+     * @return a HashMap where the key is the card name and the value is the
+     *         quantity of that card in the deck
+     * @throws NumberFormatException          if a line does not start with a valid
+     *                                        integer quantity
+     * @throws ArrayIndexOutOfBoundsException if a line does not contain both
+     *                                        quantity and card name
+     */
+    public HashMap<String, Integer> parseUploadedDeckList(String fileContent) {
+        String[] splitByNewLine = fileContent.split("\n");
+        Set<String> linesToSkip = Set.of("Commander", "Creatures", "Lands", "Sorceries", "Instants", "Plansewalkers",
+                "Battles", "Artifacts", "Enchantments", "");
+        HashMap<String, Integer> quantityAndCard = new HashMap<>();
+
+        for (String line : splitByNewLine) {
+
+            // Check the the first piece of the line is a digit
+            if (linesToSkip.contains(line.trim())) {
+                continue;
+            }
+            String[] qtyAndName = line.split("\\s", 2);
+            quantityAndCard.put(qtyAndName[1].trim(), Integer.parseInt(qtyAndName[0].trim()));
+        }
+
+        System.out.println(quantityAndCard);
+        return quantityAndCard;
     }
 }
 

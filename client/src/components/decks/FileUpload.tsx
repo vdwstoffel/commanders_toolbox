@@ -7,7 +7,7 @@ import { useState, type ChangeEvent } from "react";
 
 import { parseImportDeckList } from "@/utils/helperFunctions";
 import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
-import { useSendTextToBackEnd, useUploadDeckText } from "./useDeckQuery";
+import { useSendFileToBackEnd, useSendTextToBackEnd, useUploadDeckText } from "./useDeckQuery";
 
 const scyfallApi = new ScryfallApi();
 
@@ -18,9 +18,14 @@ interface Props {
 export default function FileUpload({ closeFn }: Props) {
   // Deck hooks
   const {sendCardText} = useSendTextToBackEnd()
+  const {deckFileUpload} = useSendFileToBackEnd();
 
   const [deckValue, setDeckValue] = useState<string>("");
   const [isBusy, setIsBusy] = useState<boolean>(false);
+
+  // File upload
+  const [file, setFile] = useState<File | null>(null);
+  const [isFileUploading, setIsFileUploading] = useState<boolean>(false)
 
   function updateDeckValueHandler(e: ChangeEvent<HTMLTextAreaElement>) {
     setDeckValue(e.target.value);
@@ -41,6 +46,29 @@ export default function FileUpload({ closeFn }: Props) {
     }
   }
 
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) {
+      setFile(e.target.files[0])
+    }
+  }
+
+  async function handleUpload() {
+    if (!file) {
+      toast.error("No file selected")
+      return;
+    }
+
+    // disable upload button
+    setIsFileUploading(true)
+    const formData = new FormData();
+    formData.append("file", file)
+    deckFileUpload(formData);
+
+    if (closeFn) {
+      closeFn()
+    }
+  }
+
   return (
     <Tabs defaultValue="file" className="w-[400px]">
       <TabsList>
@@ -49,8 +77,8 @@ export default function FileUpload({ closeFn }: Props) {
       </TabsList>
       <TabsContent value="file">
         <>
-        <input type="file" accept=".txt" name="file" className="hover:cursor-pointer"/>
-        <Button>Submit</Button>
+        <input type="file" accept=".txt" name="file" onChange={handleFileChange} className="hover:cursor-pointer"/>
+        <Button onClick={handleUpload} disabled={isFileUploading}>Submit</Button>
         </>
 
       </TabsContent>

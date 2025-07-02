@@ -151,6 +151,30 @@ export function useSendTextToBackEnd() {
   return { waitingForUpload, sendCardText };
 }
 
+export function useSendFileToBackEnd() {
+  const queryClient = useQueryClient();
+  const { deckId } = useParams();
+  const { idToken } = useUser();
+
+  const upload = (formData: FormData) => {
+    // Show a loading toast will processing the cards
+    return toast.promise(deckApi.sendDeckFileToBackend(deckId!, formData, idToken), {
+      loading: "Uploading cards...",
+      success: "Cards Imported",
+      error: (err) => "Error Uploading cards\n" + (err.message || err),
+    });
+  };
+
+  const { isPending: waitingForFileUpload, mutate: deckFileUpload } = useMutation({
+    mutationFn: upload,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deckById"] });
+    },
+  });
+
+  return { waitingForFileUpload, deckFileUpload };
+}
+
 export function useDeleteDeck() {
   const queryClient = useQueryClient();
   const { idToken } = useUser();
