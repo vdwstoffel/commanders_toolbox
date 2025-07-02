@@ -37,7 +37,7 @@ public class FileService {
                 enchantments.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("battle")) {
                 battles.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
-            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("plansewalker")) {
+            } else if (cardEntry.getCard().getCardType().toLowerCase().equals("planeswalker")) {
                 planeswalkers.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("instant")) {
                 instants.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
@@ -73,7 +73,7 @@ public class FileService {
             deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
         }
 
-        deckString += "\nPlansewalkers\n";
+        deckString += "\nPlaneswalkers\n";
         for (CardQuantity card : planeswalkers) {
             deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
         }
@@ -122,7 +122,7 @@ public class FileService {
      */
     public HashMap<String, Integer> parseUploadedDeckList(String fileContent) {
         String[] splitByNewLine = fileContent.split("\n");
-        Set<String> linesToSkip = Set.of("Commander", "Creatures", "Lands", "Sorceries", "Instants", "Plansewalkers",
+        Set<String> linesToSkip = Set.of("Commander", "Creatures", "Lands", "Sorceries", "Instants", "Planeswalkers",
                 "Battles", "Artifacts", "Enchantments", "");
         HashMap<String, Integer> quantityAndCard = new HashMap<>();
 
