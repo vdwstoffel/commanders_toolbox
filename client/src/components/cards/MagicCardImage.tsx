@@ -2,6 +2,11 @@ interface Props {
   imageUrl: string | undefined;
 }
 
+/**
+ * Displays an image inside a container with a maximum width of 60 units.
+ *
+ * @param imageUrl - The URL of the image to display, or undefined if no image is provided.
+ */
 export default function MagicCardImage({ imageUrl }: Props) {
   return (
     <div className="max-w-60">

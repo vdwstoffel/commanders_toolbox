@@ -12,6 +12,14 @@ interface Props {
   setCardFn: Dispatch<SetStateAction<MagicCard | null>>;
 }
 
+/**
+ * Displays a carousel of unique printings for a given Magic: The Gathering card name.
+ *
+ * Fetches all unique printings of the specified card from the Scryfall API and presents them in a carousel UI. Selecting a printing updates the selected card using the provided state setter.
+ *
+ * @param cardName - The name of the card to display printings for
+ * @param setCardFn - Function to update the selected card when a printing is chosen
+ */
 export default function ShowUniquePrintings({ cardName, setCardFn }: Props) {
   const [uniquePrintings, setUniquePrintings] = useState<PrintingData[]>([]);
   const [waitingForPrintings, setWaitingForPrintings] = useState<boolean>(false);
