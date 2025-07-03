@@ -289,12 +289,6 @@ interface CreateDeckArgs {
   deckTheme: string;
 }
 
-interface AddCardArgs {
-  deckId: number | string;
-  cardData: MagicCard;
-  idToken: string;
-}
-
 interface RemoveCardArgs {
   deckId: number | string;
   cardId: number;

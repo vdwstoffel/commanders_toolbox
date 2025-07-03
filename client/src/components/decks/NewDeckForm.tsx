@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import ThemeSelectDropdown from "./ThemeSelectDropdown";
 import CardSearchWithAutoComplete from "./CardSearchWithAutoComplete";
 
-import { type MagicCard, type PrintingData, ScryfallApi } from "@/api/scryfallApi";
+import { type MagicCard } from "@/api/scryfallApi";
 import { EdhRecApi, type Theme } from "../../api/edhRecApi";
 import MagicCardImage from "../cards/MagicCardImage";
 import { useCreateDeck } from "./useDeckQuery";
@@ -16,7 +16,6 @@ import ShowUniquePrintings from "../cards/ShowUniquePrintings";
 import OverlayWrapper from "../ui/OverlayWrapper";
 
 const edhRecApi = new EdhRecApi();
-const scryfallApi = new ScryfallApi();
 
 export function NewDeckForm() {
   const [deckName, setDeckName] = useState<string>("");

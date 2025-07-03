@@ -128,6 +128,12 @@ export default function DeckDetails() {
 
   async function onThemeClickHandler() {
     const res = await edhRecApi.getDeckThemes(commanderName);
+
+    if (!res) {
+      toast.error("Error getting deck theme");
+      return
+    }
+
     const themes = res.map((info: { slug: string; value: string }) => info.slug);
     setThemes(themes);
     setIsEditTheme(true);
