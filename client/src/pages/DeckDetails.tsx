@@ -131,9 +131,10 @@ export default function DeckDetails() {
 
     if (!res) {
       toast.error("Error getting deck theme");
+      return
     }
 
-    const themes = res!.map((info: { slug: string; value: string }) => info.slug);
+    const themes = res.map((info: { slug: string; value: string }) => info.slug);
     setThemes(themes);
     setIsEditTheme(true);
   }

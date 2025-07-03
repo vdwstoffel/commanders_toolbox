@@ -14,14 +14,13 @@ interface Props {
 
 export default function FileUpload({ closeFn }: Props) {
   // Deck hooks
-  const {sendCardText} = useSendTextToBackEnd()
-  const {deckFileUpload} = useSendFileToBackEnd();
-
+  const { sendCardText } = useSendTextToBackEnd();
+  const { deckFileUpload } = useSendFileToBackEnd();
   const [deckValue, setDeckValue] = useState<string>("");
 
   // File upload
   const [file, setFile] = useState<File | null>(null);
-  const [isFileUploading, setIsFileUploading] = useState<boolean>(false)
+  const [isFileUploading, setIsFileUploading] = useState<boolean>(false);
 
   function updateDeckValueHandler(e: ChangeEvent<HTMLTextAreaElement>) {
     setDeckValue(e.target.value);
@@ -35,7 +34,8 @@ export default function FileUpload({ closeFn }: Props) {
       return;
     }
 
-    sendCardText(parsed)
+    setIsFileUploading(true);
+    sendCardText(parsed);
 
     if (closeFn) {
       closeFn();
@@ -44,24 +44,24 @@ export default function FileUpload({ closeFn }: Props) {
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
-      setFile(e.target.files[0])
+      setFile(e.target.files[0]);
     }
   }
 
   async function handleUpload() {
     if (!file) {
-      toast.error("No file selected")
+      toast.error("No file selected");
       return;
     }
 
     // disable upload button
-    setIsFileUploading(true)
+    setIsFileUploading(true);
     const formData = new FormData();
-    formData.append("file", file)
+    formData.append("file", file);
     deckFileUpload(formData);
 
     if (closeFn) {
-      closeFn()
+      closeFn();
     }
   }
 
@@ -73,10 +73,11 @@ export default function FileUpload({ closeFn }: Props) {
       </TabsList>
       <TabsContent value="file">
         <>
-        <input type="file" accept=".txt" name="file" onChange={handleFileChange} className="hover:cursor-pointer"/>
-        <Button onClick={handleUpload} disabled={isFileUploading}>Submit</Button>
+          <input type="file" accept=".txt" name="file" onChange={handleFileChange} className="hover:cursor-pointer" />
+          <Button onClick={handleUpload} disabled={isFileUploading}>
+            Submit
+          </Button>
         </>
-
       </TabsContent>
       <TabsContent value="text">
         <>
@@ -88,7 +89,7 @@ export default function FileUpload({ closeFn }: Props) {
               onChange={updateDeckValueHandler}
               className="max-h-92 overflow-auto"
             />
-            <Button onClick={deckSubmitHandler}>
+            <Button disabled={isFileUploading} onClick={deckSubmitHandler}>
               Submit deck
             </Button>
           </div>
