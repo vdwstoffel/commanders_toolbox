@@ -7,7 +7,7 @@ import Loader from "../ui/Loader";
 import { landCycles } from "../../utils/landCycles";
 import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
 import { useAddCardToDeck, useGetDeckById } from "./useDeckQuery";
-import getDeckColorIdentity from "../../utils/helperFunctions";
+import {getDeckColorIdentity} from "../../utils/helperFunctions";
 import OverlayWrapper from "../ui/OverlayWrapper";
 import { Button } from "../ui/button";
 import FullCardInfo from "../cards/FullCardInfo";

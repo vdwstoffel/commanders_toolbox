@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
@@ -22,11 +23,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpHeaders;
 
+import com.mtg_app.dto.CardQuantityAndName;
 import com.mtg_app.dto.ColorDistributionResponse;
+import com.mtg_app.dto.DeckTextUploadRequest;
 import com.mtg_app.dto.DeckUpdateRequest;
+import com.mtg_app.dto.DeckUploadTextRequest;
 import com.mtg_app.dto.MagicCardRequest;
 import com.mtg_app.dto.NewDeckRequest;
 import com.mtg_app.dto.UpdateCardQuantityRequest;
@@ -42,6 +48,7 @@ import com.mtg_app.service.MagicCardService;
 import com.mtg_app.service.MagicDeckCardTokenService;
 import com.mtg_app.service.MagicDeckService;
 import com.mtg_app.tools.FileService;
+import com.mtg_app.tools.ScryfallApi;
 
 @RestController
 @RequestMapping("/api/v1/decks")
@@ -180,28 +187,7 @@ public class DeckController {
         if (deck == null)
             throw new RuntimeException("No Deck found");
 
-        // get the card request id
-        MagicCard newCard = this.magicCardService.getOrCreateNewCard(cardRequest);
-        // add the card to the deck/card mapping
-        this.magicDeckCardService.createOrUpdateDeckCardMapping(newCard, deck, false, 1);
-
-        // get the tokens associated with the card
-        Map<String, Integer> possibleTokens = new HashMap<>();
-        if (cardRequest.getAll_parts() != null) {
-            for (AllParts token : cardRequest.getAll_parts()) {
-                if (token.getType_line().contains("Token")) {
-                    possibleTokens.put(token.getId(), newCard.getId());
-                }
-            }
-            // add the token to the deck/card/token mapping
-            if (possibleTokens.size() > 0) {
-                for (Map.Entry<String, Integer> entry : possibleTokens.entrySet()) {
-                    magicDeckCardTokenService.createDeckCardTokenMapping(
-                            new MagicDeckCardToken(deckId, entry.getValue(), entry.getKey()));
-                }
-            }
-        }
-
+        this.magicDeckService.addCardToDeck(deck, cardRequest, 1);
         return ResponseEntity.ok("Card added to deck");
     }
 
@@ -259,7 +245,8 @@ public class DeckController {
         List<String> deckImages = deck.getDeckImageUri();
 
         if (commanders.contains(printingRequest.getNewCard().getName())) {
-            // Get the index of the commander and change the image at that index, this will correctly update dual commanders
+            // Get the index of the commander and change the image at that index, this will
+            // correctly update dual commanders
             int commanderIndex = commanders.indexOf(printingRequest.getNewCard().getName());
             deckImages.set(commanderIndex, printingRequest.getNewCard().getDeckImage());
             deck.setDeckImageUri(deckImages);
@@ -294,4 +281,80 @@ public class DeckController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/{deckId}/import-deck-text")
+    public ResponseEntity<String> importDeckText(@AuthenticationPrincipal Jwt jwt, @PathVariable int deckId,
+            @RequestBody DeckTextUploadRequest upload) {
+
+        String userId = jwt.getSubject();
+        MagicDeck deck = this.magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
+        List<CardQuantityAndName> cardQuantityAndName = upload.getCardQuantityAndName();
+
+        List<String> cardsToQuery = new ArrayList<>();
+
+        // Make a mapping of the name and quantity, so we can later get the correct
+        // valuew
+        Map<String, Integer> cardAndQuantity = new HashMap<>();
+
+        cardQuantityAndName.forEach(card -> {
+            // Make sure not to add the commander to the deck
+            if (!deck.getCommander().contains(card.getCardName())) {
+                cardsToQuery.add(card.getCardName());
+                cardAndQuantity.put(card.getCardName(), card.getQuantity());
+            }
+        });
+
+        List<MagicCardRequest> queriedCards = new ScryfallApi().getCardCollections(cardsToQuery);
+
+        // Create the cards that are not already in the deck
+        for (MagicCardRequest card : queriedCards) {
+            // If there are any double faced cards, just make sure the get the front side
+            int qty = cardAndQuantity.get(card.getName().split("//")[0].trim());
+            this.magicDeckService.addCardToDeck(deck, card, qty);
+        }
+
+        return ResponseEntity.ok("Deck updated");
+    }
+
+    @PostMapping("/{deckId}/upload-deck-file")
+    public ResponseEntity<String> uploadDeckFile(@RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal Jwt jwt, @PathVariable int deckId) {
+
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File does not contain any valid content");
+        }
+
+        String userId = jwt.getSubject();
+        MagicDeck deck = magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
+
+        try {
+            String fileContent = new String(file.getBytes());
+            Map<String, Integer> cardAndQuantity = new FileService().parseUploadedDeckList(fileContent);
+
+            List<String> cardsToQuery = new ArrayList<>();
+
+            // Check which cards needs to be query from scryfall api
+            for (Map.Entry<String, Integer> entry : cardAndQuantity.entrySet()) {
+                String card = entry.getKey();
+
+                if (!deck.getCommander().contains(card)) {
+                    cardsToQuery.add(card);
+                }
+            }
+
+            List<MagicCardRequest> queriedCards = new ScryfallApi().getCardCollections(cardsToQuery);
+            // Create the cards that are not already in the deck
+            for (MagicCardRequest card : queriedCards) {
+                // If there are any double faced cards, just make sure the get the front side
+                int qty = cardAndQuantity.get(card.getName().split("//")[0].trim());
+                this.magicDeckService.addCardToDeck(deck, card, qty);
+            }
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to read file");
+        }
+
+        return ResponseEntity.ok("File uploaded");
+    }
+
 }

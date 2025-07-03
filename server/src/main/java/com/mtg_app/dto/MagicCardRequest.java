@@ -165,12 +165,13 @@ public class MagicCardRequest {
                 "tcgplayer_id=" + tcgplayer_id +
                 ", name='" + name + '\'' +
                 ", mana_cost='" + mana_cost + '\'' +
-                ", color_identy='" + color_identity.toString() + '\'' +
+                ", color_identity=" + color_identity +
                 ", cmc=" + cmc +
                 ", type_line='" + type_line + '\'' +
                 ", layout='" + layout + '\'' +
-                ", image_uris=" + image_uris +
-                ", all_parts=" + all_parts +
+                ", image_uris=" + (image_uris != null ? image_uris.toString() : "null") +
+                ", card_faces=" + (card_faces != null ? card_faces.toString() : "null") +
+                ", all_parts=" + (all_parts != null ? all_parts.toString() : "null") +
                 '}';
     }
 

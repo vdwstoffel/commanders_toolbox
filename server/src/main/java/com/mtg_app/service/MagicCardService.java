@@ -24,10 +24,17 @@ public class MagicCardService implements MagicCardServiceInterface {
         this.magicTokenService = magicTokenService;
     }
 
-    /*
-     * Check whether or not the card already exists in the database, if not it will
-     * create a records
-     * Returns The card entity
+    /**
+     * Retrieves an existing {@link MagicCard} by its TCGPlayer ID or creates a new one if it does not exist.
+     * <p>
+     * This method parses the provided {@link MagicCardRequest} to extract card details,
+     * checks if a card with the given ID already exists in the repository, and if not,
+     * creates and saves a new {@link MagicCard} entity. Additionally, it processes any
+     * associated token parts and ensures their existence via the {@code magicTokenService}.
+     * </p>
+     *
+     * @param card the {@link MagicCardRequest} containing the card details to retrieve or create
+     * @return the existing or newly created {@link MagicCard}
      */
     @Override
     public MagicCard getOrCreateNewCard(MagicCardRequest card) {
@@ -72,5 +79,10 @@ public class MagicCardService implements MagicCardServiceInterface {
     @Override
     public Optional<MagicCard> getCardById(int cardId) throws IllegalArgumentException {
         return magicCardRepository.findById(cardId);
+    }
+
+    @Override
+    public List<String> batchCheckIfCardsExist(List<String> cards) {
+        return magicCardRepository.batchCheckIfCardsExist(cards);
     }
 }

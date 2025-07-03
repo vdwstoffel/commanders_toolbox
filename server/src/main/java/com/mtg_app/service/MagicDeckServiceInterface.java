@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mtg_app.entity.MagicDeck;
 import com.mtg_app.dto.ColorDistributionResponse;
+import com.mtg_app.dto.MagicCardRequest;
 import com.mtg_app.dto.NewDeckRequest;
 
 public interface MagicDeckServiceInterface {
@@ -18,4 +19,6 @@ public interface MagicDeckServiceInterface {
     void deleteDeck(int id, String userId);
 
     ColorDistributionResponse colorDistribution(int deckId, String userId);
+
+    void addCardToDeck(MagicDeck deck, MagicCardRequest card, int quantity);
 }
