@@ -1,20 +1,8 @@
-// export default function ColorDistributionPieChart() {
-//   const { isWaitingForColorDistribution, colorDistributionError, colorDistribution } = useGetDeckColorDistribution();
-
-//   if (isWaitingForColorDistribution) return <Loader />;
-//   if (colorDistributionError) throw new Error();
-
-//   console.log(colorDistribution);
-
-//   return <h1>Color Pie Chart</h1>;
-// }
-
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Pie, PieChart } from "recharts";
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 import Loader from "../ui/Loader";

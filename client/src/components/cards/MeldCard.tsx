@@ -23,7 +23,7 @@ export default function MeldCard({ card }: Readonly<Props>) {
     }
 
     getMeldedCard();
-  }, []);
+  }, [card, backside]);
 
   if (!card || !meldedCard) return;
 

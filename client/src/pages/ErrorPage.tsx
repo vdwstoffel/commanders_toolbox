@@ -2,7 +2,7 @@ import Navbar from "@/components/ui/Navbar";
 import { useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
-  const error = useRouteError();
+  const error = useRouteError() as { status?: number; statusText?: string; message?: string };
 
   return (
     <>

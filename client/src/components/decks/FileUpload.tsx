@@ -6,10 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, type ChangeEvent } from "react";
 
 import { parseImportDeckList } from "@/utils/helperFunctions";
-import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
-import { useSendFileToBackEnd, useSendTextToBackEnd, useUploadDeckText } from "./useDeckQuery";
-
-const scyfallApi = new ScryfallApi();
+import { useSendFileToBackEnd, useSendTextToBackEnd } from "./useDeckQuery";
 
 interface Props {
   closeFn?: () => void;
@@ -21,7 +18,6 @@ export default function FileUpload({ closeFn }: Props) {
   const {deckFileUpload} = useSendFileToBackEnd();
 
   const [deckValue, setDeckValue] = useState<string>("");
-  const [isBusy, setIsBusy] = useState<boolean>(false);
 
   // File upload
   const [file, setFile] = useState<File | null>(null);
@@ -92,7 +88,7 @@ export default function FileUpload({ closeFn }: Props) {
               onChange={updateDeckValueHandler}
               className="max-h-92 overflow-auto"
             />
-            <Button disabled={isBusy} onClick={deckSubmitHandler}>
+            <Button onClick={deckSubmitHandler}>
               Submit deck
             </Button>
           </div>
