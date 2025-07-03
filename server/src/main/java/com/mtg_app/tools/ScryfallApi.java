@@ -3,6 +3,7 @@ package com.mtg_app.tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -24,12 +25,12 @@ public class ScryfallApi {
         RestTemplate restTemplate = new RestTemplate();
         String uri = "https://api.scryfall.com/cards/collection";
 
-        List<HashMap<String, String>> cardBody = new ArrayList<>();
-        HashMap<String, List<HashMap<String, String>>> body = new HashMap<>();
+        List<Map<String, String>> cardBody = new ArrayList<>();
+        Map<String, List<Map<String, String>>> body = new HashMap<>();
 
         // Add all the cards to the body
         for (String cardName : cards) {
-            HashMap<String, String> card = new HashMap<>();
+            Map<String, String> card = new HashMap<>();
             card.put("name", cardName);
             cardBody.add(card);
         }

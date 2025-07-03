@@ -329,7 +329,7 @@ public class DeckController {
 
         try {
             String fileContent = new String(file.getBytes());
-            HashMap<String, Integer> cardAndQuantity = new FileService().parseUploadedDeckList(fileContent);
+            Map<String, Integer> cardAndQuantity = new FileService().parseUploadedDeckList(fileContent);
 
             List<String> cardsToQuery = new ArrayList<>();
 

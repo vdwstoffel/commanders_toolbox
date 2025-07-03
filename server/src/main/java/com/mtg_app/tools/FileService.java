@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.mtg_app.entity.MagicDeckCard;
@@ -120,11 +121,11 @@ public class FileService {
      * @throws ArrayIndexOutOfBoundsException if a line does not contain both
      *                                        quantity and card name
      */
-    public HashMap<String, Integer> parseUploadedDeckList(String fileContent) {
+    public Map<String, Integer> parseUploadedDeckList(String fileContent) {
         String[] splitByNewLine = fileContent.split("\n");
         Set<String> linesToSkip = Set.of("Commander", "Creatures", "Lands", "Sorceries", "Instants", "Planeswalkers",
                 "Battles", "Artifacts", "Enchantments", "");
-        HashMap<String, Integer> quantityAndCard = new HashMap<>();
+        Map<String, Integer> quantityAndCard = new HashMap<>();
 
         for (String line : splitByNewLine) {
 
