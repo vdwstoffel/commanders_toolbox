@@ -1,3 +1,5 @@
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+
 import { ScryfallApi, type MagicCard, type PrintingData } from "@/api/scryfallApi";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import MagicCardImage from "./MagicCardImage";
@@ -34,14 +36,22 @@ export default function ShowUniquePrintings({ cardName, setCardFn }: Props) {
   if (waitingForPrintings) return <Loader />;
 
   return (
-    <div className="flex gap-2 justify-center flex-wrap my-10 overflow-auto">
-      {uniquePrintings.map((card, idx) => {
-        return (
-          <div onClick={() => setPrintingHandler(card.tcgplayer_id)}>
-            <MagicCardImage key={card.tcgplayer_id + idx} imageUrl={card.imageUrl} />
-          </div>
-        );
-      })}
+    <div className="p-10">
+      <Carousel>
+        <CarouselContent>
+          {uniquePrintings.map((card, idx) => {
+            return (
+              <CarouselItem key={idx} className="basis-1/3">
+                <div onClick={() => setPrintingHandler(card.tcgplayer_id)}>
+                  <MagicCardImage key={card.tcgplayer_id + idx} imageUrl={card.imageUrl} />
+                </div>
+              </CarouselItem>
+            );
+          })}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </div>
   );
 }

@@ -4,7 +4,7 @@ interface Props {
 
 export default function MagicCardImage({ imageUrl }: Props) {
   return (
-    <div className="w-60">
+    <div className="max-w-60">
       <img src={imageUrl}></img>
     </div>
   );
