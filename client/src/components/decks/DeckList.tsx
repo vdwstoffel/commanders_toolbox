@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 import { usePopulateBasicLands } from "./useDeckQuery";
 import { useParams } from "react-router-dom";
 import { useUser } from "../user/useUser";
+import toast from "react-hot-toast";
 
 interface DeckListProps {
   deck: DeckCardDetails[];
@@ -86,7 +87,11 @@ export default function DeckList({ deck }: DeckListProps) {
     const res = await deckApi.downloadDeckList(Number(deckId), idToken);
 
     if (copyTo === "clipboard") {
-      navigator.clipboard.writeText(res);
+      try {
+        navigator.clipboard.writeText(res);
+      } catch (err) {
+        toast.error(`Error copying content to clipboard: ${err}`);
+      }
       return;
     }
 
@@ -107,7 +112,7 @@ export default function DeckList({ deck }: DeckListProps) {
           <Button className="mx-auto my-3" onClick={() => populateLands()}>
             Populate Lands
           </Button>
-          <DropdownMenu >
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="mx-auto my-2 min-w-32">Download</Button>
             </DropdownMenuTrigger>
