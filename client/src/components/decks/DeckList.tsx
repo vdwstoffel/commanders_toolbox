@@ -104,12 +104,12 @@ export default function DeckList({ deck }: DeckListProps) {
       <div className="grid md:grid-cols-[2fr_5fr_1fr] justify-center">
         <div className="md:col-span-1 mx-auto flex flex-col">
           <MagicCardImage imageUrl={shownCardImgUrl} />
-          <Button className="mx-auto my-5" onClick={() => populateLands()}>
+          <Button className="mx-auto my-3" onClick={() => populateLands()}>
             Populate Lands
           </Button>
-          <DropdownMenu>
+          <DropdownMenu >
             <DropdownMenuTrigger asChild>
-              <Button>Download</Button>
+              <Button className="mx-auto my-2 min-w-32">Download</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-42">
               <DropdownMenuCheckboxItem onClick={() => downloadDeckListHandler("file")}>Download deck</DropdownMenuCheckboxItem>
