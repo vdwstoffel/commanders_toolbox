@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,6 @@ import com.mtg_app.dto.CardQuantityAndName;
 import com.mtg_app.dto.ColorDistributionResponse;
 import com.mtg_app.dto.DeckTextUploadRequest;
 import com.mtg_app.dto.DeckUpdateRequest;
-import com.mtg_app.dto.DeckUploadTextRequest;
 import com.mtg_app.dto.MagicCardRequest;
 import com.mtg_app.dto.NewDeckRequest;
 import com.mtg_app.dto.UpdateCardQuantityRequest;

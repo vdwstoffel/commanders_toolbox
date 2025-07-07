@@ -25,15 +25,21 @@ public class MagicCardService implements MagicCardServiceInterface {
     }
 
     /**
-     * Retrieves an existing {@link MagicCard} by its TCGPlayer ID or creates a new one if it does not exist.
+     * Retrieves an existing {@link MagicCard} by its TCGPlayer ID or creates a new
+     * one if it does not exist.
      * <p>
-     * This method parses the provided {@link MagicCardRequest} to extract card details,
-     * checks if a card with the given ID already exists in the repository, and if not,
-     * creates and saves a new {@link MagicCard} entity. Additionally, it processes any
-     * associated token parts and ensures their existence via the {@code magicTokenService}.
+     * This method parses the provided {@link MagicCardRequest} to extract card
+     * details,
+     * checks if a card with the given ID already exists in the repository, and if
+     * not,
+     * creates and saves a new {@link MagicCard} entity. Additionally, it processes
+     * any
+     * associated token parts and ensures their existence via the
+     * {@code magicTokenService}.
      * </p>
      *
-     * @param card the {@link MagicCardRequest} containing the card details to retrieve or create
+     * @param card the {@link MagicCardRequest} containing the card details to
+     *             retrieve or create
      * @return the existing or newly created {@link MagicCard}
      */
     @Override
@@ -49,6 +55,7 @@ public class MagicCardService implements MagicCardServiceInterface {
         String cardType = card.getType_line();
         String layout = card.getLayout();
         List<String> imageUrl = card.getCardImages();
+        String set = card.getSet();
 
         String identity = parser.getColorIdentity(colorIdentity);
         List<String> manaSymbolUris = parser.getManaSymbolUris(manaCost);
@@ -58,7 +65,7 @@ public class MagicCardService implements MagicCardServiceInterface {
         if (!exists.isPresent()) {
             MagicCard cardToCreate = new MagicCard(id, cardName, identity, manaSymbolUris, cmc,
                     parser.formattedType(cardType), layout,
-                    imageUrl);
+                    imageUrl, set);
             MagicCard savedCard = this.magicCardRepository.save(cardToCreate);
 
             // Create any tokens associated with the card

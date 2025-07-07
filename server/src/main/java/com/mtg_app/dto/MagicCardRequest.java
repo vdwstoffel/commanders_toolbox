@@ -21,13 +21,14 @@ public class MagicCardRequest {
     private ImageUris image_uris;
     private List<CardFace> card_faces;
     private List<AllParts> all_parts;
+    private String set;
 
     public MagicCardRequest() {
     };
 
     public MagicCardRequest(int tcgplayer_id, String name, String mana_cost, List<String> color_identity, int cmc,
             String type_line, String layout,
-            ImageUris image_uris, List<CardFace> card_faces, List<AllParts> all_parts) {
+            ImageUris image_uris, List<CardFace> card_faces, List<AllParts> all_parts, String set) {
         this.tcgplayer_id = tcgplayer_id;
         this.name = name;
         this.mana_cost = mana_cost;
@@ -38,6 +39,7 @@ public class MagicCardRequest {
         this.image_uris = image_uris;
         this.card_faces = card_faces;
         this.all_parts = all_parts;
+        this.set = set;
     };
 
     public int getTcgplayer_id() {
@@ -157,6 +159,14 @@ public class MagicCardRequest {
 
     public void setAll_parts(List<AllParts> all_parts) {
         this.all_parts = all_parts;
+    }
+
+    public String getSet() {
+        return this.set;
+    }
+
+    public void setSet(String set) {
+        this.set = set;
     }
 
     @Override
