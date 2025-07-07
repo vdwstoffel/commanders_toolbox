@@ -29,69 +29,69 @@ public class FileService {
 
         for (MagicDeckCard cardEntry : deckList) {
             if (cardEntry.isCommander()) {
-                commanders.add(new CardQuantity(1, cardEntry.getCard().getCardName()));
+                commanders.add(new CardQuantity(1, cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("creature")) {
-                creatures.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                creatures.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("artifact")) {
-                artifacts.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                artifacts.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("enchantment")) {
-                enchantments.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                enchantments.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("battle")) {
-                battles.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                battles.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("planeswalker")) {
-                planeswalkers.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                planeswalkers.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("instant")) {
-                instants.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                instants.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("sorcery")) {
-                sorceries.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                sorceries.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             } else if (cardEntry.getCard().getCardType().toLowerCase().equals("land")) {
-                lands.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName()));
+                lands.add(new CardQuantity(cardEntry.getQuantity(), cardEntry.getCard().getCardName(), cardEntry.getCard().getSet()));
             }
         }
 
         // Go through each list and add the card to the stringfile
         for (CardQuantity card : commanders) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nCreatures\n";
         for (CardQuantity card : creatures) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nArtifacts\n";
         for (CardQuantity card : artifacts) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nEnchantments\n";
         for (CardQuantity card : enchantments) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nBattles\n";
         for (CardQuantity card : battles) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nPlaneswalkers\n";
         for (CardQuantity card : planeswalkers) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nInstants\n";
         for (CardQuantity card : instants) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nSorceries\n";
         for (CardQuantity card : sorceries) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         deckString += "\nLands\n";
         for (CardQuantity card : lands) {
-            deckString += String.format("%s %s\n", card.getQuantity(), card.getCardName());
+            deckString += String.format("%s %s [%s]\n", card.getQuantity(), card.getCardName(), card.getSet());
         }
 
         try (FileWriter writer = new FileWriter(file)) {
@@ -147,10 +147,12 @@ public class FileService {
 final class CardQuantity {
     private int quantity;
     private String cardName;
+    private String set;
 
-    public CardQuantity(int quantity, String cardName) {
+    public CardQuantity(int quantity, String cardName, String set) {
         this.quantity = quantity;
         this.cardName = cardName;
+        this.set = set;
     }
 
     public int getQuantity() {
@@ -167,5 +169,13 @@ final class CardQuantity {
 
     public void setCardName(String cardName) {
         this.cardName = cardName;
+    }
+
+    public String getSet() {
+        return this.set;
+    }
+
+    public void setSet(String set) {
+        this.set = set;
     }
 }
