@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 import MagicCardImage from "../cards/MagicCardImage";
 
 import { BackendDeckApi, type DeckCardDetails } from "@/api/backendDeckApi";
@@ -80,8 +82,13 @@ export default function DeckList({ deck }: DeckListProps) {
     Lands: lands,
   };
 
-  async function downloadDeckListHandler() {
+  async function downloadDeckListHandler(copyTo: "file" | "clipboard") {
     const res = await deckApi.downloadDeckList(Number(deckId), idToken);
+
+    if (copyTo === "clipboard") {
+      navigator.clipboard.writeText(res);
+      return;
+    }
 
     const url = window.URL.createObjectURL(new Blob([res as string]));
     const link = document.createElement("a");
@@ -97,12 +104,20 @@ export default function DeckList({ deck }: DeckListProps) {
       <div className="grid md:grid-cols-[2fr_5fr_1fr] justify-center">
         <div className="md:col-span-1 mx-auto flex flex-col">
           <MagicCardImage imageUrl={shownCardImgUrl} />
-          <Button className="mx-auto mt-5" onClick={() => populateLands()}>
+          <Button className="mx-auto my-5" onClick={() => populateLands()}>
             Populate Lands
           </Button>
-          <Button className="mx-auto my-1" onClick={downloadDeckListHandler}>
-            Download Deck
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>Download</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-42">
+              <DropdownMenuCheckboxItem onClick={() => downloadDeckListHandler("file")}>Download deck</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem onClick={() => downloadDeckListHandler("clipboard")}>
+                Copy to clipboard
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="w-full rounded-md bg-slate-200/30 px-3 sm:columns-1 md:columns-1 lg:columns-2">
           {/* Iterate through each car type then each card in that type */}
