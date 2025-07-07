@@ -22,12 +22,15 @@ public class MagicCard {
     private String cardType;
     private String layout; // TODO: Make this an enum
     private List<String> cardImageUrl;
+    
+    @Column(length = 3)
+    private String set;
 
     public MagicCard() {
     };
 
     public MagicCard(int cardId, String cardName, String colorIdentity, List<String> manaSymbolUris, int cmc,
-            String cardType, String layout, List<String> cardImageUrl) {
+            String cardType, String layout, List<String> cardImageUrl, String set) {
         this.cardId = cardId;
         this.cardName = cardName;
         this.colorIdentity = colorIdentity;
@@ -36,6 +39,7 @@ public class MagicCard {
         this.cardType = cardType;
         this.layout = layout;
         this.cardImageUrl = cardImageUrl;
+        this.set = set;
     }
 
     public int getId() {
@@ -102,6 +106,14 @@ public class MagicCard {
         this.cardImageUrl = cardImageUrl;
     }
 
+    public String getSet() {
+        return this.set;
+    }
+
+    public void setSet(String set) {
+        this.set = set;
+    }
+
     @Override
     public String toString() {
         return "MagicCard{" +
@@ -113,6 +125,7 @@ public class MagicCard {
                 ", cardType='" + cardType + '\'' +
                 ", layout='" + layout + '\'' +
                 ", cardImageUrl='" + cardImageUrl.toString() + '\'' +
+                ", set='" + set + '\'' +
                 '}';
     }
 }
