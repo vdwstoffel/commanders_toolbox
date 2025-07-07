@@ -118,13 +118,13 @@ export class BackendDeckApi {
     }
   }
 
-  async downloadDeckList(deckId: number, idToken: string) {
+  async downloadDeckList(deckId: number, idToken: string): Promise<string> {
     try {
       const res = await axios.get(this.base_url + `/${deckId}/download`, {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
       });
 
-      return res.data;
+      return res.data as string;
     } catch (err) {
       const error = err as ErrorResponse;
       throw new Error(`${error.response.status}:  ${error.response.statusText}`);
