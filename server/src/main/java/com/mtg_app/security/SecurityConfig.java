@@ -14,33 +14,16 @@ import java.util.List;
 public class SecurityConfig {
 
         @Bean
-        @Order(1)
-        public SecurityFilterChain publicChain(HttpSecurity http) throws Exception {
-                return http
-                                .securityMatcher("/api/v1/explore/**")
-                                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                                .cors(cors -> cors.configurationSource(request -> {
-                                        var config = new org.springframework.web.cors.CorsConfiguration();
-                                        config.setAllowedOrigins(List.of("*")); // Use your frontend origin in
-                                                                                // production
-                                        config.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
-                                        config.setAllowedHeaders(List.of("*"));
-                                        config.setAllowCredentials(false); // Set true only if you're using cookies
-                                        return config;
-                                }))
-                                .csrf(csrf -> csrf.disable()) // This is key if CSRF protection is interfering
-                                .build();
-        }
-
-        @Bean
-        @Order(2)
-        public SecurityFilterChain protectedChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 return http
                                 .authorizeHttpRequests(authorize -> authorize
+                                                .requestMatchers("/api/v1/explore/**").permitAll()
                                                 .requestMatchers("/api/v1/decks/**").authenticated()
                                                 .anyRequest().authenticated())
                                 .cors(withDefaults())
                                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
+                                .csrf(csrf -> csrf
+                                                .ignoringRequestMatchers("/api/v1/explore/**"))
                                 .build();
         }
 }
