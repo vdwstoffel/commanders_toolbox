@@ -1,4 +1,6 @@
 import axios from "axios";
+import { AxiosError } from "axios";
+import { axiosErrorWrapper } from "./apiHelpers";
 
 export class EdhRecApi {
   private base_url: string;
@@ -8,7 +10,6 @@ export class EdhRecApi {
   }
 
   slugify(commanders: string[]) {
-
     let commanderName;
 
     if (commanders.length === 1) {
@@ -27,7 +28,7 @@ export class EdhRecApi {
   }
 
   async getDeckStatsByTheme(commander: string[], theme: string) {
-    const slug = this.slugify(commander)
+    const slug = this.slugify(commander);
     const url = theme.toLowerCase() !== "custom" ? `${this.base_url}/${slug}/${theme}.json` : `${this.base_url}/${slug}.json`;
     const data = await axios.get<EdhDeckThemeStats>(url);
     return data.data;
@@ -39,12 +40,21 @@ export class EdhRecApi {
    * @returns
    */
   async getDeckThemes(commanderName: string[]) {
-    const slug = this.slugify(commanderName)
+    const slug = this.slugify(commanderName);
     try {
       const data = await axios.get<GetDeckThemesResponse>(`${this.base_url}/${slug}.json`);
       return data.data.panels.taglinks;
     } catch {
       return null;
+    }
+  }
+
+  async getTopCommander(period: "year" | "month" | "week") {
+    try {
+      const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${period}.json`);
+      return (response.data.container.json_dict.cardlists[0].cardviews);
+    } catch (err) {
+      axiosErrorWrapper(err as Error);
     }
   }
 }
@@ -72,4 +82,8 @@ export interface Theme {
   count: number;
   slug: string;
   value: string;
+}
+
+interface TopCommandersInterface {
+  container: { json_dict: { cardlists: { cardviews: { name: string }[] }[] } };
 }
