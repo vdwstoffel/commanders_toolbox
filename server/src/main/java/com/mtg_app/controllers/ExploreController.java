@@ -26,9 +26,9 @@ public class ExploreController {
     }
 
     @PostMapping
-    public void getBatchCardInfo(@RequestBody StringListOfCards cards) {
+    public void getBatchCardInfo() {
 
-        System.out.println(cards);
+        System.out.println("Hello");
     }
 
 }

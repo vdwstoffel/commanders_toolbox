@@ -14,6 +14,7 @@ export class BackendExploreAPI {
   }
 
   async getBatchCardInfo(listOfCards: string[]) {
+    axios.defaults.headers.common = {};
     try {
       await axios.post(this.url, listOfCards);
     } catch (err) {
