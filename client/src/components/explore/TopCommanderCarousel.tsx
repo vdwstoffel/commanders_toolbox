@@ -1,3 +1,6 @@
+import { useState } from "react";
+import toast from "react-hot-toast";
+
 import { ScryfallApi } from "@/api/scryfallApi";
 import FullCardInfo from "@/components/cards/FullCardInfo";
 import { useCreateDeck } from "@/components/decks/useDeckQuery";
@@ -7,7 +10,6 @@ import Loader from "@/components/ui/Loader";
 import OverlayWrapper from "@/components/ui/OverlayWrapper";
 import { useGetTopCommanders } from "@/hooks/useExploreQuery";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
 interface TopCommanderProps {
   period: "year" | "month" | "week";
@@ -25,7 +27,7 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
   function toggleCardInfo(cardName?: string) {
     setShowCardInfo(!showCardInfo);
 
-    if (cardInfoToShow === null) {
+    if (cardInfoToShow === null && cardName) {
       setCardInfoToShow(cardName!);
     } else {
       setCardInfoToShow(null);
@@ -35,8 +37,13 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
   async function createDeckClickHandler() {
     if (!cardInfoToShow) return;
 
-    const commander = await new ScryfallApi().getCardByName(cardInfoToShow!);
-    createDeck({ deckName: cardInfoToShow, commanders: [commander], deckTheme: "custom" });
+    try {
+      const commander = await new ScryfallApi().getCardByName(cardInfoToShow);
+      createDeck({ deckName: cardInfoToShow, commanders: [commander], deckTheme: "custom" });
+   
+    } catch (err) {
+      toast.error("Error creating deck: " + err)
+    }
   }
 
   if (!topCommanderData) return <ErrorMessage msg="No commander data available" />;
@@ -56,7 +63,7 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
                 role="button"
                 aria-label={`View details for ${card.cardName}`}
               >
-                <img className="w-60" src={card.cardImageUrl[0]} />
+                <img className="w-60" src={card.cardImageUrl[0]} alt={`${card.cardName} card image`} />
               </CarouselItem>
             );
           })}

@@ -49,12 +49,12 @@ public class ExploreController {
         }
 
         // first do a batch check if the cards exist in the database.
-        List<String> existingCards = magicCardService.batchCheckIfCardsExist(cards.getCards());
+        List<String> existingCards = magicCardService.batchCheckIfCardsExist(validCardNames);
 
         // Create a list of non existing cards
         List<String> cardsToCreate = new ArrayList<>();
 
-        for (String card : cards.getCards()) {
+        for (String card : validCardNames) {
             if (!existingCards.contains(card)) {
                 cardsToCreate.add(card);
             }
@@ -69,7 +69,7 @@ public class ExploreController {
             }
         }
 
-        List<MagicCard> cardsInAlphabeticalOrder = magicCardService.getBatchCards(cards.getCards());
+        List<MagicCard> cardsInAlphabeticalOrder = magicCardService.getBatchCards(validCardNames);
 
         // Need to preserve the cards in the original order from the list that was sent,
         List<MagicCard> originalOrder = new ArrayList<>();
