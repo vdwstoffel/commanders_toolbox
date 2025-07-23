@@ -13,7 +13,7 @@ interface TopCommanderProps {
   period: "year" | "month" | "week";
 }
 
-export default function TopCommanderCourasel({ period }: TopCommanderProps) {
+export default function TopCommanderCarousel({ period }: TopCommanderProps) {
   const { isLoadingTopCommander, topCommanderError, topCommanderData } = useGetTopCommanders(period);
   const [showCardInfo, setShowCardInfo] = useState<boolean>(false);
   const [cardInfoToShow, setCardInfoToShow] = useState<string | null>(null);
@@ -33,17 +33,29 @@ export default function TopCommanderCourasel({ period }: TopCommanderProps) {
   }
 
   async function createDeckClickHandler() {
+    if (!cardInfoToShow) return;
+
     const commander = await new ScryfallApi().getCardByName(cardInfoToShow!);
-    createDeck({ deckName: cardInfoToShow!, commanders: [commander], deckTheme: "custom" });
+    createDeck({ deckName: cardInfoToShow, commanders: [commander], deckTheme: "custom" });
   }
+
+  if (!topCommanderData) return <ErrorMessage msg="No commander data available" />;
 
   return (
     <div className="flex flex-col mx-20 border border-amber-50">
       <Carousel>
         <CarouselContent>
-          {topCommanderData!.map((card) => {
+          {topCommanderData.map((card) => {
             return (
-              <CarouselItem key={card.id} onClick={() => toggleCardInfo(card.cardName)} className="basis-1/10">
+              <CarouselItem
+                key={card.id}
+                onClick={() => toggleCardInfo(card.cardName)}
+                onKeyDown={(e) => e.key === "Enter" && toggleCardInfo(card.cardName)}
+                className="basis-1/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                tabIndex={0}
+                role="button"
+                aria-label={`View details for ${card.cardName}`}
+              >
                 <img className="w-60" src={card.cardImageUrl[0]} />
               </CarouselItem>
             );

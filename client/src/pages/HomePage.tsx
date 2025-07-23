@@ -1,4 +1,4 @@
-import TopCommanderCourasel from "@/explore/TopCommanderCarousel";
+import TopCommanderCourasel from "@/components/explore/TopCommanderCarousel";
 
 export default function HomePage() {
   return (

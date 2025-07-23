@@ -95,6 +95,9 @@ public class MagicCardService implements MagicCardServiceInterface {
 
     @Override
     public List<MagicCard> getBatchCards(List<String> cards) {
+        if (cards == null) {
+            throw new IllegalArgumentException("Cards list cannot be empty");
+        }
         return magicCardRepository.getBatchCards(cards);
     };
 }

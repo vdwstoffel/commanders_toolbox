@@ -48,10 +48,15 @@ export class EdhRecApi {
     }
   }
 
+  /**
+   * Fetches top commanders for a specified time period
+   * @param period - Time period: "year", "month", or "week"
+   * @returns Array of commander cardviews
+   */
   async getTopCommander(period: "year" | "month" | "week") {
     try {
       const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${period}.json`);
-      return (response.data.container.json_dict.cardlists[0].cardviews);
+      return response.data.container.json_dict.cardlists[0].cardviews;
     } catch (err) {
       axiosErrorWrapper(err as Error);
     }

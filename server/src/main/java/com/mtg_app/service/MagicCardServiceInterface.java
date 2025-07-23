@@ -13,5 +13,11 @@ public interface MagicCardServiceInterface {
 
     List<String> batchCheckIfCardsExist(List<String> cards);
 
+    /**
+     * Retrieves a list of MagicCard entities based on the provided card names.
+     * 
+     * @param cards List of card names to retrieve
+     * @return List of MagicCard entities corresponding to the provided names
+     */
     List<MagicCard> getBatchCards(List<String> cards);
 }
