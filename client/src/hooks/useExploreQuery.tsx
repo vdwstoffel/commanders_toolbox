@@ -8,13 +8,14 @@ const backendExploreApi = new BackendExploreAPI();
 export function useGetTopCommanders(period: "year" | "month" | "week") {
   // First get the data from edh rec
   const {
-    isPending: isLoadingTopCommanderData,
-    error: TopCommanderError,
+    error: topCommanderError,
     data: topCommanderData,
   } = useQuery({
     queryKey: ["topCommander", period],
     queryFn: () => edhRecApi.getTopCommander(period),
   });
+
+  if (topCommanderError) throw new Error("Failed getting data for top commanders")
 
   // Now that we have the data, isolate just the names
   const commanderNames = topCommanderData?.map((card) => card.name);
@@ -26,7 +27,7 @@ export function useGetTopCommanders(period: "year" | "month" | "week") {
     data: topCommanderCardInfo,
   } = useQuery({
     queryKey: ["topCommanderCardData", commanderNames],
-    queryFn: () => backendExploreApi.getBatchCardInfo(commanderNames),
+    queryFn: () => backendExploreApi.getBatchCardInfo(commanderNames!),
     enabled: !!commanderNames?.length,
   });
 

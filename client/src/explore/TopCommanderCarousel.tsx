@@ -8,7 +8,6 @@ import OverlayWrapper from "@/components/ui/OverlayWrapper";
 import { useGetTopCommanders } from "@/hooks/useExploreQuery";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface TopCommanderProps {
   period: "year" | "month" | "week";

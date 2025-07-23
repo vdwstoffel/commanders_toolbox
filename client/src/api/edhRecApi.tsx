@@ -1,5 +1,4 @@
 import axios from "axios";
-import { AxiosError } from "axios";
 import { axiosErrorWrapper } from "./apiHelpers";
 
 export class EdhRecApi {
