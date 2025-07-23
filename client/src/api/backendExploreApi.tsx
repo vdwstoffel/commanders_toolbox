@@ -5,6 +5,7 @@
 import axios from "axios";
 
 import { axiosErrorWrapper } from "./apiHelpers";
+import type { MagicCardInterface } from "./interfaces";
 
 export class BackendExploreAPI {
   private url: string;
@@ -14,11 +15,10 @@ export class BackendExploreAPI {
   }
 
   async getBatchCardInfo(listOfCards: string[]) {
-    axios.defaults.headers.common = {};
     try {
-      await axios.post(this.url, listOfCards);
+      const response: {data: MagicCardInterface[]} = await axios.post(this.url, {cards: listOfCards});
+      return response.data
     } catch (err) {
-        console.log(err)
       axiosErrorWrapper(err as Error);
     }
   }

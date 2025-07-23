@@ -92,4 +92,9 @@ public class MagicCardService implements MagicCardServiceInterface {
     public List<String> batchCheckIfCardsExist(List<String> cards) {
         return magicCardRepository.batchCheckIfCardsExist(cards);
     }
+
+    @Override
+    public List<MagicCard> getBatchCards(List<String> cards) {
+        return magicCardRepository.getBatchCards(cards);
+    };
 }

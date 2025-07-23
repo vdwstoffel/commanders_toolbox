@@ -12,4 +12,6 @@ public interface MagicCardServiceInterface {
     Optional<MagicCard> getCardById(int cardId);
 
     List<String> batchCheckIfCardsExist(List<String> cards);
+
+    List<MagicCard> getBatchCards(List<String> cards);
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { MagicCard } from "./scryfallApi";
-import type { Token } from "./interfaces";
+import type { MagicCardInterface, Token } from "./interfaces";
 
 export class BackendDeckApi {
   private base_url: string;
@@ -247,16 +247,7 @@ export interface MagicDeck {
   deckImageUri: string[];
 }
 
-export interface MagicCardInterface {
-  cardName: string;
-  colorIdentity: string;
-  manaSymbolUris: string[];
-  cmc: number;
-  cardType: string;
-  layout: string;
-  cardImageUrl: string[];
-  id: number;
-}
+
 
 export interface DeckCardDetails {
   id: number;

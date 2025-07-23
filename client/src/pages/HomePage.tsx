@@ -1,30 +1,18 @@
-import { BackendExploreAPI } from "@/api/backendExploreApi";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
-import { useGetTopCommanders } from "@/hooks/useEdhRecQuery";
-import { useEffect } from "react";
+import { useGetTopCommanders } from "@/hooks/useExploreQuery";
 
 export default function HomePage() {
-  // const { isWaitingForTopCommanderYear, topCommanderYearError, topCommanderYear } = useGetTopCommanders("year");
+  const { isLoadingTopCommander, topCommanderError, topCommanderData } = useGetTopCommanders("year");
 
-  // if (isWaitingForTopCommanderYear) return <Loader />;
-  // if (topCommanderYearError) return <ErrorMessage msg="Failed to load Top Commanders" />;
-
-  // const listOfCards = topCommanderYear?.map((card) => card.name);
-  // console.log(listOfCards)
-
-  useEffect(() => {
-
-    const test = async () => {
-      new BackendExploreAPI().getBatchCardInfo(["HEllo", "BYe"])
-    }
-
-    test()
-  }, [])
+  if (isLoadingTopCommander) return <Loader />;
+  if (topCommanderError) return <ErrorMessage msg={topCommanderError.message} />;
 
   return (
     <>
-
+      {topCommanderData!.map((card) => (
+        <img className="w-30" src={card.cardImageUrl[0]} />
+      ))}
       <h1>Home</h1>
     </>
   );
