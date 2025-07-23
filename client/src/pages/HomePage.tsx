@@ -1,19 +1,13 @@
-import ErrorMessage from "@/components/ui/ErrorMessage";
-import Loader from "@/components/ui/Loader";
-import { useGetTopCommanders } from "@/hooks/useExploreQuery";
+import TopCommanderCourasel from "@/explore/TopCommanderCarousel";
 
 export default function HomePage() {
-  const { isLoadingTopCommander, topCommanderError, topCommanderData } = useGetTopCommanders("year");
-
-  if (isLoadingTopCommander) return <Loader />;
-  if (topCommanderError) return <ErrorMessage msg={topCommanderError.message} />;
-
   return (
-    <>
-      {topCommanderData!.map((card) => (
-        <img className="w-30" src={card.cardImageUrl[0]} />
-      ))}
-      <h1>Home</h1>
-    </>
+    <div className="text-center mt-10">
+      <h1 className="text-4xl mb-5">Top Commanders all time</h1>
+      <TopCommanderCourasel period="year" />
+
+      <h1 className="text-4xl my-5">Top Commanders the last month</h1>
+      <TopCommanderCourasel period="month" />
+    </div>
   );
 }
