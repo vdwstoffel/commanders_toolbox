@@ -52,7 +52,9 @@ const { isPending: waitingToCreateDeck, mutate: createDeck } = useMutation({
       toast.dismiss(toastId);
       return result;
     } catch (error) {
+      const err = error as Error
       toast.dismiss(toastId);
+      toast.error(err.message)
       throw error;
     }
   },
