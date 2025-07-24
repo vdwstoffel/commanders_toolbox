@@ -1,15 +1,10 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 
-import { ScryfallApi } from "@/api/scryfallApi";
-import FullCardInfo from "@/components/cards/FullCardInfo";
-import { useCreateDeck } from "@/components/decks/useDeckQuery";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
-import OverlayWrapper from "@/components/ui/OverlayWrapper";
 import { useGetTopCommanders } from "@/hooks/useExploreQuery";
-import { Button } from "@/components/ui/button";
+import InfoAndCreateOverlay from "./InfoAndCreateOverlay";
 
 interface TopCommanderProps {
   period: "year" | "month" | "week";
@@ -19,7 +14,6 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
   const { isLoadingTopCommander, topCommanderError, topCommanderData } = useGetTopCommanders(period);
   const [showCardInfo, setShowCardInfo] = useState<boolean>(false);
   const [cardInfoToShow, setCardInfoToShow] = useState<string | null>(null);
-  const { createDeck } = useCreateDeck();
 
   if (isLoadingTopCommander) return <Loader />;
   if (topCommanderError) return <ErrorMessage msg={topCommanderError.message} />;
@@ -31,18 +25,6 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
       setCardInfoToShow(cardName!);
     } else {
       setCardInfoToShow(null);
-    }
-  }
-
-  async function createDeckClickHandler() {
-    if (!cardInfoToShow) return;
-
-    try {
-      const commander = await new ScryfallApi().getCardByName(cardInfoToShow);
-      createDeck({ deckName: cardInfoToShow, commanders: [commander], deckTheme: "custom" });
-   
-    } catch (err) {
-      toast.error("Error creating deck: " + err)
     }
   }
 
@@ -71,12 +53,7 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      {showCardInfo && (
-        <OverlayWrapper hideFn={toggleCardInfo}>
-          <FullCardInfo cardName={cardInfoToShow!} />
-          <Button onClick={createDeckClickHandler}>Create Deck</Button>
-        </OverlayWrapper>
-      )}
+      {showCardInfo && <InfoAndCreateOverlay cardName={cardInfoToShow!} setHideStateAction={setShowCardInfo} />}
     </div>
   );
 }
