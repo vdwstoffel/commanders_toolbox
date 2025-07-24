@@ -6,6 +6,7 @@ import { NewDeckForm } from "./components/decks/NewDeckForm";
 import ErrorPage from "./pages/ErrorPage";
 import DeckDetails from "./pages/DeckDetails";
 import AuthWrapper from "./components/user/AuthWrapper";
+import ExploreHomePage from "./components/explore/ExploreHomePage";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
           </AuthWrapper>
         ),
       },
+      {
+        path: "/explore",
+        element: <ExploreHomePage/>
+      }
     ],
   },
 ]);

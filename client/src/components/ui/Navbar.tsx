@@ -16,6 +16,7 @@ import logo from "../../../public/logo.png"
 const navigation = [
   { name: "Home", href: "/", current: false },
   { name: "Decks", href: "/decks", current: false },
+  { name: "Explore", href: "/explore", current: false },
 ];
 
 function classNames(...classes: (string | undefined | null | false)[]): string {
