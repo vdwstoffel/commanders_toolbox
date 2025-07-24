@@ -1,22 +1,26 @@
 import { useCallback, useEffect, useState } from "react";
 
-const WHITE_MANA = "https://svgs.scryfall.io/card-symbols/W.svg";
-const BLUE_MANA = "https://svgs.scryfall.io/card-symbols/U.svg";
-const BLACK_MANA = "https://svgs.scryfall.io/card-symbols/B.svg";
-const RED_MANA = "https://svgs.scryfall.io/card-symbols/R.svg";
-const GREEN_MANA = "https://svgs.scryfall.io/card-symbols/G.svg";
-const COLORLESS_MANA = "https://svgs.scryfall.io/card-symbols/C.svg";
+const MANA_SYMBOLS = [
+  { color: "white", src: "https://svgs.scryfall.io/card-symbols/W.svg" },
+  { color: "blue", src: "https://svgs.scryfall.io/card-symbols/U.svg" },
+  { color: "black", src: "https://svgs.scryfall.io/card-symbols/B.svg" },
+  { color: "red", src: "https://svgs.scryfall.io/card-symbols/R.svg" },
+  { color: "green", src: "https://svgs.scryfall.io/card-symbols/G.svg" },
+  { color: "colorless", src: "https://svgs.scryfall.io/card-symbols/C.svg" },
+];
 
 export default function ExploreHomePage() {
   const [colorPrint, setColorPrint] = useState<string>("All");
   const [activeSymbols, setActiveSymbols] = useState<string[]>([]);
-  // additional state to check if symbol should have an outline
-  const [whiteSelected, setWhiteSelected] = useState<boolean>(false);
-  const [blueSelected, setBlueSelected] = useState<boolean>(false);
-  const [blackSelected, setBlackSelected] = useState<boolean>(false);
-  const [redSelected, setRedSelected] = useState<boolean>(false);
-  const [greenSelected, setGreenSelected] = useState<boolean>(false);
-  const [colorlessSelected, setColorlessSelected] = useState<boolean>(false);
+  // state to track what symbols where clicked the show feedback
+  const [selectedSymbols, setSelectedSymbols] = useState<Record<string, boolean>>({
+    white: false,
+    blue: false,
+    black: false,
+    red: false,
+    green: false,
+    colorless: false,
+  });
 
   const hasColors = useCallback(
     (...colors: string[]) => {
@@ -68,82 +72,27 @@ export default function ExploreHomePage() {
   }, [activeSymbols, hasColors]);
 
   function manaSymbolClickHandler(symbolColor: string) {
-    // check if the symbol is in the active symbols, if not add it ,else remove it
-    if (activeSymbols.includes(symbolColor)) {
-      const copy = [...activeSymbols];
-      const index = copy.indexOf(symbolColor);
-      copy.splice(index, 1);
-      setActiveSymbols(copy);
-    } else {
-      const copy = [...activeSymbols];
-      copy.push(symbolColor);
-      setActiveSymbols(copy);
-    }
+    setSelectedSymbols((prev) => ({
+      ...prev,
+      [symbolColor]: !prev[symbolColor],
+    }));
 
-    switch (symbolColor) {
-      case "white":
-        setWhiteSelected(!whiteSelected);
-        break;
-      case "blue":
-        setBlueSelected(!blueSelected);
-        break;
-      case "black":
-        setBlackSelected(!blackSelected);
-        break;
-      case "red":
-        setRedSelected(!redSelected);
-        break;
-      case "green":
-        setGreenSelected(!greenSelected);
-        break;
-      case "colorless":
-        setColorlessSelected(!colorlessSelected);
-        break;
-      default:
-        console.warn(`Unrecognized color: ${symbolColor}`);
-    }
+    setActiveSymbols((prev) => (prev.includes(symbolColor) ? prev.filter((c) => c !== symbolColor) : [...prev, symbolColor]));
   }
 
   return (
     <div className="container flex flex-col justify-center content-center mt-10 mx-auto text-center">
       <h1 className="text-4xl font-bold">Explore Decks</h1>
       <div className="w-10 flex flex-row gap-4 mx-auto justify-center my-10">
-        <img
-          className={whiteSelected ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
-          src={WHITE_MANA}
-          alt="w-mana"
-          onClick={() => manaSymbolClickHandler("white")}
-        />
-        <img
-          className={blueSelected ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
-          src={BLUE_MANA}
-          alt="u-mana"
-          onClick={() => manaSymbolClickHandler("blue")}
-        />
-        <img
-          className={blackSelected ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
-          src={BLACK_MANA}
-          alt="b-mana"
-          onClick={() => manaSymbolClickHandler("black")}
-        />
-        <img
-          className={redSelected ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
-          src={RED_MANA}
-          alt="r-mana"
-          onClick={() => manaSymbolClickHandler("red")}
-        />
-        <img
-          className={greenSelected ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
-          src={GREEN_MANA}
-          alt="g-mana"
-          onClick={() => manaSymbolClickHandler("green")}
-        />
-        <img
-          className={colorlessSelected ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
-          src={COLORLESS_MANA}
-          alt="c-mana"
-          onClick={() => manaSymbolClickHandler("colorless")}
-        />
+        {MANA_SYMBOLS.map(({ color, src }) => (
+          <img
+            key={color}
+            className={selectedSymbols[color] ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
+            src={src}
+            alt={`${color}-mana`}
+            onClick={() => manaSymbolClickHandler(color)}
+          />
+        ))}
       </div>
       <p>Selected: {colorPrint}</p>
     </div>
