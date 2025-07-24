@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 
 const MANA_SYMBOLS = [
-  { color: "white", src: "https://svgs.scryfall.io/card-symbols/W.svg" },
-  { color: "blue", src: "https://svgs.scryfall.io/card-symbols/U.svg" },
-  { color: "black", src: "https://svgs.scryfall.io/card-symbols/B.svg" },
-  { color: "red", src: "https://svgs.scryfall.io/card-symbols/R.svg" },
-  { color: "green", src: "https://svgs.scryfall.io/card-symbols/G.svg" },
+  { color: "mono-white", src: "https://svgs.scryfall.io/card-symbols/W.svg" },
+  { color: "mono-blue", src: "https://svgs.scryfall.io/card-symbols/U.svg" },
+  { color: "mono-black", src: "https://svgs.scryfall.io/card-symbols/B.svg" },
+  { color: "mono-red", src: "https://svgs.scryfall.io/card-symbols/R.svg" },
+  { color: "mono-green", src: "https://svgs.scryfall.io/card-symbols/G.svg" },
   { color: "colorless", src: "https://svgs.scryfall.io/card-symbols/C.svg" },
 ];
 
@@ -14,11 +14,11 @@ export default function ExploreHomePage() {
   const [activeSymbols, setActiveSymbols] = useState<string[]>([]);
   // state to track what symbols where clicked the show feedback
   const [selectedSymbols, setSelectedSymbols] = useState<Record<string, boolean>>({
-    white: false,
-    blue: false,
-    black: false,
-    red: false,
-    green: false,
+    "mono-white": false,
+    "mono-blue": false,
+    "mono-black": false,
+    "mono-red": false,
+    "mono-green": false,
     colorless: false,
   });
 
@@ -32,41 +32,41 @@ export default function ExploreHomePage() {
   useEffect(() => {
     if (activeSymbols.length === 0) setColorPrint("All");
     // 5 color
-    else if (hasColors("white", "blue", "black", "red", "green")) setColorPrint("five-color");
+    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red", "mono-green")) setColorPrint("five-color");
     // 4 color
-    else if (hasColors("white", "blue", "red", "green")) setColorPrint("ink-treader");
-    else if (hasColors("white", "blue", "black", "green")) setColorPrint("witch-maw");
-    else if (hasColors("blue", "black", "red", "green")) setColorPrint("glint-eye");
-    else if (hasColors("white", "black", "red", "green")) setColorPrint("dune-brood");
-    else if (hasColors("white", "blue", "black", "red")) setColorPrint("yore-tiller");
+    else if (hasColors("mono-white", "mono-blue", "mono-red", "mono-green")) setColorPrint("ink-treader");
+    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-green")) setColorPrint("witch-maw");
+    else if (hasColors("mono-blue", "mono-black", "mono-red", "mono-green")) setColorPrint("glint-eye");
+    else if (hasColors("mono-white", "mono-black", "mono-red", "mono-green")) setColorPrint("dune-brood");
+    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red")) setColorPrint("yore-tiller");
     // tri-color
-    else if (hasColors("white", "blue", "black")) setColorPrint("esper");
-    else if (hasColors("blue", "black", "red")) setColorPrint("grixis");
-    else if (hasColors("black", "red", "green")) setColorPrint("jund");
-    else if (hasColors("red", "green", "white")) setColorPrint("naya");
-    else if (hasColors("green", "white", "blue")) setColorPrint("bant");
-    else if (hasColors("white", "black", "green")) setColorPrint("abzan");
-    else if (hasColors("blue", "red", "white")) setColorPrint("jeskai");
-    else if (hasColors("black", "green", "blue")) setColorPrint("sultai");
-    else if (hasColors("red", "white", "black")) setColorPrint("mardu");
-    else if (hasColors("green", "blue", "red")) setColorPrint("temur");
+    else if (hasColors("mono-white", "mono-blue", "mono-black")) setColorPrint("esper");
+    else if (hasColors("mono-blue", "mono-black", "mono-red")) setColorPrint("grixis");
+    else if (hasColors("mono-black", "mono-red", "mono-green")) setColorPrint("jund");
+    else if (hasColors("mono-red", "mono-green", "mono-white")) setColorPrint("naya");
+    else if (hasColors("mono-green", "mono-white", "mono-blue")) setColorPrint("bant");
+    else if (hasColors("mono-white", "mono-black", "mono-green")) setColorPrint("abzan");
+    else if (hasColors("mono-blue", "mono-red", "mono-white")) setColorPrint("jeskai");
+    else if (hasColors("mono-black", "mono-green", "mono-blue")) setColorPrint("sultai");
+    else if (hasColors("mono-red", "mono-white", "mono-black")) setColorPrint("mardu");
+    else if (hasColors("mono-green", "mono-blue", "mono-red")) setColorPrint("temur");
     // dual color
-    else if (hasColors("white", "blue")) setColorPrint("azorius");
-    else if (hasColors("blue", "black")) setColorPrint("dimir");
-    else if (hasColors("black", "red")) setColorPrint("rakdos");
-    else if (hasColors("red", "green")) setColorPrint("gruul");
-    else if (hasColors("green", "white")) setColorPrint("selesnya");
-    else if (hasColors("white", "black")) setColorPrint("orzhov");
-    else if (hasColors("blue", "red")) setColorPrint("izzet");
-    else if (hasColors("black", "green")) setColorPrint("golgari");
-    else if (hasColors("red", "white")) setColorPrint("boros");
-    else if (hasColors("green", "blue")) setColorPrint("simic");
+    else if (hasColors("mono-white", "mono-blue")) setColorPrint("azorius");
+    else if (hasColors("mono-blue", "mono-black")) setColorPrint("dimir");
+    else if (hasColors("mono-black", "mono-red")) setColorPrint("rakdos");
+    else if (hasColors("mono-red", "mono-green")) setColorPrint("gruul");
+    else if (hasColors("mono-green", "mono-white")) setColorPrint("selesnya");
+    else if (hasColors("mono-white", "mono-black")) setColorPrint("orzhov");
+    else if (hasColors("mono-blue", "mono-red")) setColorPrint("izzet");
+    else if (hasColors("mono-black", "mono-green")) setColorPrint("golgari");
+    else if (hasColors("mono-red", "mono-white")) setColorPrint("boros");
+    else if (hasColors("mono-green", "mono-blue")) setColorPrint("simic");
     // Single Color
-    else if (hasColors("white")) setColorPrint("white");
-    else if (hasColors("blue")) setColorPrint("blue");
-    else if (hasColors("black")) setColorPrint("black");
-    else if (hasColors("green")) setColorPrint("green");
-    else if (hasColors("red")) setColorPrint("red");
+    else if (hasColors("mono-white")) setColorPrint("mono-white");
+    else if (hasColors("mono-blue")) setColorPrint("mono-blue");
+    else if (hasColors("mono-black")) setColorPrint("mono-black");
+    else if (hasColors("mono-green")) setColorPrint("mono-green");
+    else if (hasColors("mono-red")) setColorPrint("mono-red");
     else if (hasColors("colorless")) setColorPrint("colorless");
     else setColorPrint("all");
   }, [activeSymbols, hasColors]);
@@ -87,7 +87,7 @@ export default function ExploreHomePage() {
         {MANA_SYMBOLS.map(({ color, src }) => (
           <img
             key={color}
-            className={selectedSymbols[color] ? "rounded-4xl outline-1 outline-offset-4 outline-blue-300" : ""}
+            className={selectedSymbols[color] ? "rounded-4xl outline-1 outline-offset-4 outline-mono-blue-300" : ""}
             src={src}
             alt={`${color}-mana`}
             onClick={() => manaSymbolClickHandler(color)}
