@@ -7,3 +7,14 @@ export interface Token {
     "power": number,
     "toughness": number
 }
+
+export interface MagicCardInterface {
+  cardName: string;
+  colorIdentity: string;
+  manaSymbolUris: string[];
+  cmc: number;
+  cardType: string;
+  layout: string;
+  cardImageUrl: string[];
+  id: number;
+}

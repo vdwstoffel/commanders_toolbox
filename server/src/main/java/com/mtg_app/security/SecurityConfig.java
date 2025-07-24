@@ -10,16 +10,17 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        return http
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/api/v1/decks").authenticated()
-                        .requestMatchers("/api/v1/decks/**").authenticated())
-                .cors(withDefaults())
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(withDefaults()))
-                .build();
-    }
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                return http
+                                .authorizeHttpRequests(authorize -> authorize
+                                                .requestMatchers("/api/v1/explore/**").permitAll()
+                                                .requestMatchers("/api/v1/decks/**").authenticated()
+                                                .anyRequest().authenticated())
+                                .cors(withDefaults())
+                                .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
+                                .csrf(csrf -> csrf
+                                                .ignoringRequestMatchers("/api/v1/explore/**"))
+                                .build();
+        }
 }

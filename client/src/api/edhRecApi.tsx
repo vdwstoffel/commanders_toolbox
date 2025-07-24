@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { axiosErrorWrapper } from "./apiHelpers";
 
 export class EdhRecApi {
   private base_url: string;
@@ -7,7 +8,15 @@ export class EdhRecApi {
     this.base_url = "https://json.edhrec.com/pages/commanders";
   }
 
-  slugify(commanderName: string) {
+  slugify(commanders: string[]) {
+    let commanderName;
+
+    if (commanders.length === 1) {
+      commanderName = commanders[0].split("//")[0]; // For double faced cards remove the second card name
+    } else {
+      commanderName = commanders.join(" ");
+    }
+
     commanderName = commanderName.replace(/^\s+|\s+$/g, "");
     commanderName = commanderName.toLowerCase();
     commanderName = commanderName
@@ -18,15 +27,7 @@ export class EdhRecApi {
   }
 
   async getDeckStatsByTheme(commander: string[], theme: string) {
-
-    let slug;
-
-    if (commander.length === 1) {
-      slug = this.slugify(commander[0].split("//")[0]); // For double faced cards remove the second card name
-    } else {
-      slug = this.slugify(commander.join(" "));
-    }
-
+    const slug = this.slugify(commander);
     const url = theme.toLowerCase() !== "custom" ? `${this.base_url}/${slug}/${theme}.json` : `${this.base_url}/${slug}.json`;
     const data = await axios.get<EdhDeckThemeStats>(url);
     return data.data;
@@ -38,19 +39,26 @@ export class EdhRecApi {
    * @returns
    */
   async getDeckThemes(commanderName: string[]) {
-    let slug;
-
-    if (commanderName.length === 1) {
-      slug = this.slugify(commanderName[0].split("//")[0]); // For double faced cards remove the second card name
-    } else {
-      slug = this.slugify(commanderName.join(" "));
-    }
-
+    const slug = this.slugify(commanderName);
     try {
       const data = await axios.get<GetDeckThemesResponse>(`${this.base_url}/${slug}.json`);
       return data.data.panels.taglinks;
     } catch {
       return null;
+    }
+  }
+
+  /**
+   * Fetches top commanders for a specified time period
+   * @param period - Time period: "year", "month", or "week"
+   * @returns Array of commander cardviews
+   */
+  async getTopCommander(period: "year" | "month" | "week") {
+    try {
+      const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${period}.json`);
+      return response.data.container.json_dict.cardlists[0].cardviews;
+    } catch (err) {
+      axiosErrorWrapper(err as AxiosError);
     }
   }
 }
@@ -78,4 +86,8 @@ export interface Theme {
   count: number;
   slug: string;
   value: string;
+}
+
+interface TopCommandersInterface {
+  container: { json_dict: { cardlists: { cardviews: { name: string }[] }[] } };
 }

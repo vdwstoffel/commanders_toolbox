@@ -22,8 +22,6 @@ public class MagicCard {
     private String cardType;
     private String layout; // TODO: Make this an enum
     private List<String> cardImageUrl;
-    
-    @Column(length = 3)
     private String set;
 
     public MagicCard() {

@@ -14,7 +14,10 @@ public interface MagicCardRepository extends JpaRepository<MagicCard, Integer> {
     @Query("FROM MagicCard c WHERE c.cardName = :cardName")
     MagicCard getCardByName(@Param("cardName") String cardName);
 
-    @Query("SELECT c.cardName FROM MagicCard c WHERE c.cardName in :cards")
+    @Query("SELECT c.cardName FROM MagicCard c WHERE c.cardName IN :cards")
     List<String> batchCheckIfCardsExist(@Param("cards") List<String> cards);
+
+    @Query("FROM MagicCard c WHERE c.cardName IN :cards")
+    List<MagicCard> getBatchCards(@Param("cards") List<String> cards);
 
 }

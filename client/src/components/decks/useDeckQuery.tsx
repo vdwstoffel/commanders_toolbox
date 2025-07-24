@@ -44,15 +44,25 @@ export function useCreateDeck() {
   const { idToken } = useUser();
   const navigate = useNavigate();
 
-  const { isPending: waitingToCreateDeck, mutate: createDeck } = useMutation({
-    mutationFn: ({ deckName, commanders, deckTheme }: CreateDeckArgs) =>
-      deckApi.createDeck(deckName, commanders, deckTheme, idToken),
-    onSuccess: (e) => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] });
-      navigate("/decks/" + e.deckId);
-    },
-    onError: () => alert("make a toast showing an error when creatiung deck"),
-  });
+const { isPending: waitingToCreateDeck, mutate: createDeck } = useMutation({
+  mutationFn: async ({ deckName, commanders, deckTheme }: CreateDeckArgs) => {
+    const toastId = toast.loading("Creating deck...");
+    try {
+      const result = await deckApi.createDeck(deckName, commanders, deckTheme, idToken);
+      toast.dismiss(toastId);
+      return result;
+    } catch (error) {
+      const err = error as Error
+      toast.dismiss(toastId);
+      toast.error(err.message)
+      throw error;
+    }
+  },
+  onSuccess: (e) => {
+    queryClient.invalidateQueries({ queryKey: ["decks"] });
+    navigate("/decks/" + e.deckId);
+  },
+});
 
   return { waitingToCreateDeck, createDeck };
 }
