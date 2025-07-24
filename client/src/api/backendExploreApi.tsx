@@ -2,7 +2,7 @@
  * API endpoint dedicated to the EdhREc explore functionality
  */
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import { axiosErrorWrapper } from "./apiHelpers";
 import type { MagicCardInterface } from "./interfaces";
@@ -19,7 +19,7 @@ export class BackendExploreAPI {
       const response: {data: MagicCardInterface[]} = await axios.post(this.url, {cards: listOfCards});
       return response.data
     } catch (err) {
-      axiosErrorWrapper(err as Error);
+      axiosErrorWrapper(err as AxiosError);
     }
   }
 }

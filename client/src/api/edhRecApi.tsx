@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { axiosErrorWrapper } from "./apiHelpers";
 
 export class EdhRecApi {
@@ -58,7 +58,7 @@ export class EdhRecApi {
       const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${period}.json`);
       return response.data.container.json_dict.cardlists[0].cardviews;
     } catch (err) {
-      axiosErrorWrapper(err as Error);
+      axiosErrorWrapper(err as AxiosError);
     }
   }
 }
