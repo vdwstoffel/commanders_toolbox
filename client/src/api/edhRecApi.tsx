@@ -48,18 +48,26 @@ export class EdhRecApi {
     }
   }
 
+  async getCommanders(keyword: string) {
+    try {
+      const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${keyword}.json`);
+      return response.data.container.json_dict.cardlists[0].cardviews;
+    } catch (err) {
+      axiosErrorWrapper(err as AxiosError);
+    }
+  }
+
   /**
    * Fetches top commanders for a specified time period
    * @param period - Time period: "year", "month", or "week"
    * @returns Array of commander cardviews
    */
   async getTopCommander(period: "year" | "month" | "week") {
-    try {
-      const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${period}.json`);
-      return response.data.container.json_dict.cardlists[0].cardviews;
-    } catch (err) {
-      axiosErrorWrapper(err as AxiosError);
-    }
+    return this.getCommanders(period);
+  }
+
+  async getCommanderByColor(color: ColorIdentity) {
+    return this.getCommanders(color);
   }
 }
 
@@ -91,3 +99,37 @@ export interface Theme {
 interface TopCommandersInterface {
   container: { json_dict: { cardlists: { cardviews: { name: string }[] }[] } };
 }
+
+export type ColorIdentity =
+  | "mono-white"
+  | "mono-blue"
+  | "mono-black"
+  | "mono-red"
+  | "mono-green"
+  | "colorless"
+  | "azorius"
+  | "dimir"
+  | "rakdos"
+  | "gruul"
+  | "selesnya"
+  | "orzhov"
+  | "izzet"
+  | "golgari"
+  | "boros"
+  | "simic"
+  | "esper"
+  | "grixis"
+  | "jund"
+  | "naya"
+  | "bant"
+  | "abzan"
+  | "jeskai"
+  | "sultai"
+  | "mardu"
+  | "temur"
+  | "ink-treader"
+  | "witch-maw"
+  | "glint-eye"
+  | "dune-brood"
+  | "yore-tiller"
+  | "five-color";

@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 
+import type { ColorIdentity } from "@/api/edhRecApi";
+import CardsByColorContainer from "./CardsByColorContainer";
+
 const MANA_SYMBOLS = [
   { color: "mono-white", src: "https://svgs.scryfall.io/card-symbols/W.svg" },
   { color: "mono-blue", src: "https://svgs.scryfall.io/card-symbols/U.svg" },
@@ -10,7 +13,7 @@ const MANA_SYMBOLS = [
 ];
 
 export default function ExploreHomePage() {
-  const [colorPrint, setColorPrint] = useState<string>("All");
+  const [colorPrint, setColorPrint] = useState<ColorIdentity>("five-color");
   const [activeSymbols, setActiveSymbols] = useState<string[]>([]);
   // state to track what symbols where clicked the show feedback
   const [selectedSymbols, setSelectedSymbols] = useState<Record<string, boolean>>({
@@ -30,9 +33,8 @@ export default function ExploreHomePage() {
   );
 
   useEffect(() => {
-    if (activeSymbols.length === 0) setColorPrint("All");
     // 5 color
-    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red", "mono-green")) setColorPrint("five-color");
+    if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red", "mono-green")) setColorPrint("five-color");
     // 4 color
     else if (hasColors("mono-white", "mono-blue", "mono-red", "mono-green")) setColorPrint("ink-treader");
     else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-green")) setColorPrint("witch-maw");
@@ -68,7 +70,7 @@ export default function ExploreHomePage() {
     else if (hasColors("mono-green")) setColorPrint("mono-green");
     else if (hasColors("mono-red")) setColorPrint("mono-red");
     else if (hasColors("colorless")) setColorPrint("colorless");
-    else setColorPrint("all");
+    else setColorPrint("five-color");
   }, [activeSymbols, hasColors]);
 
   function manaSymbolClickHandler(symbolColor: string) {
@@ -94,7 +96,7 @@ export default function ExploreHomePage() {
           />
         ))}
       </div>
-      <p>Selected: {colorPrint}</p>
+      <CardsByColorContainer color={colorPrint} />
     </div>
   );
 }
