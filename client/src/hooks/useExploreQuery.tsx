@@ -1,5 +1,6 @@
 import { BackendExploreAPI } from "@/api/backendExploreApi";
 import { EdhRecApi, type ColorIdentity } from "@/api/edhRecApi";
+import { ScryfallApi } from "@/api/scryfallApi";
 import { useQuery } from "@tanstack/react-query";
 
 const edhRecApi = new EdhRecApi();
@@ -50,7 +51,8 @@ export function useGetCommandersByColor(color: ColorIdentity) {
     data: commanderColorInfo,
   } = useQuery({
     queryKey: [`commanderColorInfo:${color}`, commanderNames],
-    queryFn: () => backendExploreApi.getBatchCardInfo(commanderNames!),
+    // queryFn: () => backendExploreApi.getBatchCardInfo(commanderNames!),
+    queryFn: () => new ScryfallApi().getCollection(commanderNames!),
     enabled: !!commanderNames?.length,
   });
 

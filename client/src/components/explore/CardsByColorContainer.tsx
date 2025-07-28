@@ -18,11 +18,14 @@ export default function CardsByColorContainer({ color }: { color: ColorIdentity 
     setShowInfo(true);
   }
 
+  console.log(commanderColorInfo);
+
   return (
     <div className="flex flex-wrap gap-2 py-5">
-      {commanderColorInfo?.map((card) => (
-        <img src={card.cardImageUrl[0]} className="w-60" onClick={() => imageClickHandler(card.cardName)} />
-      ))}
+      {commanderColorInfo?.map((card) => {
+        const cardImage = card.image_uris ? card.image_uris.large : card.card_faces![0].image_uris.large;
+        return <img src={cardImage} className="w-60" onClick={() => imageClickHandler(card.name)} />;
+      })}
       {showInfo && <InfoAndCreateOverlay cardName={cardName!} setHideStateAction={setShowInfo} />}
     </div>
   );
