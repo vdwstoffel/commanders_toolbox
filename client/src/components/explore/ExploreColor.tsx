@@ -12,7 +12,7 @@ const MANA_SYMBOLS = [
   { color: "colorless", src: "https://svgs.scryfall.io/card-symbols/C.svg" },
 ];
 
-export default function ExploreHomePage() {
+export default function ExploreColor() {
   const [colorPrint, setColorPrint] = useState<ColorIdentity>("five-color");
   const [activeSymbols, setActiveSymbols] = useState<string[]>([]);
   // state to track what symbols where clicked the show feedback
