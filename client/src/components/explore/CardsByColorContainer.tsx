@@ -22,11 +22,11 @@ export default function CardsByColorContainer({ color }: { color: ColorIdentity 
 
   return (
     <div className="flex flex-wrap gap-4">
-      {commanderColorInfo?.map((card) => {
+      {commanderColorInfo?.map((card, idx) => {
         if (card.length === 1) {
-          return <MagicCardImage imageUrl={card[0].cardImage} clickFunction={() => imageClickHandler(card[0].name)} />;
+          return <MagicCardImage key={card[0].name + idx} imageUrl={card[0].cardImage} clickFunction={() => imageClickHandler(card[0].name)} />;
         } else {
-          return <DualCommanderContainer cardImageOneImageUrl={card[0].cardImage} cardImageTwoImageUrl={card[1].cardImage} />;
+          return <DualCommanderContainer key={card[0].name + idx} cardImageOneImageUrl={card[0].cardImage} cardImageTwoImageUrl={card[1].cardImage} />;
         }
       })}
       {showInfo && <InfoAndCreateOverlay cardName={cardName!} setHideStateAction={setShowInfo} />}

@@ -99,10 +99,11 @@ export function useGetTopCommanders(period: "year" | "month" | "week") {
 
 export function useGetCommandersByColor(color: ColorIdentity) {
   // First get the data from edh rec
-  const { data: edhData } = useQuery({
+  const { data: edhData, error: edhError } = useQuery({
     queryKey: ["commanderColor", color],
     queryFn: () => edhRecApi.getCommanderByColor(color),
   });
+
 
   const commanderNames = getUniqueCardNames(edhData!);
 
@@ -122,7 +123,7 @@ export function useGetCommandersByColor(color: ColorIdentity) {
 
   return {
     waitingForCommanderByColor,
-    commanderByColorError,
+    commanderByColorError: edhError || commanderByColorError,
     commanderColorInfo: formattedData,
   };
 }

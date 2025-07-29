@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import type { ColorIdentity } from "@/api/edhRecApi";
 import CardsByColorContainer from "./CardsByColorContainer";
@@ -13,7 +14,10 @@ const MANA_SYMBOLS = [
 ];
 
 export default function ExploreColor() {
-  const [colorPrint, setColorPrint] = useState<ColorIdentity>("five-color");
+  const [searchParams, setSearchParam] = useSearchParams();
+  const color = searchParams.get("color") as ColorIdentity;
+  console.log(color);
+  const [colorPrint, setColorPrint] = useState<ColorIdentity>(color);
   const [activeSymbols, setActiveSymbols] = useState<string[]>([]);
   // state to track what symbols where clicked the show feedback
   const [selectedSymbols, setSelectedSymbols] = useState<Record<string, boolean>>({
@@ -32,46 +36,51 @@ export default function ExploreColor() {
     [activeSymbols]
   );
 
+  const updateColors = useCallback((color: ColorIdentity) => {
+    setColorPrint(color);
+    setSearchParam({ color });
+  }, [setSearchParam]);
+
   useEffect(() => {
     // 5 color
-    if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red", "mono-green")) setColorPrint("five-color");
+    if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red", "mono-green")) updateColors("five-color");
     // 4 color
-    else if (hasColors("mono-white", "mono-blue", "mono-red", "mono-green")) setColorPrint("ink-treader");
-    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-green")) setColorPrint("witch-maw");
-    else if (hasColors("mono-blue", "mono-black", "mono-red", "mono-green")) setColorPrint("glint-eye");
-    else if (hasColors("mono-white", "mono-black", "mono-red", "mono-green")) setColorPrint("dune-brood");
-    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red")) setColorPrint("yore-tiller");
+    else if (hasColors("mono-white", "mono-blue", "mono-red", "mono-green")) updateColors("ink-treader");
+    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-green")) updateColors("witch-maw");
+    else if (hasColors("mono-blue", "mono-black", "mono-red", "mono-green")) updateColors("glint-eye");
+    else if (hasColors("mono-white", "mono-black", "mono-red", "mono-green")) updateColors("dune-brood");
+    else if (hasColors("mono-white", "mono-blue", "mono-black", "mono-red")) updateColors("yore-tiller");
     // tri-color
-    else if (hasColors("mono-white", "mono-blue", "mono-black")) setColorPrint("esper");
-    else if (hasColors("mono-blue", "mono-black", "mono-red")) setColorPrint("grixis");
-    else if (hasColors("mono-black", "mono-red", "mono-green")) setColorPrint("jund");
-    else if (hasColors("mono-red", "mono-green", "mono-white")) setColorPrint("naya");
-    else if (hasColors("mono-green", "mono-white", "mono-blue")) setColorPrint("bant");
-    else if (hasColors("mono-white", "mono-black", "mono-green")) setColorPrint("abzan");
-    else if (hasColors("mono-blue", "mono-red", "mono-white")) setColorPrint("jeskai");
-    else if (hasColors("mono-black", "mono-green", "mono-blue")) setColorPrint("sultai");
-    else if (hasColors("mono-red", "mono-white", "mono-black")) setColorPrint("mardu");
-    else if (hasColors("mono-green", "mono-blue", "mono-red")) setColorPrint("temur");
+    else if (hasColors("mono-white", "mono-blue", "mono-black")) updateColors("esper");
+    else if (hasColors("mono-blue", "mono-black", "mono-red")) updateColors("grixis");
+    else if (hasColors("mono-black", "mono-red", "mono-green")) updateColors("jund");
+    else if (hasColors("mono-red", "mono-green", "mono-white")) updateColors("naya");
+    else if (hasColors("mono-green", "mono-white", "mono-blue")) updateColors("bant");
+    else if (hasColors("mono-white", "mono-black", "mono-green")) updateColors("abzan");
+    else if (hasColors("mono-blue", "mono-red", "mono-white")) updateColors("jeskai");
+    else if (hasColors("mono-black", "mono-green", "mono-blue")) updateColors("sultai");
+    else if (hasColors("mono-red", "mono-white", "mono-black")) updateColors("mardu");
+    else if (hasColors("mono-green", "mono-blue", "mono-red")) updateColors("temur");
     // dual color
-    else if (hasColors("mono-white", "mono-blue")) setColorPrint("azorius");
-    else if (hasColors("mono-blue", "mono-black")) setColorPrint("dimir");
-    else if (hasColors("mono-black", "mono-red")) setColorPrint("rakdos");
-    else if (hasColors("mono-red", "mono-green")) setColorPrint("gruul");
-    else if (hasColors("mono-green", "mono-white")) setColorPrint("selesnya");
-    else if (hasColors("mono-white", "mono-black")) setColorPrint("orzhov");
-    else if (hasColors("mono-blue", "mono-red")) setColorPrint("izzet");
-    else if (hasColors("mono-black", "mono-green")) setColorPrint("golgari");
-    else if (hasColors("mono-red", "mono-white")) setColorPrint("boros");
-    else if (hasColors("mono-green", "mono-blue")) setColorPrint("simic");
+    else if (hasColors("mono-white", "mono-blue")) updateColors("azorius");
+    else if (hasColors("mono-blue", "mono-black")) updateColors("dimir");
+    else if (hasColors("mono-black", "mono-red")) updateColors("rakdos");
+    else if (hasColors("mono-red", "mono-green")) updateColors("gruul");
+    else if (hasColors("mono-green", "mono-white")) updateColors("selesnya");
+    else if (hasColors("mono-white", "mono-black")) updateColors("orzhov");
+    else if (hasColors("mono-blue", "mono-red")) updateColors("izzet");
+    else if (hasColors("mono-black", "mono-green")) updateColors("golgari");
+    else if (hasColors("mono-red", "mono-white")) updateColors("boros");
+    else if (hasColors("mono-green", "mono-blue")) updateColors("simic");
     // Single Color
-    else if (hasColors("mono-white")) setColorPrint("mono-white");
-    else if (hasColors("mono-blue")) setColorPrint("mono-blue");
-    else if (hasColors("mono-black")) setColorPrint("mono-black");
-    else if (hasColors("mono-green")) setColorPrint("mono-green");
-    else if (hasColors("mono-red")) setColorPrint("mono-red");
-    else if (hasColors("colorless")) setColorPrint("colorless");
-    else setColorPrint("five-color");
-  }, [activeSymbols, hasColors]);
+    else if (hasColors("mono-white")) updateColors("mono-white");
+    else if (hasColors("mono-blue")) updateColors("mono-blue");
+    else if (hasColors("mono-black")) updateColors("mono-black");
+    else if (hasColors("mono-green")) updateColors("mono-green");
+    else if (hasColors("mono-red")) updateColors("mono-red");
+    else if (hasColors("colorless")) updateColors("colorless");
+    else updateColors(color ? color : "five-color");
+  }, [activeSymbols, hasColors, color, updateColors]);
 
   function manaSymbolClickHandler(symbolColor: string) {
     setSelectedSymbols((prev) => ({
