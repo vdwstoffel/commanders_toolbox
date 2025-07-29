@@ -4,6 +4,7 @@ import Loader from "../ui/Loader";
 import ErrorMessage from "../ui/ErrorMessage";
 import { useState } from "react";
 import InfoAndCreateOverlay from "./InfoAndCreateOverlay";
+import MagicCardImage from "../cards/MagicCardImage";
 
 export default function CardsByColorContainer({ color }: { color: ColorIdentity }) {
   const { waitingForCommanderByColor, commanderByColorError, commanderColorInfo } = useGetCommandersByColor(color);
@@ -18,15 +19,22 @@ export default function CardsByColorContainer({ color }: { color: ColorIdentity 
     setShowInfo(true);
   }
 
-  console.log(commanderColorInfo);
-
   return (
     <div className="flex flex-wrap gap-2 py-5">
       {commanderColorInfo?.map((card) => {
-        const cardImage = card.image_uris ? card.image_uris.large : card.card_faces![0].image_uris.large;
-        return <img src={cardImage} className="w-60" onClick={() => imageClickHandler(card.name)} />;
+        if (card.length === 1) {
+          return <MagicCardImage imageUrl={card[0].cardImage} clickFunction={() => imageClickHandler(card[0].name)} />;
+        } else {
+          return (
+            <div className="flex flex-col">
+              <img src={card[0].cardImage} className="w-60 h-40" onClick={() => imageClickHandler(card[0].name)} />
+              <img src={card[1].cardImage} className="w-60 h-40" onClick={() => imageClickHandler(card[1].name)} />
+            </div>
+          );
+        }
       })}
       {showInfo && <InfoAndCreateOverlay cardName={cardName!} setHideStateAction={setShowInfo} />}
     </div>
   );
 }
+6
