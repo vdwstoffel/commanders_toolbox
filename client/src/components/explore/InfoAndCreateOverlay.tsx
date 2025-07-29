@@ -8,7 +8,7 @@ import { useCreateDeck } from "../decks/useDeckQuery";
 import { ScryfallApi } from "@/api/scryfallApi";
 
 interface Props {
-  cardName: string;
+  cardName: string[];
   setHideStateAction: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -19,8 +19,14 @@ export default function InfoAndCreateOverlay({ cardName, setHideStateAction }: P
     if (!cardName) return;
 
     try {
-      const commander = await new ScryfallApi().getCardByName(cardName);
-      createDeck({ deckName: cardName, commanders: [commander], deckTheme: "custom" });
+      if (cardName.length === 1) {
+        const commander = await new ScryfallApi().getCardByName(cardName[0]);
+        createDeck({ deckName: cardName[0], commanders: [commander], deckTheme: "custom" });
+      } else {
+        const commander1 = await new ScryfallApi().getCardByName(cardName[0]);
+        const commander2 = await new ScryfallApi().getCardByName(cardName[1]);
+        createDeck({ deckName: cardName[0] + " / " + cardName[1], commanders: [commander1, commander2], deckTheme: "custom" });
+      }
     } catch (err) {
       toast.error("Error creating deck: " + err);
     }
@@ -29,7 +35,7 @@ export default function InfoAndCreateOverlay({ cardName, setHideStateAction }: P
   return (
     <>
       <OverlayWrapper hideFn={() => setHideStateAction(false)}>
-        <FullCardInfo cardName={cardName!} />
+        <FullCardInfo cardName={cardName[0]!} />
         <Button onClick={createDeckClickHandler}>Create Deck</Button>
       </OverlayWrapper>
     </>

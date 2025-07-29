@@ -10,12 +10,13 @@ import DualCommanderContainer from "./DaulCommanderContainer";
 export default function CardsByColorContainer({ color }: { color: ColorIdentity }) {
   const { waitingForCommanderByColor, commanderByColorError, commanderColorInfo } = useGetCommandersByColor(color);
   const [showInfo, setShowInfo] = useState<boolean>(false);
-  const [cardName, setCardName] = useState<string | null>(null);
+  const [cardName, setCardName] = useState<string[] | null>(null);
 
   if (waitingForCommanderByColor) return <Loader />;
   if (commanderByColorError) return <ErrorMessage msg="Failed to load commander data" />;
 
-  function imageClickHandler(cardName: string) {
+  function imageClickHandler(cardName: string[]) {
+    console.log(cardName)
     setCardName(cardName);
     setShowInfo(true);
   }
@@ -24,9 +25,22 @@ export default function CardsByColorContainer({ color }: { color: ColorIdentity 
     <div className="flex flex-wrap gap-4">
       {commanderColorInfo?.map((card, idx) => {
         if (card.length === 1) {
-          return <MagicCardImage key={card[0].name + idx} imageUrl={card[0].cardImage} clickFunction={() => imageClickHandler(card[0].name)} />;
+          return (
+            <MagicCardImage
+              key={card[0].name + idx}
+              imageUrl={card[0].cardImage}
+              clickFunction={() => imageClickHandler([card[0].name])}
+            />
+          );
         } else {
-          return <DualCommanderContainer key={card[0].name + idx} cardImageOneImageUrl={card[0].cardImage} cardImageTwoImageUrl={card[1].cardImage} />;
+          return (
+            <DualCommanderContainer
+              key={card[0].name + idx}
+              cardImageOneImageUrl={card[0].cardImage}
+              cardImageTwoImageUrl={card[1].cardImage}
+              clickFunction={() => imageClickHandler([card[0].name, card[1].name])}
+            />
+          );
         }
       })}
       {showInfo && <InfoAndCreateOverlay cardName={cardName!} setHideStateAction={setShowInfo} />}
