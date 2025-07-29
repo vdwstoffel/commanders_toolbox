@@ -5,6 +5,7 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { useState } from "react";
 import InfoAndCreateOverlay from "./InfoAndCreateOverlay";
 import MagicCardImage from "../cards/MagicCardImage";
+import DualCommanderContainer from "./DaulCommanderContainer";
 
 export default function CardsByColorContainer({ color }: { color: ColorIdentity }) {
   const { waitingForCommanderByColor, commanderByColorError, commanderColorInfo } = useGetCommandersByColor(color);
@@ -20,16 +21,17 @@ export default function CardsByColorContainer({ color }: { color: ColorIdentity 
   }
 
   return (
-    <div className="flex flex-wrap gap-2 py-5">
+    <div className="flex flex-wrap gap-4 py-5">
       {commanderColorInfo?.map((card) => {
         if (card.length === 1) {
           return <MagicCardImage imageUrl={card[0].cardImage} clickFunction={() => imageClickHandler(card[0].name)} />;
         } else {
           return (
-            <div className="flex flex-col">
-              <img src={card[0].cardImage} className="w-60 h-40" onClick={() => imageClickHandler(card[0].name)} />
-              <img src={card[1].cardImage} className="w-60 h-40" onClick={() => imageClickHandler(card[1].name)} />
-            </div>
+            // <div className="flex flex-col">
+            //   <img src={card[0].cardImage} className="w-60 h-40" onClick={() => imageClickHandler(card[0].name)} />
+            //   <img src={card[1].cardImage} className="w-60 h-40" onClick={() => imageClickHandler(card[1].name)} />
+            // </div>
+            <DualCommanderContainer cardImageOneImageUrl={card[0].cardImage} cardImageTwoImageUrl={card[1].cardImage} />
           );
         }
       })}
