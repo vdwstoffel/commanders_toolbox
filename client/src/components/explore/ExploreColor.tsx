@@ -83,7 +83,7 @@ export default function ExploreColor() {
   }
 
   return (
-    <div className="container flex flex-col justify-center content-center mt-10 mx-auto text-center">
+    <div className="container mx-auto text-center mt-10">
       <h1 className="text-4xl font-bold">Explore Decks</h1>
       <div className="w-10 flex flex-row gap-4 mx-auto justify-center my-10">
         {MANA_SYMBOLS.map(({ color, src }) => (

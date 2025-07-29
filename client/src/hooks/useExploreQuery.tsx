@@ -61,7 +61,6 @@ function formatCardData(rawCardData: MagicCard[], originalEdhRecData: string[]) 
       cardData.push(partners);
     }
   });
-
   return cardData;
 }
 

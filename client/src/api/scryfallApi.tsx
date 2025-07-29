@@ -79,7 +79,7 @@ export class ScryfallApi {
       }
 
       const body_1 = { identifiers: expectedBody.slice(0, 75) };
-      const body_2 = { identifiers: expectedBody.slice(76) };
+      const body_2 = { identifiers: expectedBody.slice(75) };
       const [response1, response2] = await Promise.all([
         await axios.post(`${this.base_url}/cards/collection`, body_1),
         await axios.post(`${this.base_url}/cards/collection`, body_2),
