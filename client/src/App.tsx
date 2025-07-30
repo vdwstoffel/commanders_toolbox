@@ -48,7 +48,7 @@ const router = createBrowserRouter([
         children: [
           { path: "color", element: <ExploreColor /> },
           {
-            path: "themes",
+            path: ":overview",
             children: [
               { index: true, element: <ThemesOverview /> },
               { path: ":theme", element: <CardsByTheme /> },

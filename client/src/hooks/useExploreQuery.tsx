@@ -129,14 +129,14 @@ export function useGetCommandersByColor(color: ColorIdentity) {
   };
 }
 
-export function useGetThemesOverview() {
+export function useGetThemesOverview(overview: "themes" | "kindred") {
   const {
     isPending: isPendingThemesOverview,
     error: themesOverviewError,
     data: themesOverview,
   } = useQuery({
     queryKey: ["themes"],
-    queryFn: () => edhRecApi.getThemeOrTribeOverview("themes"),
+    queryFn: () => edhRecApi.getThemeOrTribeOverview(overview),
   });
 
   return { isPendingThemesOverview, themesOverviewError, themesOverview };

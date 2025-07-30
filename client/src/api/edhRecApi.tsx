@@ -87,13 +87,21 @@ export class EdhRecApi {
 
   /**
    * EdhRec to get the cards for the theme or tribe. The CardsList have the new card at index 0 and other top cards at index 1
-   * @param themeOrTribe 
-   * @returns 
+   * @param themeOrTribe
+   * @returns
    */
   async getThemeOrTribeCards(themeOrTribe: string) {
     try {
       const response = await axios.get<EdhRecCollectionsInterface>(`${this.tags_url}/${themeOrTribe}.json`);
-      return response.data.container.json_dict.cardlists[1].cardviews;
+
+      // set the index for to get the top commanders. Some themes have new cards and other not  and this shifts the index
+      const responseToCheck = response.data.container.json_dict.cardlists;
+
+      for (const _ of responseToCheck) {
+        if (_.header === "Top Commanders") {
+          return _.cardviews;
+        }
+      }
     } catch (err) {
       axiosErrorWrapper(err as AxiosError);
     }
@@ -126,7 +134,7 @@ export interface Theme {
 }
 
 interface EdhRecCollectionsInterface {
-  container: { json_dict: { cardlists: { cardviews: { name: string; url: string }[] }[] } };
+  container: { json_dict: { cardlists: { cardviews: { name: string; url: string }[]; header: string }[] } };
 }
 
 export type ColorIdentity =

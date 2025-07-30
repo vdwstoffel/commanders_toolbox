@@ -1,11 +1,13 @@
+import { useNavigate, useParams } from "react-router-dom";
+
 import { useGetThemesOverview } from "@/hooks/useExploreQuery";
 import Loader from "../ui/Loader";
 import ErrorMessage from "../ui/ErrorMessage";
 import ThemeCard from "./ThemeCard";
-import { useNavigate } from "react-router-dom";
 
 export default function ThemesOverview() {
-  const { isPendingThemesOverview, themesOverviewError, themesOverview } = useGetThemesOverview();
+  const { overview } = useParams();
+  const { isPendingThemesOverview, themesOverviewError, themesOverview } = useGetThemesOverview(overview as "themes" | "kindred");
   const navigate = useNavigate();
 
   if (isPendingThemesOverview) return <Loader />;
