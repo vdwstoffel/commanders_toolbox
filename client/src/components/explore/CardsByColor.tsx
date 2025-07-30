@@ -10,5 +10,5 @@ export default function CardsByColor({ color }: { color: ColorIdentity }) {
   if (waitingForCommanderByColor) return <Loader />;
   if (commanderByColorError) return <ErrorMessage msg={commanderByColorError.message} />;
 
-  return <CardByCollectionContainer cardCollection={commanderColorInfo!} />;
+  return commanderColorInfo ? <CardByCollectionContainer cardCollection={commanderColorInfo} /> : null;
 }

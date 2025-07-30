@@ -31,7 +31,8 @@ export default function FullCardInfo({ cardName }: Readonly<Props>) {
         setLoading(false);
       } catch (err) {
         const error = err as AxiosError;
-        setError(error.message);
+        const errorMessage = error.message || "Failed to fetch card data";
+        setError(errorMessage);
         setLoading(false);
       }
     }

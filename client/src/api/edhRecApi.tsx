@@ -102,6 +102,7 @@ export class EdhRecApi {
           return cardList.cardviews;
         }
       }
+      throw new Error("Top commanders could not be found");
     } catch (err) {
       axiosErrorWrapper(err as AxiosError);
     }

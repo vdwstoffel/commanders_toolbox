@@ -34,7 +34,7 @@ function formatCardData(rawCardData: MagicCard[], originalEdhRecData: string[]) 
   // format the info to match dual commander if any, return an object with card names and card images
   const cardData: ExploreCardInfo[][] = [];
 
-  if (!rawCardData || !originalEdhRecData) return;
+  if (!rawCardData || !originalEdhRecData) return [];
 
   originalEdhRecData.forEach((card) => {
     // Check if it is dual commander or not
@@ -42,6 +42,7 @@ function formatCardData(rawCardData: MagicCard[], originalEdhRecData: string[]) 
 
     if (possibleCards.length === 1) {
       const cardInfo = rawCardData.filter((card) => card.name.split("//")[0].trim() === possibleCards[0]);
+      if (cardInfo.length === 0) return; // for each does not support continue, use return instead
       cardData.push([
         {
           name: cardInfo[0].name,
@@ -106,7 +107,7 @@ export function useGetCommandersByColor(color: ColorIdentity) {
     queryFn: () => edhRecApi.getCommanderByColor(color),
   });
 
-  const commanderNames = getUniqueCardNames(edhData!);
+  const commanderNames = edhData ? getUniqueCardNames(edhData) : [];
 
   // now get the card data from scryfall
   const {
@@ -143,12 +144,12 @@ export function useGetThemesOverview(overview: "themes" | "kindred") {
 }
 
 export function useGetCardsByTheme(theme: string) {
-  const { data: cardsByThemeEdh } = useQuery({
+  const { data: cardsByThemeEdh, error: cardsByThemeErrorEdh } = useQuery({
     queryKey: ["cardsByTheme"],
     queryFn: () => edhRecApi.getThemeOrTribeCards(theme),
   });
 
-  const commanderNames = getUniqueCardNames(cardsByThemeEdh!);
+  const commanderNames = cardsByThemeEdh ? getUniqueCardNames(cardsByThemeEdh) : [];
 
   // now get the card data from scryfall
   const {
@@ -164,5 +165,9 @@ export function useGetCardsByTheme(theme: string) {
   const originalEdhCardPairings = cardsByThemeEdh?.map((card) => card.name);
   const formattedData = formatCardData(cardsByTheme!, originalEdhCardPairings!);
 
-  return { isWaitingForCardsByTheme: isWaitingForCardsByTheme, cardsByThemeError: cardsByThemeError, cardsByTheme: formattedData };
+  return {
+    isWaitingForCardsByTheme,
+    cardsByThemeError: cardsByThemeErrorEdh || cardsByThemeError,
+    cardsByTheme: formattedData,
+  };
 }

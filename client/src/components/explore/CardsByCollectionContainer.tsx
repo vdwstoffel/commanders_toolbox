@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { ExploreCardInfo } from "@/hooks/useExploreQuery";
 import MagicCardImage from "../cards/MagicCardImage";
-import DualCommanderContainer from "./DaulCommanderContainer";
+import DualCommanderContainer from "./DualCommanderContainer";
 import InfoAndCreateOverlay from "./InfoAndCreateOverlay";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 
 export default function CardByCollectionContainer({ cardCollection }: Props) {
   const [showInfo, setShowInfo] = useState<boolean>(false);
-  const [cardName, setCardName] = useState<string[] | null>(null);
+  const [cardName, setCardName] = useState<string[]>([]);
 
   function imageClickHandler(cardName: string[]) {
     setCardName(cardName);
@@ -40,7 +40,7 @@ export default function CardByCollectionContainer({ cardCollection }: Props) {
           );
         }
       })}
-      {showInfo && <InfoAndCreateOverlay cardName={cardName!} setHideStateAction={setShowInfo} />}
+      {showInfo && <InfoAndCreateOverlay cardName={cardName} setHideStateAction={setShowInfo} />}
     </div>
   );
 }

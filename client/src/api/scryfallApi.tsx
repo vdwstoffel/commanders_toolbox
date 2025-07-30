@@ -56,39 +56,26 @@ export class ScryfallApi {
   }
 
   async getCollection(identifiers: string[]): Promise<MagicCard[]> {
-    /**
-     * Since collections can support a max number of 75 cards, send multiple queries when that limit is exceeded
-     */
-    const returnValue: MagicCard[] = [];
-
-    if (identifiers.length <= 75) {
-      // Create the expected body first
-      const expectedBody: { name: string }[] = [];
-      for (const cardName of identifiers) {
-        expectedBody.push({ name: cardName });
-      }
-
-      const body = { identifiers: expectedBody };
-
-      const response: { data: Collections } = await axios.post(`${this.base_url}/cards/collection`, body);
-      returnValue.push(...response.data.data);
-    } else {
-      const expectedBody: { name: string }[] = [];
-      for (const cardName of identifiers) {
-        expectedBody.push({ name: cardName });
-      }
-
-      const body_1 = { identifiers: expectedBody.slice(0, 75) };
-      const body_2 = { identifiers: expectedBody.slice(75) };
-      const [response1, response2] = await Promise.all([
-        await axios.post(`${this.base_url}/cards/collection`, body_1),
-        await axios.post(`${this.base_url}/cards/collection`, body_2),
-      ]);
-
-      returnValue.push(...response1.data.data);
-      returnValue.push(...response2.data.data);
+    const BATCH_SIZE = 75;
+    const allCards: MagicCard[] = [];
+    // Create batches of card identifiers
+    const batches: string[][] = [];
+    for (let i = 0; i < identifiers.length; i += BATCH_SIZE) {
+      batches.push(identifiers.slice(i, i + BATCH_SIZE));
     }
-    return returnValue;
+    // Process all batches concurrently
+    const requests = batches.map((batch) => {
+      const body = {
+        identifiers: batch.map((name) => ({ name })),
+      };
+      return axios.post<Collections>(`${this.base_url}/cards/collection`, body);
+    });
+    const responses = await Promise.all(requests);
+    // Combine all results
+    for (const response of responses) {
+      allCards.push(...response.data.data);
+    }
+    return allCards;
   }
 }
 

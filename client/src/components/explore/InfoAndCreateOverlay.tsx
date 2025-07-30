@@ -18,7 +18,7 @@ export default function InfoAndCreateOverlay({ cardName, setHideStateAction }: P
   const { createDeck } = useCreateDeck();
 
   async function createDeckClickHandler() {
-    if (!cardName) return;
+    if (!cardName || cardName.length === 0) return;
 
     try {
       if (cardName.length === 1) {
@@ -26,8 +26,8 @@ export default function InfoAndCreateOverlay({ cardName, setHideStateAction }: P
         createDeck({ deckName: cardName[0], commanders: [commander], deckTheme: theme || "custom" });
       } else {
         const [commander1, commander2] = await Promise.all([
-          await new ScryfallApi().getCardByName(cardName[0]),
-          await new ScryfallApi().getCardByName(cardName[1]),
+          new ScryfallApi().getCardByName(cardName[0]),
+          new ScryfallApi().getCardByName(cardName[1]),
         ]);
         createDeck({
           deckName: cardName[0] + "/" + cardName[1],
@@ -36,14 +36,15 @@ export default function InfoAndCreateOverlay({ cardName, setHideStateAction }: P
         });
       }
     } catch (err) {
-      toast.error("Error creating deck: " + err);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+      toast.error(`Error creating deck: ${errorMessage}`);
     }
   }
 
   return (
     <>
       <OverlayWrapper hideFn={() => setHideStateAction(false)}>
-        <FullCardInfo cardName={cardName[0]!} />
+        <FullCardInfo cardName={cardName[0]} />
         <Button onClick={createDeckClickHandler}>Create Deck</Button>
       </OverlayWrapper>
     </>
