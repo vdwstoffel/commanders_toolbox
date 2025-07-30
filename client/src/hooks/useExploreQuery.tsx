@@ -42,10 +42,12 @@ function formatCardData(rawCardData: MagicCard[], originalEdhRecData: string[]) 
 
     if (possibleCards.length === 1) {
       const cardInfo = rawCardData.filter((card) => card.name.split("//")[0].trim() === possibleCards[0]);
-      cardData.push([{
-        name: cardInfo[0].name,
-        cardImage: cardInfo[0].image_uris ? cardInfo[0].image_uris.large : cardInfo[0].card_faces![0].image_uris.large,
-      }]);
+      cardData.push([
+        {
+          name: cardInfo[0].name,
+          cardImage: cardInfo[0].image_uris ? cardInfo[0].image_uris.large : cardInfo[0].card_faces![0].image_uris.large,
+        },
+      ]);
     } else {
       const partners: ExploreCardInfo[] = [];
       const partner1 = rawCardData.filter((card) => card.name.split("//")[0].trim() === possibleCards[0]);
@@ -64,7 +66,7 @@ function formatCardData(rawCardData: MagicCard[], originalEdhRecData: string[]) 
   return cardData;
 }
 
-interface ExploreCardInfo {
+export interface ExploreCardInfo {
   name: string;
   cardImage: string;
 }
@@ -104,7 +106,6 @@ export function useGetCommandersByColor(color: ColorIdentity) {
     queryFn: () => edhRecApi.getCommanderByColor(color),
   });
 
-
   const commanderNames = getUniqueCardNames(edhData!);
 
   // now get the card data from scryfall
@@ -126,4 +127,46 @@ export function useGetCommandersByColor(color: ColorIdentity) {
     commanderByColorError: edhError || commanderByColorError,
     commanderColorInfo: formattedData,
   };
+}
+
+export function useGetThemesOverview() {
+  const {
+    isPending: isPendingThemesOverview,
+    error: themesOverviewError,
+    data: themesOverview,
+  } = useQuery({
+    queryKey: ["themes"],
+    queryFn: () => edhRecApi.getThemeOrTribeOverview("themes"),
+  });
+
+  return { isPendingThemesOverview, themesOverviewError, themesOverview };
+}
+
+export function useGetCardsByTheme(theme: string) {
+  const {
+    isPending: isWaitingForCardsByThemeEdh,
+    error: cardsByThemeErrorEdh,
+    data: cardsByThemeEdh,
+  } = useQuery({
+    queryKey: ["cardsByTheme"],
+    queryFn: () => edhRecApi.getThemeOrTribeCards(theme),
+  });
+
+  const commanderNames = getUniqueCardNames(cardsByThemeEdh!);
+
+  // now get the card data from scryfall
+  const {
+    isPending: isWaitingForCardsByTheme,
+    error: cardsByThemeError,
+    data: cardsByTheme,
+  } = useQuery({
+    queryKey: [`commanderTheme:${theme}`, commanderNames],
+    queryFn: () => new ScryfallApi().getCollection(commanderNames!),
+    enabled: !!commanderNames?.length,
+  });
+
+  const originalEdhCardPairings = cardsByThemeEdh?.map((card) => card.name);
+  const formattedData = formatCardData(cardsByTheme!, originalEdhCardPairings!);
+
+  return { isWaitingForCardsByTheme: isWaitingForCardsByTheme, cardsByThemeError: cardsByThemeError, cardsByTheme: formattedData };
 }

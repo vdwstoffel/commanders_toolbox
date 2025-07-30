@@ -10,7 +10,7 @@ const navigation = [
   { name: "Decks", href: "/decks", current: false },
 ];
 
-const subMenu = [{ name: "Color", href: "/explore/color" }, { name: "Theme", href: "/explore/theme" }];
+const subMenu = [{ name: "Color", href: "/explore/color" }, { name: "Theme", href: "/explore/themes" }];
 
 function classNames(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(" ");

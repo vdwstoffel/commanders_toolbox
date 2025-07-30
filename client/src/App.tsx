@@ -7,6 +7,8 @@ import ErrorPage from "./pages/ErrorPage";
 import DeckDetails from "./pages/DeckDetails";
 import AuthWrapper from "./components/user/AuthWrapper";
 import ExploreColor from "./components/explore/ExploreColor";
+import ThemesOverview from "./components/explore/ThemesOverview";
+import CardsByTheme from "./components/explore/CardsByTheme";
 
 const router = createBrowserRouter([
   {
@@ -41,7 +43,19 @@ const router = createBrowserRouter([
           </AuthWrapper>
         ),
       },
-      { path: "/explore", children: [{ path: "color", element: <ExploreColor /> }] },
+      {
+        path: "/explore",
+        children: [
+          { path: "color", element: <ExploreColor /> },
+          {
+            path: "themes",
+            children: [
+              { index: true, element: <ThemesOverview /> },
+              { path: ":theme", element: <CardsByTheme /> },
+            ],
+          },
+        ],
+      },
     ],
   },
 ]);

@@ -1,29 +1,27 @@
-import type { ColorIdentity } from "@/api/edhRecApi";
-import { useGetCommandersByColor } from "@/hooks/useExploreQuery";
-import Loader from "../ui/Loader";
-import ErrorMessage from "../ui/ErrorMessage";
 import { useState } from "react";
-import InfoAndCreateOverlay from "./InfoAndCreateOverlay";
+
+import type { ExploreCardInfo } from "@/hooks/useExploreQuery";
 import MagicCardImage from "../cards/MagicCardImage";
 import DualCommanderContainer from "./DaulCommanderContainer";
+import InfoAndCreateOverlay from "./InfoAndCreateOverlay";
+import { useParams } from "react-router-dom";
 
-export default function CardsByColorContainer({ color }: { color: ColorIdentity }) {
-  const { waitingForCommanderByColor, commanderByColorError, commanderColorInfo } = useGetCommandersByColor(color);
+interface Props {
+  cardCollection: ExploreCardInfo[][];
+}
+
+export default function CardByCollectionContainer({ cardCollection }: Props) {
   const [showInfo, setShowInfo] = useState<boolean>(false);
   const [cardName, setCardName] = useState<string[] | null>(null);
 
-  if (waitingForCommanderByColor) return <Loader />;
-  if (commanderByColorError) return <ErrorMessage msg="Failed to load commander data" />;
-
   function imageClickHandler(cardName: string[]) {
-    console.log(cardName)
     setCardName(cardName);
     setShowInfo(true);
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
-      {commanderColorInfo?.map((card, idx) => {
+    <div className="flex flex-wrap gap-4 justify-center my-5">
+      {cardCollection?.map((card, idx) => {
         if (card.length === 1) {
           return (
             <MagicCardImage

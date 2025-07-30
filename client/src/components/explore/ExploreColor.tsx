@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import type { ColorIdentity } from "@/api/edhRecApi";
-import CardsByColorContainer from "./CardsByColorContainer";
+import CardsByColor from "./CardsByColor";
 
 const MANA_SYMBOLS = [
   { color: "mono-white", src: "https://svgs.scryfall.io/card-symbols/W.svg" },
@@ -36,10 +36,13 @@ export default function ExploreColor() {
     [activeSymbols]
   );
 
-  const updateColors = useCallback((color: ColorIdentity) => {
-    setColorPrint(color);
-    setSearchParam({ color });
-  }, [setSearchParam]);
+  const updateColors = useCallback(
+    (color: ColorIdentity) => {
+      setColorPrint(color);
+      setSearchParam({ color });
+    },
+    [setSearchParam]
+  );
 
   useEffect(() => {
     // 5 color
@@ -105,7 +108,7 @@ export default function ExploreColor() {
           />
         ))}
       </div>
-      <CardsByColorContainer color={colorPrint} />
+      <CardsByColor color={colorPrint} />
     </div>
   );
 }

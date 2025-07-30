@@ -3,9 +3,11 @@ import { axiosErrorWrapper } from "./apiHelpers";
 
 export class EdhRecApi {
   private base_url: string;
+  private tags_url: string;
 
   constructor() {
     this.base_url = "https://json.edhrec.com/pages/commanders";
+    this.tags_url = "https://json.edhrec.com/pages/tags";
   }
 
   slugify(commanders: string[]) {
@@ -50,7 +52,7 @@ export class EdhRecApi {
 
   async getCommanders(keyword: string) {
     try {
-      const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${keyword}.json`);
+      const response = await axios.get<EdhRecCollectionsInterface>(`${this.base_url}/${keyword}.json`);
       return response.data.container.json_dict.cardlists[0].cardviews;
     } catch (err) {
       axiosErrorWrapper(err as AxiosError);
@@ -68,6 +70,33 @@ export class EdhRecApi {
 
   async getCommanderByColor(color: ColorIdentity) {
     return this.getCommanders(color);
+  }
+
+  /**
+   * EdhRec endpoint to get either themes or tribes. Use theme/tribe to get an overview
+   * @param themeOrTribe
+   */
+  async getThemeOrTribeOverview(themeOrTribe: string) {
+    try {
+      const response = await axios.get<EdhRecCollectionsInterface>(`${this.tags_url}/${themeOrTribe}.json`);
+      return response.data.container.json_dict.cardlists[0].cardviews;
+    } catch (err) {
+      axiosErrorWrapper(err as AxiosError);
+    }
+  }
+
+  /**
+   * EdhRec to get the cards for the theme or tribe. The CardsList have the new card at index 0 and other top cards at index 1
+   * @param themeOrTribe 
+   * @returns 
+   */
+  async getThemeOrTribeCards(themeOrTribe: string) {
+    try {
+      const response = await axios.get<EdhRecCollectionsInterface>(`${this.tags_url}/${themeOrTribe}.json`);
+      return response.data.container.json_dict.cardlists[1].cardviews;
+    } catch (err) {
+      axiosErrorWrapper(err as AxiosError);
+    }
   }
 }
 
@@ -96,8 +125,8 @@ export interface Theme {
   value: string;
 }
 
-interface TopCommandersInterface {
-  container: { json_dict: { cardlists: { cardviews: { name: string }[] }[] } };
+interface EdhRecCollectionsInterface {
+  container: { json_dict: { cardlists: { cardviews: { name: string; url: string }[] }[] } };
 }
 
 export type ColorIdentity =
