@@ -11,14 +11,9 @@ export default function CardsByTheme() {
   if (isWaitingForCardsByTheme) return <Loader />;
   if (cardsByThemeError) return <ErrorMessage msg={cardsByThemeError.message} />;
 
-  console.log(cardsByTheme);
-
   return (
     <>
-      <h1 className="text-center font-bold text-5xl my-10">
-        Top Commanders: {theme?.slice(0, 1).toLocaleUpperCase()}
-        {theme?.slice(1)}
-      </h1>
+      <h1 className="text-center font-bold text-5xl my-10">Top Commanders: {theme!.charAt(0).toUpperCase() + theme?.slice(1)}</h1>
       <CardByCollectionContainer cardCollection={cardsByTheme!} />
     </>
   );

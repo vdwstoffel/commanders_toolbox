@@ -36,8 +36,13 @@ export default function ShowUniquePrintings({ cardName, setCardFn }: Props) {
   }, [cardName]);
 
   async function setPrintingHandler(cardName: number) {
-    const card = await scryfallApi.getCardByTcgId(cardName);
-    setCardFn(card);
+    try {
+
+      const card = await scryfallApi.getCardByTcgId(cardName);
+      setCardFn(card);
+    } catch {
+      setError("Error fetching carddetails")
+    }
   }
 
   if (error) return <ErrorMessage msg={error} />;

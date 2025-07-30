@@ -22,7 +22,7 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
     setShowCardInfo(!showCardInfo);
 
     if (cardInfoToShow === null && cardName) {
-      setCardInfoToShow(cardName!);
+      setCardInfoToShow(cardName);
     } else {
       setCardInfoToShow(null);
     }
@@ -53,7 +53,7 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      {showCardInfo && <InfoAndCreateOverlay cardName={cardInfoToShow!} setHideStateAction={setShowCardInfo} />}
+      {showCardInfo && <InfoAndCreateOverlay cardName={[cardInfoToShow!]} setHideStateAction={setShowCardInfo} />}
     </div>
   );
 }

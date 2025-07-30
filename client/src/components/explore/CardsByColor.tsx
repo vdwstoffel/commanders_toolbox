@@ -8,7 +8,7 @@ export default function CardsByColor({ color }: { color: ColorIdentity }) {
   const { waitingForCommanderByColor, commanderByColorError, commanderColorInfo } = useGetCommandersByColor(color);
 
   if (waitingForCommanderByColor) return <Loader />;
-  if (commanderByColorError) return <ErrorMessage msg="Failed to load commander data" />;
+  if (commanderByColorError) return <ErrorMessage msg={commanderByColorError.message} />;
 
   return <CardByCollectionContainer cardCollection={commanderColorInfo!} />;
 }

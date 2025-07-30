@@ -97,9 +97,9 @@ export class EdhRecApi {
       // set the index for to get the top commanders. Some themes have new cards and other not  and this shifts the index
       const responseToCheck = response.data.container.json_dict.cardlists;
 
-      for (const _ of responseToCheck) {
-        if (_.header === "Top Commanders") {
-          return _.cardviews;
+      for (const cardList of responseToCheck) {
+        if (cardList.header === "Top Commanders") {
+          return cardList.cardviews;
         }
       }
     } catch (err) {

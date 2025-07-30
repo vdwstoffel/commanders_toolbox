@@ -19,7 +19,6 @@ export default function InfoAndCreateOverlay({ cardName, setHideStateAction }: P
 
   async function createDeckClickHandler() {
     if (!cardName) return;
-    console.log(theme);
 
     try {
       if (cardName.length === 1) {
