@@ -143,11 +143,7 @@ export function useGetThemesOverview(overview: "themes" | "kindred") {
 }
 
 export function useGetCardsByTheme(theme: string) {
-  const {
-    isPending: isWaitingForCardsByThemeEdh,
-    error: cardsByThemeErrorEdh,
-    data: cardsByThemeEdh,
-  } = useQuery({
+  const { data: cardsByThemeEdh } = useQuery({
     queryKey: ["cardsByTheme"],
     queryFn: () => edhRecApi.getThemeOrTribeCards(theme),
   });

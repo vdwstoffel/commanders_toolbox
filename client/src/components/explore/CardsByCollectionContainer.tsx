@@ -4,7 +4,6 @@ import type { ExploreCardInfo } from "@/hooks/useExploreQuery";
 import MagicCardImage from "../cards/MagicCardImage";
 import DualCommanderContainer from "./DaulCommanderContainer";
 import InfoAndCreateOverlay from "./InfoAndCreateOverlay";
-import { useParams } from "react-router-dom";
 
 interface Props {
   cardCollection: ExploreCardInfo[][];

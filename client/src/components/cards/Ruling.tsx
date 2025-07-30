@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 
-import Loader from "../ui/Loader";
-
 import { ScryfallApi, type CardRulings } from "@/api/scryfallApi";
-import type { AxiosError } from "axios";
+import Loader from "../ui/Loader";
 import ErrorMessage from "../ui/ErrorMessage";
 
 interface Props {
