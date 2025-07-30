@@ -56,17 +56,26 @@ export class ScryfallApi {
   }
 
   async getCollection(identifiers: string[]): Promise<MagicCard[]> {
-    // Create the expected body first
-    const expectedBody: { name: string }[] = [];
-    for (const cardName of identifiers) {
-      expectedBody.push({ name: cardName });
+    const BATCH_SIZE = 75;
+    const allCards: MagicCard[] = [];
+    // Create batches of card identifiers
+    const batches: string[][] = [];
+    for (let i = 0; i < identifiers.length; i += BATCH_SIZE) {
+      batches.push(identifiers.slice(i, i + BATCH_SIZE));
     }
-
-    const body = { identifiers: expectedBody };
-
-    const response: { data: Collections } = await axios.post(`${this.base_url}/cards/collection`, body);
-
-    return response.data.data;
+    // Process all batches concurrently
+    const requests = batches.map((batch) => {
+      const body = {
+        identifiers: batch.map((name) => ({ name })),
+      };
+      return axios.post<Collections>(`${this.base_url}/cards/collection`, body);
+    });
+    const responses = await Promise.all(requests);
+    // Combine all results
+    for (const response of responses) {
+      allCards.push(...response.data.data);
+    }
+    return allCards;
   }
 }
 

@@ -8,6 +8,8 @@ import MeldCard from "./MeldCard";
 import Rulings from "./Ruling";
 
 import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
+import ErrorMessage from "../ui/ErrorMessage";
+import type { AxiosError } from "axios";
 
 const scryfallApi = new ScryfallApi();
 
@@ -18,21 +20,28 @@ interface Props {
 export default function FullCardInfo({ cardName }: Readonly<Props>) {
   const [card, setCard] = useState<MagicCard | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function getCard() {
       setLoading(true);
-      const cardDetails = await scryfallApi.getCardByName(cardName);
-      setCard(cardDetails);
-      setLoading(false);
+      try {
+        const cardDetails = await scryfallApi.getCardByName(cardName);
+        setCard(cardDetails);
+        setLoading(false);
+      } catch (err) {
+        const error = err as AxiosError;
+        const errorMessage = error.message || "Failed to fetch card data";
+        setError(errorMessage);
+        setLoading(false);
+      }
     }
 
     getCard();
   }, [cardName]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
+  if (error) return <ErrorMessage msg={error} />;
 
   return (
     <>

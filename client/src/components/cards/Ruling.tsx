@@ -1,26 +1,31 @@
 import { useEffect, useState } from "react";
 
-import Loader from "../ui/Loader";
-
 import { ScryfallApi, type CardRulings } from "@/api/scryfallApi";
+import Loader from "../ui/Loader";
+import ErrorMessage from "../ui/ErrorMessage";
 
 interface Props {
   rulingUri: string;
 }
 
-
-const scryfallApi = new ScryfallApi()
+const scryfallApi = new ScryfallApi();
 
 export default function Rulings({ rulingUri }: Readonly<Props>) {
   const [rules, setRules] = useState<CardRulings[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function getRules() {
       setIsLoading(true);
-      const rulesResponse = await scryfallApi.getCardRulings(rulingUri);
-      setRules(rulesResponse);
-      setIsLoading(false);
+      try {
+        const rulesResponse = await scryfallApi.getCardRulings(rulingUri);
+        setRules(rulesResponse);
+        setIsLoading(false);
+      } catch {
+        setError("An unknown error occurred!");
+        setIsLoading(false);
+      }
     }
 
     getRules();
@@ -29,9 +34,13 @@ export default function Rulings({ rulingUri }: Readonly<Props>) {
   if (isLoading)
     return (
       <div className="mx-auto w-fit text-right">
-        <Loader/>
+        <Loader />
       </div>
     );
+
+  if (error) {
+    return <ErrorMessage msg={error} />;
+  }
 
   if (rules!.length < 1) return;
 

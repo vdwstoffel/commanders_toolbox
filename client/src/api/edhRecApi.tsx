@@ -3,9 +3,11 @@ import { axiosErrorWrapper } from "./apiHelpers";
 
 export class EdhRecApi {
   private base_url: string;
+  private tags_url: string;
 
   constructor() {
     this.base_url = "https://json.edhrec.com/pages/commanders";
+    this.tags_url = "https://json.edhrec.com/pages/tags";
   }
 
   slugify(commanders: string[]) {
@@ -48,15 +50,59 @@ export class EdhRecApi {
     }
   }
 
+  async getCommanders(keyword: string) {
+    try {
+      const response = await axios.get<EdhRecCollectionsInterface>(`${this.base_url}/${keyword}.json`);
+      return response.data.container.json_dict.cardlists[0].cardviews;
+    } catch (err) {
+      axiosErrorWrapper(err as AxiosError);
+    }
+  }
+
   /**
    * Fetches top commanders for a specified time period
    * @param period - Time period: "year", "month", or "week"
    * @returns Array of commander cardviews
    */
   async getTopCommander(period: "year" | "month" | "week") {
+    return this.getCommanders(period);
+  }
+
+  async getCommanderByColor(color: ColorIdentity) {
+    return this.getCommanders(color);
+  }
+
+  /**
+   * EdhRec endpoint to get either themes or tribes. Use theme/tribe to get an overview
+   * @param themeOrTribe
+   */
+  async getThemeOrTribeOverview(themeOrTribe: string) {
     try {
-      const response = await axios.get<TopCommandersInterface>(`${this.base_url}/${period}.json`);
+      const response = await axios.get<EdhRecCollectionsInterface>(`${this.tags_url}/${themeOrTribe}.json`);
       return response.data.container.json_dict.cardlists[0].cardviews;
+    } catch (err) {
+      axiosErrorWrapper(err as AxiosError);
+    }
+  }
+
+  /**
+   * EdhRec to get the cards for the theme or tribe. The CardsList have the new card at index 0 and other top cards at index 1
+   * @param themeOrTribe
+   * @returns
+   */
+  async getThemeOrTribeCards(themeOrTribe: string) {
+    try {
+      const response = await axios.get<EdhRecCollectionsInterface>(`${this.tags_url}/${themeOrTribe}.json`);
+
+      // set the index for to get the top commanders. Some themes have new cards and other not  and this shifts the index
+      const responseToCheck = response.data.container.json_dict.cardlists;
+
+      for (const cardList of responseToCheck) {
+        if (cardList.header === "Top Commanders") {
+          return cardList.cardviews;
+        }
+      }
+      throw new Error("Top commanders could not be found");
     } catch (err) {
       axiosErrorWrapper(err as AxiosError);
     }
@@ -88,6 +134,40 @@ export interface Theme {
   value: string;
 }
 
-interface TopCommandersInterface {
-  container: { json_dict: { cardlists: { cardviews: { name: string }[] }[] } };
+interface EdhRecCollectionsInterface {
+  container: { json_dict: { cardlists: { cardviews: { name: string; url: string }[]; header: string }[] } };
 }
+
+export type ColorIdentity =
+  | "mono-white"
+  | "mono-blue"
+  | "mono-black"
+  | "mono-red"
+  | "mono-green"
+  | "colorless"
+  | "azorius"
+  | "dimir"
+  | "rakdos"
+  | "gruul"
+  | "selesnya"
+  | "orzhov"
+  | "izzet"
+  | "golgari"
+  | "boros"
+  | "simic"
+  | "esper"
+  | "grixis"
+  | "jund"
+  | "naya"
+  | "bant"
+  | "abzan"
+  | "jeskai"
+  | "sultai"
+  | "mardu"
+  | "temur"
+  | "ink-treader"
+  | "witch-maw"
+  | "glint-eye"
+  | "dune-brood"
+  | "yore-tiller"
+  | "five-color";

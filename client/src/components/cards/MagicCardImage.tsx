@@ -1,8 +1,9 @@
 interface Props {
   imageUrl: string | undefined;
+  clickFunction?: () => void;
 }
 
-export default function MagicCardImage({ imageUrl }: Props) {
+export default function MagicCardImage({ imageUrl, clickFunction }: Props) {
   
   if (!imageUrl) {
     return <div className="max-w-60">Image not available</div>
@@ -10,7 +11,7 @@ export default function MagicCardImage({ imageUrl }: Props) {
   
   return (
     <div className="max-w-60">
-      <img src={imageUrl} alt="Magic Card"/>
+      <img src={imageUrl} alt="Magic Card" onClick={clickFunction}/>
     </div>
   );
 }
