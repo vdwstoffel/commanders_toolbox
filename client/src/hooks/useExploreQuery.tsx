@@ -53,6 +53,7 @@ function formatCardData(rawCardData: MagicCard[], originalEdhRecData: string[]) 
       const partners: ExploreCardInfo[] = [];
       const partner1 = rawCardData.filter((card) => card.name.split("//")[0].trim() === possibleCards[0]);
       const partner2 = rawCardData.filter((card) => card.name.split("//")[0].trim() === possibleCards[1]);
+      if (partner1.length === 0 || partner2.length === 0) return;
       partners.push({
         name: partner1[0].name,
         cardImage: partner1[0].image_uris ? partner1[0].image_uris.large : partner1[0].card_faces![0].image_uris.large,
@@ -121,7 +122,8 @@ export function useGetCommandersByColor(color: ColorIdentity) {
   });
 
   const originalEdhCardPairings = edhData?.map((card) => card.name);
-  const formattedData = formatCardData(commanderColorInfo!, originalEdhCardPairings!);
+  const formattedData =
+    commanderColorInfo && originalEdhCardPairings ? formatCardData(commanderColorInfo, originalEdhCardPairings) : [];
 
   return {
     waitingForCommanderByColor,
@@ -163,7 +165,7 @@ export function useGetCardsByTheme(theme: string) {
   });
 
   const originalEdhCardPairings = cardsByThemeEdh?.map((card) => card.name);
-  const formattedData = formatCardData(cardsByTheme!, originalEdhCardPairings!);
+  const formattedData = cardsByTheme && originalEdhCardPairings ? formatCardData(cardsByTheme, originalEdhCardPairings) : [];
 
   return {
     isWaitingForCardsByTheme,

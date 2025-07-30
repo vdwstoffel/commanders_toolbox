@@ -60,7 +60,6 @@ const COLOR_COMBINATIONS: Record<string, ColorIdentity> = {
 export default function ExploreColor() {
   const [searchParams, setSearchParam] = useSearchParams();
   const color = searchParams.get("color") as ColorIdentity;
-  console.log(color);
   const [colorPrint, setColorPrint] = useState<ColorIdentity>(color);
   const [activeSymbols, setActiveSymbols] = useState<string[]>([]);
   // state to track what symbols where clicked the show feedback
