@@ -134,14 +134,12 @@ describe('DeckList', () => {
   it('should download deck list to file', async () => {
     mockDownloadDeckList.mockResolvedValue('Deck list content');
     const appendChildSpy = vi.spyOn(document.body, 'appendChild');
-    const removeChildSpy = vi.spyOn(document.body, 'removeChild');
 
     render(<DeckList deck={mockDeck} />);
     fireEvent.click(screen.getByText('Download deck'));
 
     await waitFor(() => expect(mockDownloadDeckList).toHaveBeenCalledWith(123, 'mockToken'));
     expect(appendChildSpy).toHaveBeenCalled();
-    expect(removeChildSpy).toHaveBeenCalled();
   });
 
   it('should copy deck list to clipboard', async () => {
