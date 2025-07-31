@@ -11,7 +11,7 @@ export default function MagicCardImage({ imageUrl, clickFunction }: Props) {
   
   return (
     <div className="max-w-60">
-      <img src={imageUrl} alt="Magic Card" onClick={clickFunction}/>
+      <img src={imageUrl} alt="Magic Card" onClick={clickFunction} data-testid="magic-card-image"/>
     </div>
   );
 }

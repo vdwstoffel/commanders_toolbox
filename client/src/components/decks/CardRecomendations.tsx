@@ -63,8 +63,16 @@ export default function CardRecommendations({ commander, theme }: Props) {
     setHoveredCardImageUrl("");
   }
 
-  async function onClickHandler() {
-    setShowCardInfoOverlay(!showCardInfoOverlay);
+  async function onClickHandler(cardName: string) {
+
+    if (showCardInfoOverlay) {
+      setShowCardInfoOverlay(false);
+      return;
+    }
+
+    const res = await scryfallApi.getCardByName(cardName);
+    setSelectedCard(res);
+    setShowCardInfoOverlay(true);
   }
 
   function addCardToDeckHandler() {
@@ -86,7 +94,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
                   className="grid grid-cols-[6fr_1fr] gap-3 hover:cursor-pointer"
                   onMouseEnter={() => onHoverHandler(card.name)}
                   onMouseOut={onHoverExitHandler}
-                  onClick={onClickHandler}
+                  onClick={() => onClickHandler(card.name)}
                 >
                   <p>{card.name}</p>
                   <p>{Math.round(card.synergy * 100)}%</p>
