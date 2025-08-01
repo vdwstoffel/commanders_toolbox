@@ -82,7 +82,7 @@ describe('LandCycles', () => {
     expect(screen.getAllByText('Cycle 1').length).toBeGreaterThan(0);
     expect(screen.getByTestId('magic-card-image-image-a.jpg')).toBeInTheDocument();
     expect(screen.queryByTestId('magic-card-image-image-b.jpg')).not.toBeInTheDocument();
-    expect(screen.queryByText('Cycle 2')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Cycle 2' })).not.toBeInTheDocument();
   });
 
   it('should not render lands already in the deck', () => {

@@ -59,25 +59,27 @@ export default function LandCycles() {
       </div>
       <div className="mx-4">
         {landCycles.map((lands) => {
+          const filteredLands = lands.lands.filter((land) => {
+            if (cardsInDeck?.includes(land.cardName)) return false;
+            for (const c of land.colors) {
+              if (!colorIdentity?.includes(c)) return false;
+            }
+            return true;
+          });
+
+          if (filteredLands.length === 0) return null;
+
           return (
             <div className="my-10" key={lands.label}>
               <h1 className="mb-5 rounded-lg bg-neutral-700 text-center text-xl font-bold text-neutral-200" id={lands.label}>
                 {lands.label}
               </h1>
               <ul className="flex flex-wrap content-center justify-center gap-2 hover:cursor-pointer">
-                {lands.lands.map((land) => {
-                  if (cardsInDeck?.includes(land.cardName)) return; // Do not show card if it is in deck
-                  // If the land is not in the decks color identity do not show it.
-                  for (const c of land.colors) {
-                    if (!colorIdentity?.includes(c)) return;
-                  }
-
-                  return (
-                    <li key={land.cardName} onClick={() => selectCardHandler(land.cardName)}>
-                      <MagicCardImage imageUrl={land.cardImage} />
-                    </li>
-                  );
-                })}
+                {filteredLands.map((land) => (
+                  <li key={land.cardName} onClick={() => selectCardHandler(land.cardName)}>
+                    <MagicCardImage imageUrl={land.cardImage} />
+                  </li>
+                ))}
               </ul>
             </div>
           );
