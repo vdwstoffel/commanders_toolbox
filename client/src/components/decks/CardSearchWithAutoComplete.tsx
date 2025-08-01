@@ -67,7 +67,7 @@ export default function CardSearchWithAutoComplete({ label, setValue }: Props) {
         <Label htmlFor="commander" className="text-right">
           {label}
         </Label>
-        <Input ref={inputRef} id="commander" defaultValue="" className="col-span-3" value={query} onChange={commanderInputHandler} />
+        <Input ref={inputRef} id="commander" className="col-span-3" value={query} onChange={commanderInputHandler} />
       </div>
       {showList && cardNameAutocompleteResults.length > 0 && (
         <Dropdown position={dropdownPosition}>
