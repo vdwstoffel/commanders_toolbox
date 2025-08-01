@@ -7,7 +7,8 @@ on:
     branches:
       - main
 jobs:
-  Build Site:
+  Build_Site:
+    name: Build Client Site
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,27 +28,29 @@ jobs:
       - name: Build client
         run: npm run build
 
-  Lint Code:
-      runs-on: ubuntu-latest
-      defaults:
-        run:
-          working-directory: ./client
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+  Lint_Code:
+    name: Lint Client Code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-        - name: Install dependencies
-          run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-        - name: Lint code
-          run: npm run lint
+      - name: Lint code
+        run: npm run lint
 
-  Unit Tests:
+  Unit_Tests:
+    name: Run Client Unit Tests
     runs-on: ubuntu-latest
     defaults:
       run:
