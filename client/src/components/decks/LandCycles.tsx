@@ -4,7 +4,7 @@ import { useState } from "react";
 import MagicCardImage from "../cards/MagicCardImage";
 import Loader from "../ui/Loader";
 
-import { landCycles } from "../../utils/landCycles";
+import { landCycles } from "@/utils/landCycles";
 import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
 import { useAddCardToDeck, useGetDeckById } from "./useDeckQuery";
 import {getDeckColorIdentity} from "../../utils/helperFunctions";
