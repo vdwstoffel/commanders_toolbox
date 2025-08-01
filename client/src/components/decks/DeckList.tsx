@@ -20,7 +20,9 @@ const deckApi = new BackendDeckApi();
 export default function DeckList({ deck }: DeckListProps) {
   const { deckId } = useParams();
   const { idToken } = useUser();
-  const [shownCardImgUrl, setShownCardImgUIrl] = useState<string>(deck[0].card.cardImageUrl[0]);
+  const [shownCardImgUrl, setShownCardImgUIrl] = useState<string>(
+    deck.find((card) => card.commander)?.card.cardImageUrl[0] ?? deck[0].card.cardImageUrl[0]
+  );
   const { populateLands } = usePopulateBasicLands();
 
   deck?.sort((a, b) => a.card.cmc - b.card.cmc); // sort the cards by cmc
