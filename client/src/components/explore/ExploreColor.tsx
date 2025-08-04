@@ -27,8 +27,8 @@ const COLOR_COMBINATIONS: Record<string, ColorIdentity> = {
   // Tri-color
   "mono-black,mono-blue,mono-white": "esper",
   "mono-black,mono-green,mono-white": "abzan",
-  "mono-black,mono-green,mono-blue": "sultai",
-  "mono-black,mono-red,mono-green": "jund",
+  "mono-black,mono-blue,mono-green": "sultai",
+  "mono-black,mono-green,mono-red": "jund",
   "mono-black,mono-red,mono-white": "mardu",
   "mono-blue,mono-green,mono-white": "bant",
   "mono-blue,mono-red,mono-white": "jeskai",
