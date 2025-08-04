@@ -20,7 +20,9 @@ const deckApi = new BackendDeckApi();
 export default function DeckList({ deck }: DeckListProps) {
   const { deckId } = useParams();
   const { idToken } = useUser();
-  const [shownCardImgUrl, setShownCardImgUIrl] = useState<string>(deck[0].card.cardImageUrl[0]);
+  const [shownCardImgUrl, setShownCardImgUIrl] = useState<string>(
+    deck.find((card) => card.commander)?.card.cardImageUrl[0] ?? deck[0].card.cardImageUrl[0]
+  );
   const { populateLands } = usePopulateBasicLands();
 
   deck?.sort((a, b) => a.card.cmc - b.card.cmc); // sort the cards by cmc
@@ -88,7 +90,8 @@ export default function DeckList({ deck }: DeckListProps) {
 
     if (copyTo === "clipboard") {
       try {
-        navigator.clipboard.writeText(res);
+        await navigator.clipboard.writeText(res);
+        toast.success("Copied to clipboard")
       } catch (err) {
         toast.error(`Error copying content to clipboard: ${err}`);
       }
@@ -108,7 +111,7 @@ export default function DeckList({ deck }: DeckListProps) {
     <>
       <div className="grid md:grid-cols-[2fr_5fr_1fr] justify-center">
         <div className="md:col-span-1 mx-auto flex flex-col">
-          <MagicCardImage imageUrl={shownCardImgUrl} />
+          <MagicCardImage imageUrl={shownCardImgUrl} data-testid="magic-card-image" />
           <Button className="mx-auto my-3" onClick={() => populateLands()}>
             Populate Lands
           </Button>

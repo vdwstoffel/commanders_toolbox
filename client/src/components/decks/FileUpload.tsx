@@ -73,7 +73,7 @@ export default function FileUpload({ closeFn }: Props) {
       </TabsList>
       <TabsContent value="file">
         <>
-          <input type="file" accept=".txt" name="file" onChange={handleFileChange} className="hover:cursor-pointer" />
+          <input type="file" accept=".txt" name="file" onChange={handleFileChange} className="hover:cursor-pointer" data-testid="file-input" />
           <Button onClick={handleUpload} disabled={isFileUploading}>
             Submit
           </Button>
@@ -81,10 +81,10 @@ export default function FileUpload({ closeFn }: Props) {
       </TabsContent>
       <TabsContent value="text">
         <>
-          <p className="text-center font-bold my-4">Paste the deck list here. ex 1 Muldrotha</p>
+          <p className="text-center font-bold my-4">Paste deck list</p>
           <div className="grid w-full gap-2 max-h-96">
             <Textarea
-              placeholder="Type your message here."
+              placeholder="1 Muldrotha the Gravetide"
               value={deckValue}
               onChange={updateDeckValueHandler}
               className="max-h-92 overflow-auto"

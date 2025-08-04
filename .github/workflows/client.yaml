@@ -1,4 +1,4 @@
-name: Build and lint client
+name: Client Pipeline
 on:
   push:
     branches:
@@ -7,7 +7,29 @@ on:
     branches:
       - main
 jobs:
-  build-and-lint:
+  Build_Site:
+    name: Build Client Site
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build client
+        run: npm run build
+
+  Lint_Code:
+    name: Lint Client Code
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,5 +49,23 @@ jobs:
       - name: Lint code
         run: npm run lint
 
-      - name: Build client
-        run: npm run build
+  Unit_Tests:
+    name: Run Client Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test

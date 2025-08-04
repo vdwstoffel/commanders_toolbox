@@ -31,7 +31,7 @@ export default function OverlayWrapper({ children, hideFn }: Props) {
   }, [hideFn]);
 
   return (
-    <div  className="fixed left-0 top-0 z-90 h-screen w-screen backdrop-blur-sm">
+    <div data-testid="overlay-wrapper" className="fixed left-0 top-0 z-90 h-screen w-screen backdrop-blur-sm">
       <div className="fixed left-1/2 top-1/2 -translate-x-2/4 -translate-y-1/2">
         <div ref={ref} className="max-h-screen overflow-auto rounded-lg bg-neutral-900/80 p-10 text-neutral-200 mt-20">
           {children}
