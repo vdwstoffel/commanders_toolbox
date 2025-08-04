@@ -64,15 +64,13 @@ export default function CardRecommendations({ commander, theme }: Props) {
   }
 
   async function onClickHandler(cardName: string) {
-
-    if (showCardInfoOverlay) {
-      setShowCardInfoOverlay(false);
-      return;
-    }
-
     const res = await scryfallApi.getCardByName(cardName);
     setSelectedCard(res);
     setShowCardInfoOverlay(true);
+  }
+
+  function onOverlayClose() {
+    setShowCardInfoOverlay(false);
   }
 
   function addCardToDeckHandler() {
@@ -105,7 +103,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
       </div>
       {hoveredCardImageUrl && <img src={hoveredCardImageUrl} className="ml-12 h-96 min-w-72 rounded-lg" />}
       {showCardInfoOverlay && (
-        <OverlayWrapper hideFn={onClickHandler}>
+        <OverlayWrapper hideFn={onOverlayClose}>
           <Button variant="secondary" className="mx-auto" onClick={addCardToDeckHandler}>
             Add to Deck
           </Button>
