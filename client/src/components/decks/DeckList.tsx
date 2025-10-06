@@ -91,7 +91,7 @@ export default function DeckList({ deck }: DeckListProps) {
     if (copyTo === "clipboard") {
       try {
         await navigator.clipboard.writeText(res);
-        toast.success("Copied to clipboard")
+        toast.success("Copied to clipboard");
       } catch (err) {
         toast.error(`Error copying content to clipboard: ${err}`);
       }
@@ -111,21 +111,23 @@ export default function DeckList({ deck }: DeckListProps) {
     <>
       <div className="grid md:grid-cols-[2fr_5fr_1fr] justify-center">
         <div className="md:col-span-1 mx-auto flex flex-col">
-          <MagicCardImage imageUrl={shownCardImgUrl} data-testid="magic-card-image" />
-          <Button className="mx-auto my-3" onClick={() => populateLands()}>
-            Populate Lands
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="mx-auto my-2 min-w-32">Download</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-42">
-              <DropdownMenuCheckboxItem onClick={() => downloadDeckListHandler("file")}>Download deck</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem onClick={() => downloadDeckListHandler("clipboard")}>
-                Copy to clipboard
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="sticky top-20 flex flex-col">
+            <MagicCardImage imageUrl={shownCardImgUrl} data-testid="magic-card-image" />
+            <Button className="mx-auto my-3" onClick={() => populateLands()}>
+              Populate Lands
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="mx-auto my-2 min-w-32">Download</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-42">
+                <DropdownMenuCheckboxItem onClick={() => downloadDeckListHandler("file")}>Download deck</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem onClick={() => downloadDeckListHandler("clipboard")}>
+                  Copy to clipboard
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         <div className="w-full rounded-md bg-slate-200/30 px-3 sm:columns-1 md:columns-1 lg:columns-2">
           {/* Iterate through each car type then each card in that type */}
