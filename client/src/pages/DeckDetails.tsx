@@ -35,6 +35,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 const edhRecApi = new EdhRecApi();
 
@@ -150,8 +152,8 @@ export default function DeckDetails() {
     setIsEditTheme(true);
   }
 
-  function setNewThemeHandler(e: ChangeEvent<HTMLSelectElement>) {
-    updateDeck({ deckTheme: e.target.value });
+  function setNewThemeHandler(e: string) {
+    updateDeck({ deckTheme: e });
     setIsEditTheme(false);
   }
 
@@ -203,27 +205,24 @@ export default function DeckDetails() {
         </div>
 
         {isEditTheme ? (
-          <select
-            onBlur={() => setIsEditTheme(false)}
-            ref={themeSelectRef}
-            onChange={setNewThemeHandler}
-            className="capitalize mx-auto mt-3 w-fit rounded-xl bg-slate-100/30 px-3"
-          >
-            <option className="bg-neutral-900 text-neutral-200">Select Theme</option>
-            <option key={"custom"} value={"custom"} className="bg-neutral-900 text-neutral-200">
-              Custom
-            </option>
-
-            {themes.map((theme) => (
-              <option key={theme} value={theme} className="bg-neutral-900 text-neutral-200">
-                {theme}
-              </option>
-            ))}
-          </select>
+          <Select onValueChange={(e) => setNewThemeHandler(e)}>
+            <SelectTrigger className="w-[180px] mx-auto" onBlur={() => setIsEditTheme(false)}>
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent className="max-h-72 capitalize">
+              <SelectGroup>
+                {themes.map((theme) => (
+                  <SelectItem key={theme} value={theme}>
+                    {theme}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         ) : (
           <button
             onClick={onThemeClickHandler}
-            className="mx-auto my-3 mb-0 w-fit rounded-xl bg-slate-100/30 px-3 capitalize hover:cursor-pointer"
+            className="mx-auto min-w-40 rounded-xl bg-slate-100/30 px-3 py-2 capitalize hover:cursor-pointer"
           >
             {deckTheme}
           </button>
