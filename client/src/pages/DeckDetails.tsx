@@ -24,6 +24,17 @@ import { EdhRecApi } from "@/api/edhRecApi";
 import PlayTest from "@/components/playtest/Playtest";
 import toast from "react-hot-toast";
 import FileUpload from "@/components/decks/FileUpload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const edhRecApi = new EdhRecApi();
 
@@ -131,7 +142,7 @@ export default function DeckDetails() {
 
     if (!res) {
       toast.error("Error getting deck theme");
-      return
+      return;
     }
 
     const themes = res.map((info: { slug: string; value: string }) => info.slug);
@@ -166,9 +177,28 @@ export default function DeckDetails() {
               {deckName}
             </button>
           )}
-          <div className="flex flex-col justify-center justify-items-center gap-1">
+          <div className="flex flex-col justify-center gap-1 items-center">
             <FaFileUpload className="text-sm hover:cursor-pointer" onClick={() => setShowFileUpload(true)} />
-            <MdDeleteForever className="text-red-700 hover:cursor-pointer text-xl" onClick={deleteDeckHandler} />
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <MdDeleteForever className="text-red-700 hover:cursor-pointer text-xl" />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm delete deck</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this deck.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="hover:bg-red-700" onClick={deleteDeckHandler}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 
