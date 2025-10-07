@@ -44,7 +44,7 @@ export default function FullCardInfo({ cardName }: Readonly<Props>) {
   if (error) return <ErrorMessage msg={error} />;
 
   return (
-    <>
+    <div className="my-10">
       {card?.layout === "normal" && <SingleFacedCard card={card} />}
       {(card?.layout === "transform" || card?.layout === "modal_dfc") && <DoubleFacedCard card={card} />}
       {(card?.layout === "adventure" || card?.layout === "split") && <AdventureCard card={card} />}
@@ -60,6 +60,6 @@ export default function FullCardInfo({ cardName }: Readonly<Props>) {
           <Rulings rulingUri={card!.rulings_uri} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
