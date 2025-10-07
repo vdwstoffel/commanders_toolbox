@@ -10,6 +10,7 @@ import { usePopulateBasicLands } from "./useDeckQuery";
 import { useParams } from "react-router-dom";
 import { useUser } from "../user/useUser";
 import toast from "react-hot-toast";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface DeckListProps {
   deck: DeckCardDetails[];
@@ -25,7 +26,10 @@ export default function DeckList({ deck }: DeckListProps) {
   );
   const { populateLands } = usePopulateBasicLands();
 
-  deck?.sort((a, b) => a.card.cmc - b.card.cmc); // sort the cards by cmc
+  // State for grouping
+  const [groupBy, setGroupBy] = useState<"type" | "cmc">("type");
+
+  deck?.sort((a, b) => a.card.cmc - b.card.cmc).sort((a,b) => a.card.cardName.localeCompare(b.card.cardName)); // sort the cards by cmc
   const commander: DeckCardDetails[] = [];
   const creatures: DeckCardDetails[] = [];
   const instants: DeckCardDetails[] = [];
@@ -85,6 +89,22 @@ export default function DeckList({ deck }: DeckListProps) {
     Lands: lands,
   };
 
+  const cardsByMana = {
+    Commander: deck.filter((card) => card.commander),
+    "0": deck.filter((card) => card.card.cmc === 0 && card.card.cardType !== "land"),
+    "1": deck.filter((card) => card.card.cmc === 1 && !card.commander),
+    "2": deck.filter((card) => card.card.cmc === 2 && !card.commander),
+    "3": deck.filter((card) => card.card.cmc === 3 && !card.commander),
+    "4": deck.filter((card) => card.card.cmc === 4 && !card.commander),
+    "5": deck.filter((card) => card.card.cmc === 5 && !card.commander),
+    "6": deck.filter((card) => card.card.cmc === 6 && !card.commander),
+    "7": deck.filter((card) => card.card.cmc === 7 && !card.commander),
+    "8": deck.filter((card) => card.card.cmc === 8 && !card.commander),
+    "9": deck.filter((card) => card.card.cmc === 9 && !card.commander),
+    "10+": deck.filter((card) => card.card.cmc >= 10),
+    Lands: deck.filter((card) => card.card.cardType === "land"),
+  };
+
   async function downloadDeckListHandler(copyTo: "file" | "clipboard") {
     const res = await deckApi.downloadDeckList(Number(deckId), idToken);
 
@@ -108,7 +128,22 @@ export default function DeckList({ deck }: DeckListProps) {
   }
 
   return (
-    <>
+    <div>
+      <div className="mx-auto text-center my-10 flex justify-center items-center gap-2">
+        <h1>Group By</h1>
+
+        <Select defaultValue={groupBy} onValueChange={(value: "type" | "cmc") => setGroupBy(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="type">Type</SelectItem>
+              <SelectItem value="cmc">CMC</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="grid md:grid-cols-[2fr_5fr_1fr] justify-center">
         <div className="md:col-span-1 mx-auto flex flex-col">
           <div className="sticky top-20 flex flex-col">
@@ -131,13 +166,13 @@ export default function DeckList({ deck }: DeckListProps) {
         </div>
         <div className="w-full rounded-md bg-slate-200/30 px-3 sm:columns-1 md:columns-1 lg:columns-2">
           {/* Iterate through each car type then each card in that type */}
-          {Object.entries(CardTypes).map(([heading, cards]) => {
+          {Object.entries(groupBy === "cmc" ? cardsByMana : CardTypes).map(([heading, cards]) => {
             return cards.length > 0 ? (
               <CardTypeContainer key={heading} cards={cards} heading={heading} hoverFunc={setShownCardImgUIrl} />
             ) : null;
           })}
         </div>
       </div>
-    </>
+    </div>
   );
 }
