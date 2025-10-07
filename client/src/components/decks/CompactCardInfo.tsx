@@ -115,7 +115,9 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
       {!cardDetails.commander && <TiDelete data-testid="delete-icon" className="text-red-700" onClick={removeCardFromDeckHandler} />}
       {showCardInfo && (
         <OverlayWrapper hideFn={toggleShowCardInfoHandler}>
-          <Tabs tabs={["Info", "Printings"]} activeTab={activeTab} tabHandler={setActiveTab} />
+          <div className="w-fit mx-auto mb-10">
+            <Tabs tabs={["Info", "Printings"]} activeTab={activeTab} tabHandler={setActiveTab} />
+          </div>
           {activeTab === 0 && <FullCardInfo cardName={card.cardName} />}
           {activeTab === 1 && <ShowUniquePrintings cardName={cardDetails.card.cardName} setCardFn={setCardPrinting} />}
         </OverlayWrapper>

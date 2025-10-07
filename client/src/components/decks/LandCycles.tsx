@@ -1,13 +1,12 @@
 import { useState } from "react";
 
-
 import MagicCardImage from "../cards/MagicCardImage";
 import Loader from "../ui/Loader";
 
 import { landCycles } from "@/utils/landCycles";
 import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
 import { useAddCardToDeck, useGetDeckById } from "./useDeckQuery";
-import {getDeckColorIdentity} from "../../utils/helperFunctions";
+import { getDeckColorIdentity } from "../../utils/helperFunctions";
 import OverlayWrapper from "../ui/OverlayWrapper";
 import { Button } from "../ui/button";
 import FullCardInfo from "../cards/FullCardInfo";
@@ -48,8 +47,8 @@ export default function LandCycles() {
 
   return (
     <div className="relative grid grid-cols-[1fr_6fr]">
-      <div className="">
-        <div className="sticky top-10 mx-auto mt-10 flex-col rounded-lg bg-neutral-700 p-3 text-neutral-200 hidden md:flex">
+      <div>
+        <div className="sticky top-30 mx-auto ml-5 mt-10 flex-col rounded-lg bg-neutral-700 p-3 text-neutral-200 hidden md:flex">
           {TABS.map((tab) => (
             <a key={tab} href={`#${tab}`}>
               {tab}
@@ -87,7 +86,11 @@ export default function LandCycles() {
       </div>
       {showOverlay && (
         <OverlayWrapper hideFn={closeOveralyHandler}>
-          <Button onClick={addCardToDeckHandler} variant="secondary">Add to deck</Button>
+          <div className="text-center">
+            <Button onClick={addCardToDeckHandler} variant="secondary">
+              Add to deck
+            </Button>
+          </div>
           <FullCardInfo cardName={selectedCardScryfallDetails!.name} />
         </OverlayWrapper>
       )}

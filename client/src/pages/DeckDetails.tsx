@@ -24,6 +24,18 @@ import { EdhRecApi } from "@/api/edhRecApi";
 import PlayTest from "@/components/playtest/Playtest";
 import toast from "react-hot-toast";
 import FileUpload from "@/components/decks/FileUpload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const edhRecApi = new EdhRecApi();
 
@@ -131,7 +143,7 @@ export default function DeckDetails() {
 
     if (!res) {
       toast.error("Error getting deck theme");
-      return
+      return;
     }
 
     const themes = res.map((info: { slug: string; value: string }) => info.slug);
@@ -139,8 +151,8 @@ export default function DeckDetails() {
     setIsEditTheme(true);
   }
 
-  function setNewThemeHandler(e: ChangeEvent<HTMLSelectElement>) {
-    updateDeck({ deckTheme: e.target.value });
+  function setNewThemeHandler(e: string) {
+    updateDeck({ deckTheme: e });
     setIsEditTheme(false);
   }
 
@@ -166,34 +178,50 @@ export default function DeckDetails() {
               {deckName}
             </button>
           )}
-          <div className="flex flex-col justify-center justify-items-center gap-1">
+          <div className="flex flex-col justify-center gap-1 items-center">
             <FaFileUpload className="text-sm hover:cursor-pointer" onClick={() => setShowFileUpload(true)} />
-            <MdDeleteForever className="text-red-700 hover:cursor-pointer text-xl" onClick={deleteDeckHandler} />
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <MdDeleteForever className="text-red-700 hover:cursor-pointer text-xl" />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm delete deck</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this deck.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="hover:bg-red-700" onClick={deleteDeckHandler}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 
         {isEditTheme ? (
-          <select
-            onBlur={() => setIsEditTheme(false)}
-            ref={themeSelectRef}
-            onChange={setNewThemeHandler}
-            className="capitalize mx-auto mt-3 w-fit rounded-xl bg-slate-100/30 px-3"
-          >
-            <option className="bg-neutral-900 text-neutral-200">Select Theme</option>
-            <option key={"custom"} value={"custom"} className="bg-neutral-900 text-neutral-200">
-              Custom
-            </option>
-
-            {themes.map((theme) => (
-              <option key={theme} value={theme} className="bg-neutral-900 text-neutral-200">
-                {theme}
-              </option>
-            ))}
-          </select>
+          <Select onValueChange={(e) => setNewThemeHandler(e)}>
+            <SelectTrigger className="w-[180px] mx-auto" onBlur={() => setIsEditTheme(false)}>
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent className="max-h-72 capitalize">
+              <SelectGroup>
+                {themes.map((theme) => (
+                  <SelectItem key={theme} value={theme}>
+                    {theme}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         ) : (
           <button
             onClick={onThemeClickHandler}
-            className="mx-auto my-3 mb-0 w-fit rounded-xl bg-slate-100/30 px-3 capitalize hover:cursor-pointer"
+            className="mx-auto min-w-40 rounded-xl bg-slate-100/30 px-3 py-2 capitalize hover:cursor-pointer"
           >
             {deckTheme}
           </button>

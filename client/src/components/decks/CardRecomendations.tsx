@@ -104,9 +104,12 @@ export default function CardRecommendations({ commander, theme }: Props) {
       {hoveredCardImageUrl && <img src={hoveredCardImageUrl} className="ml-12 h-96 min-w-72 rounded-lg" />}
       {showCardInfoOverlay && (
         <OverlayWrapper hideFn={onOverlayClose}>
+          <div className="w-full text-center">
+
           <Button variant="secondary" className="mx-auto" onClick={addCardToDeckHandler}>
             Add to Deck
           </Button>
+          </div>
           <FullCardInfo cardName={selectedCard!.name} />
         </OverlayWrapper>
       )}
