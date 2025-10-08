@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import MagicCardImage from "../cards/MagicCardImage";
@@ -26,10 +26,13 @@ export default function DeckList({ deck }: DeckListProps) {
   );
   const { populateLands } = usePopulateBasicLands();
 
-  // State for grouping
+  // State for grouping/sorting
   const [groupBy, setGroupBy] = useState<"type" | "cmc">("type");
+  const [sortBy, setSortBy] = useState<"name" | "cmc">("cmc");
 
-  deck?.sort((a, b) => a.card.cmc - b.card.cmc).sort((a,b) => a.card.cardName.localeCompare(b.card.cardName)); // sort the cards by cmc
+
+  if (sortBy === "cmc") deck.sort((a, b) => a.card.cmc - b.card.cmc);
+
   const commander: DeckCardDetails[] = [];
   const creatures: DeckCardDetails[] = [];
   const instants: DeckCardDetails[] = [];
@@ -91,16 +94,16 @@ export default function DeckList({ deck }: DeckListProps) {
 
   const cardsByMana = {
     Commander: deck.filter((card) => card.commander),
-    "0": deck.filter((card) => card.card.cmc === 0 && card.card.cardType !== "land"),
-    "1": deck.filter((card) => card.card.cmc === 1 && !card.commander),
-    "2": deck.filter((card) => card.card.cmc === 2 && !card.commander),
-    "3": deck.filter((card) => card.card.cmc === 3 && !card.commander),
-    "4": deck.filter((card) => card.card.cmc === 4 && !card.commander),
-    "5": deck.filter((card) => card.card.cmc === 5 && !card.commander),
-    "6": deck.filter((card) => card.card.cmc === 6 && !card.commander),
-    "7": deck.filter((card) => card.card.cmc === 7 && !card.commander),
-    "8": deck.filter((card) => card.card.cmc === 8 && !card.commander),
-    "9": deck.filter((card) => card.card.cmc === 9 && !card.commander),
+    "0 ": deck.filter((card) => card.card.cmc === 0 && card.card.cardType !== "land"),
+    "1 ": deck.filter((card) => card.card.cmc === 1 && !card.commander),
+    "2 ": deck.filter((card) => card.card.cmc === 2 && !card.commander),
+    "3 ": deck.filter((card) => card.card.cmc === 3 && !card.commander),
+    "4 ": deck.filter((card) => card.card.cmc === 4 && !card.commander),
+    "5 ": deck.filter((card) => card.card.cmc === 5 && !card.commander),
+    "6 ": deck.filter((card) => card.card.cmc === 6 && !card.commander),
+    "7 ": deck.filter((card) => card.card.cmc === 7 && !card.commander),
+    "8 ": deck.filter((card) => card.card.cmc === 8 && !card.commander),
+    "9 ": deck.filter((card) => card.card.cmc === 9 && !card.commander),
     "10+": deck.filter((card) => card.card.cmc >= 10),
     Lands: deck.filter((card) => card.card.cardType === "land"),
   };
@@ -127,11 +130,19 @@ export default function DeckList({ deck }: DeckListProps) {
     link.remove();
   }
 
+  function sortDeckBy(sortBy: "name" | "cmc") {
+    setSortBy(sortBy);
+
+    if (sortBy === "name") deck.sort((a,b) => a.card.cardName.localeCompare(b.card.cardName));
+    if (sortBy === "cmc") deck.sort((a, b) => a.card.cmc - b.card.cmc);
+  }
+
   return (
     <div>
       <div className="mx-auto text-center my-10 flex justify-center items-center gap-2">
-        <h1>Group By</h1>
 
+        {/* Group By Select */}
+        <h1>Group By</h1>
         <Select defaultValue={groupBy} onValueChange={(value: "type" | "cmc") => setGroupBy(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -143,6 +154,22 @@ export default function DeckList({ deck }: DeckListProps) {
             </SelectGroup>
           </SelectContent>
         </Select>
+
+        {/* Sortby Select */}
+        <h1>Sort By</h1>
+        <Select defaultValue={sortBy} onValueChange={(value: "name" | "cmc") => sortDeckBy(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="cmc">CMC</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+
       </div>
       <div className="grid md:grid-cols-[2fr_5fr_1fr] justify-center">
         <div className="md:col-span-1 mx-auto flex flex-col">
