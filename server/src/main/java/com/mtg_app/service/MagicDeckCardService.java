@@ -63,7 +63,7 @@ public class MagicDeckCardService implements MagicDeckCardServiceInterface {
     @Override
     public void updateCardQuantity(int deckId, int cardId, int quantity) {
         this.magicDeckCardRepository.updateCardQuantityByDeckIdAndCardId(deckId, cardId, quantity);
-    } 
+    }
 
     @Override
     public void removeCardFromDeck(int deckId, int cardId) {
@@ -119,6 +119,7 @@ public class MagicDeckCardService implements MagicDeckCardServiceInterface {
                     this.createOrUpdateDeckCardMapping(alreadyInDeck.get().getCard(), deck, false, entry.getValue());
                 } else {
                     MagicCard card = this.magicCardRepository.getCardByName(entry.getKey());
+                    System.out.println("Already in deck " + card);
                     this.createOrUpdateDeckCardMapping(card, deck, false, entry.getValue());
                 }
             }

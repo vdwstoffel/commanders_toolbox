@@ -240,7 +240,7 @@ export default function DeckDetails() {
             <TabsTrigger value="landCycles">Land Cycles</TabsTrigger>
           </TabsList>
           <TabsContent value="deckList">
-            <div className="flex justify-center items-center flex-col mb-10 px-5">
+            <div className="flex justify-center items-center flex-col px-5">
               <div className="flex items-center gap-2">
                 <CardSearchWithAutoComplete label="Search Card" setValue={setCardToSearch} />
                 <FaEye onClick={toggleCardInfoOverlayHandler} />

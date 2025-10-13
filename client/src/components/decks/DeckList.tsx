@@ -139,7 +139,7 @@ export default function DeckList({ deck }: DeckListProps) {
 
   return (
     <div>
-      <div className="mx-auto text-center my-10 flex justify-center items-center gap-2">
+      <div className="mx-auto text-center mb-10 flex justify-center items-center gap-2">
 
         {/* Group By Select */}
         <h1>Group By</h1>

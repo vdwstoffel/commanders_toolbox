@@ -28,7 +28,8 @@ public class MagicDeckService implements MagicDeckServiceInterface {
     private final MagicDeckCardTokenService magicDeckCardTokenService;
 
     @Autowired
-    public MagicDeckService(MagicDeckRepository magicDeckRepository, MagicDeckCardService magicDeckCardService, MagicCardService magicCardService, MagicDeckCardTokenService magicDeckCardTokenService) {
+    public MagicDeckService(MagicDeckRepository magicDeckRepository, MagicDeckCardService magicDeckCardService,
+            MagicCardService magicCardService, MagicDeckCardTokenService magicDeckCardTokenService) {
         this.magicDeckRepository = magicDeckRepository;
         this.magicDeckCardService = magicDeckCardService;
         this.magicCardService = magicCardService;
@@ -91,18 +92,24 @@ public class MagicDeckService implements MagicDeckServiceInterface {
     }
 
     /**
-     * Adds a card to the specified Magic deck, including handling any associated token cards.
+     * Adds a card to the specified Magic deck, including handling any associated
+     * token cards.
      *
-     * <p>This method performs the following actions:
+     * <p>
+     * This method performs the following actions:
      * <ul>
-     *   <li>Retrieves or creates a new {@link MagicCard} based on the provided {@link MagicCardRequest}.</li>
-     *   <li>Adds the card to the deck using the deck-card mapping service.</li>
-     *   <li>If the card has associated token parts (as indicated by {@code getAll_parts()}), 
-     *       it identifies all tokens and creates deck-card-token mappings for each token.</li>
+     * <li>Retrieves or creates a new {@link MagicCard} based on the provided
+     * {@link MagicCardRequest}.</li>
+     * <li>Adds the card to the deck using the deck-card mapping service.</li>
+     * <li>If the card has associated token parts (as indicated by
+     * {@code getAll_parts()}),
+     * it identifies all tokens and creates deck-card-token mappings for each
+     * token.</li>
      * </ul>
      *
      * @param deck the {@link MagicDeck} to which the card will be added
-     * @param card the {@link MagicCardRequest} containing card details and possible token parts
+     * @param card the {@link MagicCardRequest} containing card details and possible
+     *             token parts
      */
     @Override
     public void addCardToDeck(MagicDeck deck, MagicCardRequest card, int quantity) {
