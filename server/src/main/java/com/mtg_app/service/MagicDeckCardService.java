@@ -119,7 +119,6 @@ public class MagicDeckCardService implements MagicDeckCardServiceInterface {
                     this.createOrUpdateDeckCardMapping(alreadyInDeck.get().getCard(), deck, false, entry.getValue());
                 } else {
                     MagicCard card = this.magicCardRepository.getCardByName(entry.getKey());
-                    System.out.println("Already in deck " + card);
                     this.createOrUpdateDeckCardMapping(card, deck, false, entry.getValue());
                 }
             }

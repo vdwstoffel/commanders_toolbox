@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useMemo, useState } from "react";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import MagicCardImage from "../cards/MagicCardImage";
@@ -30,8 +30,16 @@ export default function DeckList({ deck }: DeckListProps) {
   const [groupBy, setGroupBy] = useState<"type" | "cmc">("type");
   const [sortBy, setSortBy] = useState<"name" | "cmc">("cmc");
 
-
-  if (sortBy === "cmc") deck.sort((a, b) => a.card.cmc - b.card.cmc);
+  const sortedDeck = useMemo(() => {
+    const copy = [...deck];
+    const safeCmc = (n: number | null | undefined) => (Number.isFinite(n as number) ? (n as number) : Number.POSITIVE_INFINITY);
+    return copy.sort((a, b) => {
+      if (sortBy === "name") return a.card.cardName.localeCompare(b.card.cardName);
+      // sortBy === "cmc"
+      const diff = safeCmc(a.card.cmc) - safeCmc(b.card.cmc);
+      return diff !== 0 ? diff : a.card.cardName.localeCompare(b.card.cardName);
+    });
+  }, [deck, sortBy]);
 
   const commander: DeckCardDetails[] = [];
   const creatures: DeckCardDetails[] = [];
@@ -43,39 +51,39 @@ export default function DeckList({ deck }: DeckListProps) {
   const planeswalkers: DeckCardDetails[] = [];
   const lands: DeckCardDetails[] = [];
 
-  for (let i = 0; i < deck!.length; i++) {
-    if (deck[i].commander) {
-      commander.push(deck[i]);
+  for (let i = 0; i < sortedDeck!.length; i++) {
+    if (sortedDeck[i].commander) {
+      commander.push(sortedDeck[i]);
       continue;
     }
 
-    switch (deck[i].card.cardType) {
+    switch (sortedDeck[i].card.cardType) {
       case "creature":
-        creatures.push(deck[i]);
+        creatures.push(sortedDeck[i]);
         break;
       case "instant":
-        instants.push(deck[i]);
+        instants.push(sortedDeck[i]);
         break;
       case "sorcery":
-        sorceries.push(deck[i]);
+        sorceries.push(sortedDeck[i]);
         break;
       case "artifact":
-        artifacts.push(deck[i]);
+        artifacts.push(sortedDeck[i]);
         break;
       case "enchantment":
-        enchantments.push(deck[i]);
+        enchantments.push(sortedDeck[i]);
         break;
       case "battle":
-        battles.push(deck[i]);
+        battles.push(sortedDeck[i]);
         break;
       case "planeswalker":
-        planeswalkers.push(deck[i]);
+        planeswalkers.push(sortedDeck[i]);
         break;
       case "land":
-        lands.push(deck[i]);
+        lands.push(sortedDeck[i]);
         break;
       default:
-        throw new Error(`${deck[i].card.cardName} has an unknown card type`);
+        throw new Error(`${sortedDeck[i].card.cardName} has an unknown card type`);
     }
   }
 
@@ -93,19 +101,19 @@ export default function DeckList({ deck }: DeckListProps) {
   };
 
   const cardsByMana = {
-    Commander: deck.filter((card) => card.commander),
-    "0 ": deck.filter((card) => card.card.cmc === 0 && card.card.cardType !== "land"),
-    "1 ": deck.filter((card) => card.card.cmc === 1 && !card.commander),
-    "2 ": deck.filter((card) => card.card.cmc === 2 && !card.commander),
-    "3 ": deck.filter((card) => card.card.cmc === 3 && !card.commander),
-    "4 ": deck.filter((card) => card.card.cmc === 4 && !card.commander),
-    "5 ": deck.filter((card) => card.card.cmc === 5 && !card.commander),
-    "6 ": deck.filter((card) => card.card.cmc === 6 && !card.commander),
-    "7 ": deck.filter((card) => card.card.cmc === 7 && !card.commander),
-    "8 ": deck.filter((card) => card.card.cmc === 8 && !card.commander),
-    "9 ": deck.filter((card) => card.card.cmc === 9 && !card.commander),
-    "10+": deck.filter((card) => card.card.cmc >= 10),
-    Lands: deck.filter((card) => card.card.cardType === "land"),
+    Commander: sortedDeck.filter((card) => card.commander),
+    "0 ": sortedDeck.filter((card) => card.card.cmc === 0 && card.card.cardType !== "land" && !card.commander),
+    "1 ": sortedDeck.filter((card) => card.card.cmc === 1 && !card.commander),
+    "2 ": sortedDeck.filter((card) => card.card.cmc === 2 && !card.commander),
+    "3 ": sortedDeck.filter((card) => card.card.cmc === 3 && !card.commander),
+    "4 ": sortedDeck.filter((card) => card.card.cmc === 4 && !card.commander),
+    "5 ": sortedDeck.filter((card) => card.card.cmc === 5 && !card.commander),
+    "6 ": sortedDeck.filter((card) => card.card.cmc === 6 && !card.commander),
+    "7 ": sortedDeck.filter((card) => card.card.cmc === 7 && !card.commander),
+    "8 ": sortedDeck.filter((card) => card.card.cmc === 8 && !card.commander),
+    "9 ": sortedDeck.filter((card) => card.card.cmc === 9 && !card.commander),
+    "10+": sortedDeck.filter((card) => card.card.cmc >= 10 && !card.commander),
+    Lands: sortedDeck.filter((card) => card.card.cardType === "land"),
   };
 
   async function downloadDeckListHandler(copyTo: "file" | "clipboard") {
@@ -124,26 +132,22 @@ export default function DeckList({ deck }: DeckListProps) {
     const url = window.URL.createObjectURL(new Blob([res as string]));
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `${deck[0].deck.deckName}.txt`);
+    link.setAttribute("download", `${sortedDeck[0].deck.deckName}.txt`);
     document.body.appendChild(link);
     link.click();
     link.remove();
   }
 
-  function sortDeckBy(sortBy: "name" | "cmc") {
-    setSortBy(sortBy);
-
-    if (sortBy === "name") deck.sort((a,b) => a.card.cardName.localeCompare(b.card.cardName));
-    if (sortBy === "cmc") deck.sort((a, b) => a.card.cmc - b.card.cmc);
+  function sortDeckBy(next: "name" | "cmc") {
+    setSortBy(next);
   }
 
   return (
     <div>
       <div className="mx-auto text-center mb-10 flex justify-center items-center gap-2">
-
         {/* Group By Select */}
         <h1>Group By</h1>
-        <Select defaultValue={groupBy} onValueChange={(value: "type" | "cmc") => setGroupBy(value)}>
+        <Select value={groupBy} onValueChange={(value: "type" | "cmc") => setGroupBy(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
           </SelectTrigger>
@@ -157,7 +161,7 @@ export default function DeckList({ deck }: DeckListProps) {
 
         {/* Sortby Select */}
         <h1>Sort By</h1>
-        <Select defaultValue={sortBy} onValueChange={(value: "name" | "cmc") => sortDeckBy(value)}>
+        <Select value={sortBy} onValueChange={(value: "name" | "cmc") => sortDeckBy(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
           </SelectTrigger>
@@ -168,8 +172,6 @@ export default function DeckList({ deck }: DeckListProps) {
             </SelectGroup>
           </SelectContent>
         </Select>
-
-
       </div>
       <div className="grid md:grid-cols-[2fr_5fr_1fr] justify-center">
         <div className="md:col-span-1 mx-auto flex flex-col">

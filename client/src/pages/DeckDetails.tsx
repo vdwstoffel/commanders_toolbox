@@ -82,11 +82,12 @@ export default function DeckDetails() {
 
   if (isWaitingForDeck) return <Loader />;
   if (deckByIdError) return <ErrorMessage msg={`There was an error loading deck with deckId: ${deckId}`} />;
+  if (!deckById || deckById.length == 0) return <ErrorMessage msg="There was and error fetching the deck" />
 
-  const deckName = deckById![0].deck.deckName;
-  const deckTheme = deckById![0].deck.theme;
-  const commanderName = deckById![0].deck.commander;
-  const deckColorIdentity = deckById![0].deck.colorIdentity;
+  const deckName = deckById[0].deck.deckName;
+  const deckTheme = deckById[0].deck.theme;
+  const commanderName = deckById[0].deck.commander;
+  const deckColorIdentity = deckById[0].deck.colorIdentity;
 
   function addCardToDeckHandler() {
     if (!cardToSearch) return;
