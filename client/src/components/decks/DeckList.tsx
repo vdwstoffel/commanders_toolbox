@@ -112,7 +112,7 @@ export default function DeckList({ deck }: DeckListProps) {
     "7 ": sortedDeck.filter((card) => card.card.cmc === 7 && !card.commander),
     "8 ": sortedDeck.filter((card) => card.card.cmc === 8 && !card.commander),
     "9 ": sortedDeck.filter((card) => card.card.cmc === 9 && !card.commander),
-    "10+": sortedDeck.filter((card) => card.card.cmc >= 10 && !card.commander),
+    "10+": sortedDeck.filter((card) => (card.card.cmc ?? Number.POSITIVE_INFINITY) >= 10 && !card.commander),
     Lands: sortedDeck.filter((card) => card.card.cardType === "land"),
   };
 
@@ -146,7 +146,7 @@ export default function DeckList({ deck }: DeckListProps) {
     <div>
       <div className="mx-auto text-center mb-10 flex justify-center items-center gap-2">
         {/* Group By Select */}
-        <h1>Group By</h1>
+        <label htmlFor="group-by-select">Group By</label>
         <Select value={groupBy} onValueChange={(value: "type" | "cmc") => setGroupBy(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -160,7 +160,7 @@ export default function DeckList({ deck }: DeckListProps) {
         </Select>
 
         {/* Sortby Select */}
-        <h1>Sort By</h1>
+        <label htmlFor="sort-by-select">Sort By</label>
         <Select value={sortBy} onValueChange={(value: "name" | "cmc") => sortDeckBy(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
