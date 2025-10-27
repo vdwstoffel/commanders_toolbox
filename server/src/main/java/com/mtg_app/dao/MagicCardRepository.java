@@ -11,7 +11,7 @@ import com.mtg_app.entity.MagicCard;
 public interface MagicCardRepository extends JpaRepository<MagicCard, Integer> {
     // basic crud operations extends from the JPA repository
 
-    @Query("FROM MagicCard c WHERE c.cardName = :cardName")
+    @Query(value="SELECT * FROM magic_card c WHERE c.card_name = :cardName LIMIT 1", nativeQuery = true)
     MagicCard getCardByName(@Param("cardName") String cardName);
 
     @Query("SELECT c.cardName FROM MagicCard c WHERE c.cardName IN :cards")

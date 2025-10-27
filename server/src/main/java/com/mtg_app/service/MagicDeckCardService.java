@@ -63,7 +63,7 @@ public class MagicDeckCardService implements MagicDeckCardServiceInterface {
     @Override
     public void updateCardQuantity(int deckId, int cardId, int quantity) {
         this.magicDeckCardRepository.updateCardQuantityByDeckIdAndCardId(deckId, cardId, quantity);
-    } 
+    }
 
     @Override
     public void removeCardFromDeck(int deckId, int cardId) {

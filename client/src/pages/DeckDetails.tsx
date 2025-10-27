@@ -82,11 +82,12 @@ export default function DeckDetails() {
 
   if (isWaitingForDeck) return <Loader />;
   if (deckByIdError) return <ErrorMessage msg={`There was an error loading deck with deckId: ${deckId}`} />;
+  if (!deckById || deckById.length == 0) return <ErrorMessage msg="There was and error fetching the deck" />
 
-  const deckName = deckById![0].deck.deckName;
-  const deckTheme = deckById![0].deck.theme;
-  const commanderName = deckById![0].deck.commander;
-  const deckColorIdentity = deckById![0].deck.colorIdentity;
+  const deckName = deckById[0].deck.deckName;
+  const deckTheme = deckById[0].deck.theme;
+  const commanderName = deckById[0].deck.commander;
+  const deckColorIdentity = deckById[0].deck.colorIdentity;
 
   function addCardToDeckHandler() {
     if (!cardToSearch) return;
@@ -240,7 +241,7 @@ export default function DeckDetails() {
             <TabsTrigger value="landCycles">Land Cycles</TabsTrigger>
           </TabsList>
           <TabsContent value="deckList">
-            <div className="flex justify-center items-center flex-col mb-10 px-5">
+            <div className="flex justify-center items-center flex-col px-5">
               <div className="flex items-center gap-2">
                 <CardSearchWithAutoComplete label="Search Card" setValue={setCardToSearch} />
                 <FaEye onClick={toggleCardInfoOverlayHandler} />
