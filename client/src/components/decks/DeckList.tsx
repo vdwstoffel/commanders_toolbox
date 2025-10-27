@@ -100,21 +100,24 @@ export default function DeckList({ deck }: DeckListProps) {
     Lands: lands,
   };
 
-  const cardsByMana = {
-    Commander: sortedDeck.filter((card) => card.commander),
-    "0 ": sortedDeck.filter((card) => card.card.cmc === 0 && card.card.cardType !== "land" && !card.commander),
-    "1 ": sortedDeck.filter((card) => card.card.cmc === 1 && !card.commander),
-    "2 ": sortedDeck.filter((card) => card.card.cmc === 2 && !card.commander),
-    "3 ": sortedDeck.filter((card) => card.card.cmc === 3 && !card.commander),
-    "4 ": sortedDeck.filter((card) => card.card.cmc === 4 && !card.commander),
-    "5 ": sortedDeck.filter((card) => card.card.cmc === 5 && !card.commander),
-    "6 ": sortedDeck.filter((card) => card.card.cmc === 6 && !card.commander),
-    "7 ": sortedDeck.filter((card) => card.card.cmc === 7 && !card.commander),
-    "8 ": sortedDeck.filter((card) => card.card.cmc === 8 && !card.commander),
-    "9 ": sortedDeck.filter((card) => card.card.cmc === 9 && !card.commander),
-    "10+": sortedDeck.filter((card) => (card.card.cmc ?? Number.POSITIVE_INFINITY) >= 10 && !card.commander),
-    Lands: sortedDeck.filter((card) => card.card.cardType === "land"),
-  };
+  const cardsByMana = useMemo(
+    () => ({
+      Commander: sortedDeck.filter((card) => card.commander),
+      "0 ": sortedDeck.filter((card) => card.card.cmc === 0 && card.card.cardType !== "land" && !card.commander),
+      "1 ": sortedDeck.filter((card) => card.card.cmc === 1 && !card.commander),
+      "2 ": sortedDeck.filter((card) => card.card.cmc === 2 && !card.commander),
+      "3 ": sortedDeck.filter((card) => card.card.cmc === 3 && !card.commander),
+      "4 ": sortedDeck.filter((card) => card.card.cmc === 4 && !card.commander),
+      "5 ": sortedDeck.filter((card) => card.card.cmc === 5 && !card.commander),
+      "6 ": sortedDeck.filter((card) => card.card.cmc === 6 && !card.commander),
+      "7 ": sortedDeck.filter((card) => card.card.cmc === 7 && !card.commander),
+      "8 ": sortedDeck.filter((card) => card.card.cmc === 8 && !card.commander),
+      "9 ": sortedDeck.filter((card) => card.card.cmc === 9 && !card.commander),
+      "10+": sortedDeck.filter((card) => (card.card.cmc ?? Number.POSITIVE_INFINITY) >= 10 && !card.commander),
+      Lands: sortedDeck.filter((card) => card.card.cardType === "land"),
+    }),
+    [sortedDeck]
+  );
 
   async function downloadDeckListHandler(copyTo: "file" | "clipboard") {
     const res = await deckApi.downloadDeckList(Number(deckId), idToken);
@@ -146,7 +149,7 @@ export default function DeckList({ deck }: DeckListProps) {
     <div>
       <div className="mx-auto text-center mb-10 flex justify-center items-center gap-2">
         {/* Group By Select */}
-        <label htmlFor="group-by-select">Group By</label>
+        <label>Group By</label>
         <Select value={groupBy} onValueChange={(value: "type" | "cmc") => setGroupBy(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
@@ -160,7 +163,7 @@ export default function DeckList({ deck }: DeckListProps) {
         </Select>
 
         {/* Sortby Select */}
-        <label htmlFor="sort-by-select">Sort By</label>
+        <label>Sort By</label>
         <Select value={sortBy} onValueChange={(value: "name" | "cmc") => sortDeckBy(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue />
