@@ -1,34 +1,75 @@
 /**
- * Global state to keep the user idToken and user details
- *
+ * Global state to keep the user's JWT and expose auth actions (local auth).
  */
 
-import { useAuth0 } from "@auth0/auth0-react";
 import { createContext, useEffect, useState, type ReactNode } from "react";
+import { AuthApi } from "@/api/authApi";
 
 interface UserContextInterface {
   idToken: string;
-  isAuthenticated: boolean
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
+  logout: () => void;
 }
 
 interface UserTokenProviderProps {
   children: ReactNode;
 }
 
-export const UserContext = createContext<UserContextInterface>({ idToken: "", isAuthenticated: false });
+const TOKEN_KEY = "idToken";
+const authApi = new AuthApi();
+
+export function isTokenValid(token: string): boolean {
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return typeof payload.exp === "number" && payload.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+export const UserContext = createContext<UserContextInterface>({
+  idToken: "",
+  isAuthenticated: false,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+});
 
 export default function UserContextProvider({ children }: UserTokenProviderProps) {
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const [idToken, setIdToken] = useState<string>("");
 
   useEffect(() => {
-    async function getToken() {
-      const token = await getAccessTokenSilently({ detailedResponse: true });
-      setIdToken(token.id_token);
+    const stored = localStorage.getItem(TOKEN_KEY);
+    if (stored && isTokenValid(stored)) {
+      setIdToken(stored);
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
     }
+  }, []);
 
-    getToken();
-  }, [getAccessTokenSilently]);
+  async function login(email: string, password: string) {
+    const token = await authApi.login(email, password);
+    localStorage.setItem(TOKEN_KEY, token);
+    setIdToken(token);
+  }
 
-  return <UserContext.Provider value={{ idToken, isAuthenticated }}>{children}</UserContext.Provider>;
+  async function register(email: string, password: string) {
+    const token = await authApi.register(email, password);
+    localStorage.setItem(TOKEN_KEY, token);
+    setIdToken(token);
+  }
+
+  function logout() {
+    localStorage.removeItem(TOKEN_KEY);
+    setIdToken("");
+  }
+
+  const isAuthenticated = isTokenValid(idToken);
+
+  return (
+    <UserContext.Provider value={{ idToken, isAuthenticated, login, register, logout }}>{children}</UserContext.Provider>
+  );
 }
