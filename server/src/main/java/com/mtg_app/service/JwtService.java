@@ -20,24 +20,24 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 @Service
 public class JwtService {
 
-	private final JwtEncoder encoder;
-	private final long ttlSeconds;
+    private final JwtEncoder encoder;
+    private final long ttlSeconds;
 
-	public JwtService(@Value("${app.jwt.secret}") String secret,
-			@Value("${app.jwt.ttl-seconds}") long ttlSeconds) {
-		SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-		this.encoder = new NimbusJwtEncoder(new ImmutableSecret<>(key));
-		this.ttlSeconds = ttlSeconds;
-	}
+    public JwtService(@Value("${app.jwt.secret}") String secret,
+            @Value("${app.jwt.ttl-seconds}") long ttlSeconds) {
+        SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        this.encoder = new NimbusJwtEncoder(new ImmutableSecret<>(key));
+        this.ttlSeconds = ttlSeconds;
+    }
 
-	public String generateToken(String userId) {
-		Instant now = Instant.now();
-		JwtClaimsSet claims = JwtClaimsSet.builder()
-				.subject(userId)
-				.issuedAt(now)
-				.expiresAt(now.plusSeconds(ttlSeconds))
-				.build();
-		JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
-		return encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
-	}
+    public String generateToken(String userId) {
+        Instant now = Instant.now();
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject(userId)
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(ttlSeconds))
+                .build();
+        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+        return encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
+    }
 }
