@@ -6,6 +6,9 @@ import { Toaster } from "react-hot-toast";
 import "./index.css";
 import App from "./App.tsx";
 import UserContextProvider from "./components/user/UserContextProvider.tsx";
+import { registerAuthInterceptor } from "./api/authInterceptor";
+
+registerAuthInterceptor();
 
 const queryClient = new QueryClient();
 
