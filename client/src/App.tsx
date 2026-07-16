@@ -9,6 +9,8 @@ import AuthWrapper from "./components/user/AuthWrapper";
 import ExploreColor from "./components/explore/ExploreColor";
 import ThemesOverview from "./components/explore/ThemesOverview";
 import CardsByTheme from "./components/explore/CardsByTheme";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +19,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: "/login", element: <LoginPage /> },
+      { path: "/register", element: <RegisterPage /> },
       {
         path: "/decks",
         element: (
