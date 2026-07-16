@@ -1,7 +1,7 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "../user/useUser";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { NavLink } from "react-router-dom";
+import { Bars3Icon, XMarkIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import logo from "../../../public/logo.png";
 
@@ -22,17 +22,13 @@ function classNames(...classes: (string | undefined | null | false)[]): string {
 
 export default function Navbar() {
   /** Auth details */
-  const { isAuthenticated, isLoading, loginWithRedirect, logout, user } = useAuth0();
-
-  if (isLoading) return <p>Loading user..</p>;
+  const { isAuthenticated, logout } = useUser();
+  const navigate = useNavigate();
 
   /** FUNCTIONS */
-  function loginHandler() {
-    loginWithRedirect();
-  }
-
   function logoutHandler() {
-    logout({ logoutParams: { returnTo: window.location.origin } });
+    logout();
+    navigate("/");
   }
 
   return (
@@ -98,7 +94,7 @@ export default function Navbar() {
                   <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">Open user menu</span>
-                    <img alt="" src={user?.picture} className="size-8 rounded-full" />
+                    <UserCircleIcon aria-hidden="true" className="size-8 rounded-full text-gray-300" />
                   </MenuButton>
                 </div>
                 <MenuItems
@@ -126,9 +122,9 @@ export default function Navbar() {
                 </MenuItems>
               </Menu>
             ) : (
-              <p className="text-neutral-300 hover:cursor-pointer" onClick={loginHandler}>
+              <NavLink to="/login" className="text-neutral-300 hover:cursor-pointer">
                 Login
-              </p>
+              </NavLink>
             )}
           </div>
         </div>
