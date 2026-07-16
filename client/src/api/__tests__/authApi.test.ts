@@ -11,7 +11,7 @@ describe("AuthApi", () => {
   });
 
   it("register posts credentials and returns the token", async () => {
-    (axios.post as any).mockResolvedValue({ data: { token: "tok-1" } });
+    vi.mocked(axios.post).mockResolvedValue({ data: { token: "tok-1" } });
 
     const token = await api.register("a@b.com", "pw");
 
@@ -20,7 +20,7 @@ describe("AuthApi", () => {
   });
 
   it("login posts credentials and returns the token", async () => {
-    (axios.post as any).mockResolvedValue({ data: { token: "tok-2" } });
+    vi.mocked(axios.post).mockResolvedValue({ data: { token: "tok-2" } });
 
     const token = await api.login("a@b.com", "pw");
 
@@ -29,7 +29,7 @@ describe("AuthApi", () => {
   });
 
   it("login throws the server message on failure", async () => {
-    (axios.post as any).mockRejectedValue({ response: { data: { message: "Invalid email or password" } } });
+    vi.mocked(axios.post).mockRejectedValue({ response: { data: { message: "Invalid email or password" } } });
 
     await expect(api.login("a@b.com", "wrong")).rejects.toThrow("Invalid email or password");
   });

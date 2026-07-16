@@ -13,7 +13,6 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^2.3.0",
     "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",

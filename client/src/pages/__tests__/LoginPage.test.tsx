@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../LoginPage";
 import { useUser } from "@/components/user/useUser";
@@ -5,7 +6,7 @@ import { useUser } from "@/components/user/useUser";
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
-  NavLink: ({ children }: any) => <a>{children}</a>,
+  NavLink: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
 }));
 vi.mock("@/components/user/useUser");
 
