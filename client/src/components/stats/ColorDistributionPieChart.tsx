@@ -43,11 +43,11 @@ export default function ColorDistributionPieChart() {
   if (colorDistributionError) throw new Error();
 
   const chartData = [
-    { color: "Plains", value: colorDistribution?.white, fill: "#F9FAF4" },
-    { color: "Islands", value: colorDistribution?.blue, fill: "#0E68AB" },
-    { color: "Swamps", value: colorDistribution?.black, fill: "#150B00" },
-    { color: "Mountains", value: colorDistribution?.red, fill: "#D3202A" },
-    { color: "Forests", value: colorDistribution?.green, fill: "#00733E" },
+    { color: "Plains", value: colorDistribution?.white, fill: "var(--mana-w)" },
+    { color: "Islands", value: colorDistribution?.blue, fill: "var(--mana-u)" },
+    { color: "Swamps", value: colorDistribution?.black, fill: "var(--mana-b)" },
+    { color: "Mountains", value: colorDistribution?.red, fill: "var(--mana-r)" },
+    { color: "Forests", value: colorDistribution?.green, fill: "var(--mana-g)" },
   ];
 
   return (

@@ -112,7 +112,7 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
         )}
       </div>
 
-      {!cardDetails.commander && <TiDelete data-testid="delete-icon" className="text-red-700" onClick={removeCardFromDeckHandler} />}
+      {!cardDetails.commander && <TiDelete data-testid="delete-icon" className="text-destructive" onClick={removeCardFromDeckHandler} />}
       {showCardInfo && (
         <OverlayWrapper hideFn={toggleShowCardInfoHandler}>
           <div className="w-fit mx-auto mb-10">

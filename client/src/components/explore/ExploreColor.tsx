@@ -106,7 +106,7 @@ export default function ExploreColor() {
         {MANA_SYMBOLS.map(({ color, src }) => (
           <img
             key={color}
-            className={selectedSymbols[color] ? "rounded-4xl outline-1 outline-offset-4 outline-slate-400" : ""}
+            className={selectedSymbols[color] ? "rounded-4xl outline-1 outline-offset-4 outline-ring" : ""}
             src={src}
             alt={`${color}-mana`}
             onClick={() => manaSymbolClickHandler(color)}
