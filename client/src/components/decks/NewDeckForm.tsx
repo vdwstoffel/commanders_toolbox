@@ -105,7 +105,7 @@ export function NewDeckForm() {
     <>
       <div className="w-72 sm:w-90 mx-auto">
         <div className="grid gap-4 py-4">
-          {error && <p className="text-red-500 font-bold">{error}</p>}
+          {error && <p className="text-destructive font-bold">{error}</p>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="deckName" className="text-right">
               Deck Name
