@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 
 import Tabs from "../ui/CustomTabs";
@@ -23,6 +23,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
   const [hoveredCardImageUrl, setHoveredCardImageUrl] = useState<string>("");
   const [selectedCard, setSelectedCard] = useState<MagicCard | undefined>(undefined);
   const [showCardInfoOverlay, setShowCardInfoOverlay] = useState<boolean>(false);
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   if (isPending) return <Loader />;
   if (error) {
@@ -31,7 +32,6 @@ export default function CardRecommendations({ commander, theme }: Props) {
   const tabs = recs?.map((rec) => rec.header);
   const recommendedCards = recs![activeTabIndex].cardviews;
   const cardsInDeck = deckById?.map((card) => card.card.cardName.split("//")[0].trim()); // only check the first name of double sided cards
-  let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
 
   function activeTabHandler(index: number) {
     setActiveTabIndex(index);
@@ -39,31 +39,42 @@ export default function CardRecommendations({ commander, theme }: Props) {
 
   async function onHoverHandler(cardName: string) {
     // Clear any existing timeout if the hover changes quickly
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
     }
 
     // Create a new timeout to fetch the card after a short delay
-    hoverTimeout = setTimeout(async () => {
-      const res = await scryfallApi.getCardByName(cardName);
-      setSelectedCard(res);
+    hoverTimeout.current = setTimeout(async () => {
+      try {
+        const res = await scryfallApi.getCardByName(cardName);
+        setSelectedCard(res);
 
-      if (res.image_uris) {
-        setHoveredCardImageUrl(res.image_uris.large);
-      } else if (res.card_faces) {
-        setHoveredCardImageUrl(res.card_faces[0].image_uris.large);
+        if (res.image_uris) {
+          setHoveredCardImageUrl(res.image_uris.large);
+        } else if (res.card_faces) {
+          setHoveredCardImageUrl(res.card_faces[0].image_uris.large);
+        }
+      } catch {
+        setHoveredCardImageUrl("");
       }
     }, 200);
   }
 
   function onHoverExitHandler() {
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
+    }
     setHoveredCardImageUrl("");
   }
 
   async function onClickHandler(cardName: string) {
-    const res = await scryfallApi.getCardByName(cardName);
-    setSelectedCard(res);
-    setShowCardInfoOverlay(true);
+    try {
+      const res = await scryfallApi.getCardByName(cardName);
+      setSelectedCard(res);
+      setShowCardInfoOverlay(true);
+    } catch {
+      /* ignore failed lookups */
+    }
   }
 
   function onOverlayClose() {
@@ -74,23 +85,21 @@ export default function CardRecommendations({ commander, theme }: Props) {
     <div className="3xl:w-1/3 mx-auto mt-10 grid w-2/3 grid-cols-3">
       <Tabs tabs={tabs} direction="col" tabHandler={activeTabHandler} activeTab={activeTabIndex} />
       <div className="mx-3 mt-3 h-96 w-fit overflow-auto px-3">
-        {recommendedCards
+        {[...recommendedCards]
           .sort((a: { synergy: number }, b: { synergy: number }) => b.synergy - a.synergy)
-          .map((card) => {
-            if (!cardsInDeck?.includes(card.name)) {
-              return (
-                <div
-                  className="grid grid-cols-[6fr_1fr] gap-3 hover:cursor-pointer"
-                  onMouseEnter={() => onHoverHandler(card.name)}
-                  onMouseOut={onHoverExitHandler}
-                  onClick={() => onClickHandler(card.name)}
-                >
-                  <p>{card.name}</p>
-                  <p>{Math.round(card.synergy * 100)}%</p>
-                </div>
-              );
-            }
-          })}
+          .filter((card) => !cardsInDeck?.includes(card.name))
+          .map((card) => (
+            <div
+              key={card.name}
+              className="grid grid-cols-[6fr_1fr] gap-3 hover:cursor-pointer"
+              onMouseEnter={() => onHoverHandler(card.name)}
+              onMouseLeave={onHoverExitHandler}
+              onClick={() => onClickHandler(card.name)}
+            >
+              <p>{card.name}</p>
+              <p>{Math.round(card.synergy * 100)}%</p>
+            </div>
+          ))}
       </div>
       {hoveredCardImageUrl && <img src={hoveredCardImageUrl} className="ml-12 h-96 min-w-72 rounded-lg" />}
       {showCardInfoOverlay && selectedCard && (
