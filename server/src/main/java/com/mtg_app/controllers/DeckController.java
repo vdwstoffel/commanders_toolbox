@@ -176,16 +176,19 @@ public class DeckController {
 
     @PostMapping("/{deckId}/add-card")
     public ResponseEntity<String> addCardToDeck(@AuthenticationPrincipal Jwt jwt, @PathVariable int deckId,
-            @RequestBody MagicCardRequest cardRequest) {
+            @RequestBody MagicCardRequest cardRequest, @RequestParam(defaultValue = "1") int quantity) {
 
         String userId = jwt.getSubject();
+
+        if (quantity < 1)
+            throw new RuntimeException("Quantity must be at least 1");
 
         // Find deck by userId and deckID, if it does not exists throw an error
         MagicDeck deck = magicDeckService.getDeckByDeckIdAndUserId(deckId, userId);
         if (deck == null)
             throw new RuntimeException("No Deck found");
 
-        this.magicDeckService.addCardToDeck(deck, cardRequest, 1);
+        this.magicDeckService.addCardToDeck(deck, cardRequest, quantity);
         return ResponseEntity.ok("Card added to deck");
     }
 

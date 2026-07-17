@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -112,6 +113,7 @@ public class MagicDeckService implements MagicDeckServiceInterface {
      *             token parts
      */
     @Override
+    @Transactional
     public void addCardToDeck(MagicDeck deck, MagicCardRequest card, int quantity) {
         // get the card request id
         MagicCard newCard = this.magicCardService.getOrCreateNewCard(card);
