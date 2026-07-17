@@ -2,6 +2,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import CardRecommendations from '../CardRecomendations';
 import { useEdhRecCommanderStats, useAddCardToDeck, useGetDeckById } from '../useDeckQuery';
 import { ScryfallApi } from '@/api/scryfallApi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 vi.mock('../useDeckQuery');
 vi.mock('@/api/scryfallApi');
@@ -20,6 +21,12 @@ vi.mock('../ui/button', () => ({
   Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
 }));
 
+function makeWrapper() {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={qc}>{children}</QueryClientProvider>
+  );
+}
 
 describe('CardRecommendations', () => {
   const mockAddCard = vi.fn();
@@ -33,13 +40,13 @@ describe('CardRecommendations', () => {
 
   it('should display loader when pending', () => {
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: true, error: false, recs: [] });
-    render(<CardRecommendations commander={['commander1']} theme="theme1" />);
+    render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
   it('should display error message when there is an error', () => {
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: true, recs: [] });
-    render(<CardRecommendations commander={['commander1']} theme="theme1" />);
+    render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
     expect(screen.getByText('Could not load Card Recommendations')).toBeInTheDocument();
   });
 
@@ -49,7 +56,7 @@ describe('CardRecommendations', () => {
       { header: 'Tab 2', cardviews: [{ name: 'Card B', synergy: 0.9 }] },
     ];
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: mockRecs });
-    render(<CardRecommendations commander={['commander1']} theme="theme1" />);
+    render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
 
     expect(screen.getByRole('tabs')).toBeInTheDocument();
     expect(screen.getByText('Tab 1')).toBeInTheDocument();
@@ -65,7 +72,7 @@ describe('CardRecommendations', () => {
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: mockRecs });
     (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCard);
 
-    render(<CardRecommendations commander={['commander1']} theme="theme1" />);
+    render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
 
     fireEvent.mouseEnter(screen.getByText('Card A'));
 
@@ -80,7 +87,7 @@ describe('CardRecommendations', () => {
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: mockRecs });
     (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCard);
 
-    render(<CardRecommendations commander={['commander1']} theme="theme1" />);
+    render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
 
     fireEvent.click(screen.getByText('Card A'));
 
@@ -99,7 +106,7 @@ describe('CardRecommendations', () => {
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: mockRecs });
     (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCard);
 
-    render(<CardRecommendations commander={['commander1']} theme="theme1" />);
+    render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
 
     fireEvent.click(screen.getByText('Card A'));
 

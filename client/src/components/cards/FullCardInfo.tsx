@@ -1,64 +1,30 @@
-import { useEffect, useState } from "react";
-
 import Loader from "../ui/Loader";
-import SingleFacedCard from "./SingleFacedCard";
-import DoubleFacedCard from "./DoubleFacedCard";
-import AdventureCard from "./AdventureCard";
-import MeldCard from "./MeldCard";
+import CardFaceView from "./CardFaceView";
 import Rulings from "./Ruling";
-
-import { ScryfallApi, type MagicCard } from "@/api/scryfallApi";
 import ErrorMessage from "../ui/ErrorMessage";
-import type { AxiosError } from "axios";
-
-const scryfallApi = new ScryfallApi();
+import { useCardQuery } from "@/hooks/useScryfallQuery";
 
 interface Props {
   cardName: string;
 }
 
 export default function FullCardInfo({ cardName }: Readonly<Props>) {
-  const [card, setCard] = useState<MagicCard | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: card, isPending, error } = useCardQuery(cardName);
 
-  useEffect(() => {
-    async function getCard() {
-      setLoading(true);
-      try {
-        const cardDetails = await scryfallApi.getCardByName(cardName);
-        setCard(cardDetails);
-        setLoading(false);
-      } catch (err) {
-        const error = err as AxiosError;
-        const errorMessage = error.message || "Failed to fetch card data";
-        setError(errorMessage);
-        setLoading(false);
-      }
-    }
-
-    getCard();
-  }, [cardName]);
-
-  if (loading) return <Loader />;
-  if (error) return <ErrorMessage msg={error} />;
+  if (isPending) return <Loader />;
+  if (error || !card) return <ErrorMessage msg={error ? error.message : "Failed to fetch card data"} />;
 
   return (
     <div className="my-10">
-      {card?.layout === "normal" && <SingleFacedCard card={card} />}
-      {(card?.layout === "transform" || card?.layout === "modal_dfc") && <DoubleFacedCard card={card} />}
-      {(card?.layout === "adventure" || card?.layout === "split") && <AdventureCard card={card} />}
-      {card?.layout === "meld" && <MeldCard card={card} />}
+      <CardFaceView card={card} />
 
       <div className="flex gap-3">
-        <p>EUR: {card?.prices.eur}</p>
-        <p>USD: {card?.prices.usd}</p>
+        <p>EUR: {card.prices.eur}</p>
+        <p>USD: {card.prices.usd}</p>
       </div>
 
-      <div>
-        <div className="mt-4 text-right">
-          <Rulings rulingUri={card!.rulings_uri} />
-        </div>
+      <div className="mt-4 text-right">
+        <Rulings rulingUri={card.rulings_uri} />
       </div>
     </div>
   );
