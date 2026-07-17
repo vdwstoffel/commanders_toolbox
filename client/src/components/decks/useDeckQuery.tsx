@@ -272,7 +272,7 @@ export function usePopulateBasicLands() {
 
 export function useEdhRecCommanderStats(commander: string[], theme: string) {
   const { isPending, data, error } = useQuery({
-    queryKey: ["edhCommanderData"],
+    queryKey: ["edhCommanderData", commander, theme],
     queryFn: () => edhRecApi.getDeckStatsByTheme(commander, theme),
   });
 

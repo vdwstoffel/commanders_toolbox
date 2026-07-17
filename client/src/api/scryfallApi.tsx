@@ -1,6 +1,10 @@
 import axios from "axios";
 // https://scryfall.com/docs/api/cards
 
+export function scryfallImageFromId(id: string, size: "small" | "normal" | "large" = "normal"): string {
+  return `https://cards.scryfall.io/${size}/front/${id[0]}/${id[1]}/${id}.jpg`;
+}
+
 export class ScryfallApi {
   private base_url: string;
 
