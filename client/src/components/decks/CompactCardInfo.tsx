@@ -4,17 +4,14 @@
  */
 
 import { TiDelete } from "react-icons/ti";
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useCallback, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 
 import type { DeckCardDetails } from "@/api/backendDeckApi";
-import { useRemoveCardFromDeck, useUpdateCardPrinting, useUpdateCardQuantity } from "./useDeckQuery";
+import { useRemoveCardFromDeck, useUpdateCardQuantity } from "./useDeckQuery";
 import { useUser } from "../user/useUser";
-import FullCardInfo from "../cards/FullCardInfo";
 import OverlayWrapper from "../ui/OverlayWrapper";
-import Tabs from "../ui/CustomTabs";
-import ShowUniquePrintings from "../cards/ShowUniquePrintings";
-import { type MagicCard } from "@/api/scryfallApi";
+import CardDetailDialog from "./CardDetailDialog";
 
 interface CompactCardInfoProps {
   cardDetails: DeckCardDetails;
@@ -28,15 +25,10 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
   // Custom Card Hooks
   const { removeCard } = useRemoveCardFromDeck();
   const { updateCardQty } = useUpdateCardQuantity();
-  const { updateCardPrinting } = useUpdateCardPrinting();
   //State for editing quantity
   const [inEditMode, setInEditMode] = useState<boolean>(false);
   const [tempQty, setTempQty] = useState<number>(quantity);
   const inputRef = useRef<HTMLInputElement>(null);
-  // Selecting tabs
-  const [activeTab, setActiveTab] = useState<number>(0);
-  // Changing card Printing
-  const [cardPrinting, setCardPrinting] = useState<MagicCard | null>(null);
 
   const card = cardDetails.card;
 
@@ -81,13 +73,6 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
     }
   }
 
-  useEffect(() => {
-    if (!cardPrinting || cardPrinting.tcgplayer_id === cardDetails.card.id) return;
-
-    updateCardPrinting({ originalId: cardDetails.card.id, newCard: cardPrinting! });
-    setShowCardInfo(false);
-  }, [cardPrinting, cardDetails.card.id, updateCardPrinting]);
-
   return (
     <div className="grid gap-4 w-auto grid-cols-[0.5fr_10fr_5fr_0.5fr] hover:cursor-pointer items-center">
       {inEditMode ? (
@@ -115,11 +100,7 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
       {!cardDetails.commander && <TiDelete data-testid="delete-icon" className="text-destructive" onClick={removeCardFromDeckHandler} />}
       {showCardInfo && (
         <OverlayWrapper hideFn={toggleShowCardInfoHandler}>
-          <div className="w-fit mx-auto mb-10">
-            <Tabs tabs={["Info", "Printings"]} activeTab={activeTab} tabHandler={setActiveTab} />
-          </div>
-          {activeTab === 0 && <FullCardInfo cardName={card.cardName} />}
-          {activeTab === 1 && <ShowUniquePrintings cardName={cardDetails.card.cardName} setCardFn={setCardPrinting} />}
+          <CardDetailDialog cardDetails={cardDetails} quantity={quantity} onClose={toggleShowCardInfoHandler} />
         </OverlayWrapper>
       )}
     </div>

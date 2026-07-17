@@ -13,26 +13,15 @@ vi.mock('../../user/useUser');
 vi.mock('@/api/scryfallApi');
 
 vi.mock('../../ui/OverlayWrapper', () => ({ default: ({ children, hideFn }: any) => <div data-testid="overlay-wrapper" onClick={hideFn}>{children}</div> }));
-vi.mock('../../ui/CustomTabs', () => ({
-  default: ({ tabs, tabHandler }: { tabs: string[], tabHandler: (index: number) => void}) => (
-    <div data-testid="custom-tabs">
-      {tabs.map((tab: string, index: number) => (
-        <button key={tab} onClick={(e) => { e.stopPropagation(); tabHandler(index); }} data-testid={`tab-${tab}`}>{tab}</button>
-      ))}
+
+vi.mock('../CardDetailDialog', () => ({
+  default: ({ cardDetails, onClose }: any) => (
+    <div data-testid="card-detail-dialog">
+      {cardDetails.card.cardName}
+      <button data-testid="dialog-close" onClick={onClose} />
     </div>
   ),
 }));
-
-const mockNewCard = { id: 'newCardId', cardName: 'New Printing', tcgplayer_id: 456 };
-vi.mock('../../cards/ShowUniquePrintings', () => ({
-    default: ({ cardName, setCardFn }: { cardName: string, setCardFn: (card: any) => void }) => (
-      <div data-testid="show-unique-printings">
-        {cardName}
-        <button data-testid="set-card-btn" onClick={() => setCardFn(mockNewCard)} />
-      </div>
-    )
-  }));
-vi.mock('../../cards/FullCardInfo', () => ({ default: ({ cardName }: any) => <div data-testid="full-card-info">{cardName}</div> }));
 
 
 describe('CompactCardInfo', () => {
@@ -87,9 +76,9 @@ describe('CompactCardInfo', () => {
   it('should toggle card info overlay on card name click', async () => {
     render(<CompactCardInfo cardDetails={mockCardDetails} quantity={1} />);
     fireEvent.click(screen.getByText('Test Card'));
-    await waitFor(() => expect(screen.getByTestId('overlay-wrapper')).toBeInTheDocument());
-    fireEvent.click(screen.getByTestId('overlay-wrapper'));
-    await waitFor(() => expect(screen.queryByTestId('overlay-wrapper')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId('card-detail-dialog')).toBeInTheDocument());
+    fireEvent.click(screen.getByTestId('dialog-close'));
+    await waitFor(() => expect(screen.queryByTestId('card-detail-dialog')).not.toBeInTheDocument());
   });
 
   it('should enter edit mode on quantity double click', () => {
@@ -134,47 +123,4 @@ describe('CompactCardInfo', () => {
     expect(mockUpdateCardQty).not.toHaveBeenCalled();
   });
 
-  it('should switch tabs in overlay', async () => {
-    render(<CompactCardInfo cardDetails={mockCardDetails} quantity={1} />);
-    fireEvent.click(screen.getByText('Test Card'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('custom-tabs')).toBeInTheDocument();
-      expect(screen.getByTestId('full-card-info')).toBeInTheDocument();
-    });
-
-    expect(screen.queryByTestId('show-unique-printings')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByTestId('tab-Printings'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('show-unique-printings')).toBeInTheDocument();
-    });
-
-    expect(screen.queryByTestId('full-card-info')).not.toBeInTheDocument();
-  });
-
-  it('should update card printing when setCardFn is called from ShowUniquePrintings', async () => {
-    render(<CompactCardInfo cardDetails={mockCardDetails} quantity={1} />);
-    fireEvent.click(screen.getByText('Test Card'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('custom-tabs')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByTestId('tab-Printings'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('show-unique-printings')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByTestId('set-card-btn'));
-
-    await waitFor(() => {
-      expect(mockUpdateCardPrinting).toHaveBeenCalledWith({
-        originalId: 'card1',
-        newCard: mockNewCard,
-      });
-    });
-  });
 });
