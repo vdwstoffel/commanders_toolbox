@@ -121,7 +121,14 @@ export interface EdhDeckThemeStats {
   land: number;
   basic: number;
   nonbasic: number;
-  container: { json_dict: { cardlists: { cardviews: { name: string; synergy: number }[]; header: string }[] } };
+  container: {
+    json_dict: {
+      cardlists: {
+        cardviews: { id?: string; name: string; synergy: number; num_decks?: number; potential_decks?: number }[];
+        header: string;
+      }[];
+    };
+  };
 }
 
 export interface GetDeckThemesResponse {
@@ -171,3 +178,8 @@ export type ColorIdentity =
   | "dune-brood"
   | "yore-tiller"
   | "five-color";
+
+export function inclusionPercent(card: { num_decks?: number; potential_decks?: number }): number {
+  if (!card.potential_decks) return 0;
+  return Math.round(((card.num_decks ?? 0) / card.potential_decks) * 100);
+}
