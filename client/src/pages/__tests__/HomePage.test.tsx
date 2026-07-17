@@ -16,7 +16,6 @@ describe("HomePage", () => {
     render(<HomePage />);
     expect(screen.getByRole("button", { name: "Create a Deck" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Explore Decks" })).toBeInTheDocument();
-    expect(screen.getAllByTestId("carousel")).toBeTruthy();
     expect(screen.getAllByTestId("carousel")).toHaveLength(2);
   });
 

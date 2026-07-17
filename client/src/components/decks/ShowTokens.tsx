@@ -49,7 +49,7 @@ export default function ShowTokens() {
       <div className="mx-auto text-center">
         <label className="inline-flex cursor-pointer items-center">
           <input type="checkbox" value="" className="peer sr-only" onClick={toggleUniqueHandler} />
-          <div className="peer relative h-6 w-11 rounded-full bg-input after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-border after:bg-foreground after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"></div>
+          <div className="peer relative h-6 w-11 rounded-full bg-input after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-border after:bg-foreground after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-primary-foreground rtl:peer-checked:after:-translate-x-full"></div>
           <span className="ms-3 text-sm font-medium text-foreground">Show All Tokens</span>
         </label>
         <p className="text-xs">Each duplicate token indicates a different card that produces it</p>
