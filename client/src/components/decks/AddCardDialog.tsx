@@ -15,9 +15,10 @@ interface Props {
   deckColorIdentity: string;
   commanderNames: string[];
   deckCards: DeckCardDetails[];
+  onClose: () => void;
 }
 
-export default function AddCardDialog({ card, deckColorIdentity, commanderNames, deckCards }: Props) {
+export default function AddCardDialog({ card, deckColorIdentity, commanderNames, deckCards, onClose }: Props) {
   const { addingCard, addCard } = useAddCardToDeck();
   const [selectedTcgId, setSelectedTcgId] = useState<number | undefined>(card.tcgplayer_id);
   const [quantity, setQuantity] = useState(1);
@@ -48,6 +49,7 @@ export default function AddCardDialog({ card, deckColorIdentity, commanderNames,
     if (blockedReason) return;
     addCard({ card: displayCard, quantity });
     setQuantity(1);
+    onClose();
   }
 
   const eur = displayCard.prices?.eur;

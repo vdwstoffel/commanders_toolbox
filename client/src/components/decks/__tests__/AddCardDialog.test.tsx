@@ -26,6 +26,7 @@ const printings = [
 
 describe("AddCardDialog", () => {
   const mockAddCard = vi.fn();
+  const mockOnClose = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -36,7 +37,14 @@ describe("AddCardDialog", () => {
 
   function renderDialog(overrides = {}) {
     return render(
-      <AddCardDialog card={baseCard} deckColorIdentity="WUBRG" commanderNames={[]} deckCards={[]} {...overrides} />
+      <AddCardDialog
+        card={baseCard}
+        deckColorIdentity="WUBRG"
+        commanderNames={[]}
+        deckCards={[]}
+        onClose={mockOnClose}
+        {...overrides}
+      />
     );
   }
 
@@ -54,6 +62,7 @@ describe("AddCardDialog", () => {
     expect(screen.getByTestId("quantity")).toHaveTextContent("2");
     fireEvent.click(screen.getByRole("button", { name: /Add to Deck/ }));
     expect(mockAddCard).toHaveBeenCalledWith({ card: baseCard, quantity: 2 });
+    expect(mockOnClose).toHaveBeenCalled();
   });
 
   it("shows the in-deck count from deckCards", () => {
@@ -66,6 +75,7 @@ describe("AddCardDialog", () => {
     expect(screen.getByText(/not in the deck's color identity/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Add to Deck/ }));
     expect(mockAddCard).not.toHaveBeenCalled();
+    expect(mockOnClose).not.toHaveBeenCalled();
   });
 
   it("blocks adding the commander", () => {
@@ -73,6 +83,7 @@ describe("AddCardDialog", () => {
     expect(screen.getByText(/Cannot add the commander/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Add to Deck/ }));
     expect(mockAddCard).not.toHaveBeenCalled();
+    expect(mockOnClose).not.toHaveBeenCalled();
   });
 
   it("does not render the printing strip when there is one or zero printings", () => {

@@ -219,6 +219,7 @@ export default function DeckDetails() {
                     deckColorIdentity={deckColorIdentity}
                     commanderNames={commanderName}
                     deckCards={deckById!}
+                    onClose={() => setCardToSearch(null)}
                   />
                 </OverlayWrapper>
               )}
