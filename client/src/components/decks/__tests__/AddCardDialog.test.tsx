@@ -8,14 +8,6 @@ vi.mock("@/hooks/useScryfallQuery");
 vi.mock("@/components/cards/CardFaceView", () => ({ default: ({ card }: any) => <div>{card.name}</div> }));
 vi.mock("@/components/cards/Ruling", () => ({ default: () => <div>rulings</div> }));
 vi.mock("@/components/cards/ManaCost", () => ({ default: () => <div>mana</div> }));
-vi.mock("@/components/ui/select", () => ({
-  Select: ({ children }: any) => <div>{children}</div>,
-  SelectContent: ({ children }: any) => <div>{children}</div>,
-  SelectGroup: ({ children }: any) => <div>{children}</div>,
-  SelectItem: ({ children }: any) => <div>{children}</div>,
-  SelectTrigger: ({ children }: any) => <div>{children}</div>,
-  SelectValue: () => <span />,
-}));
 
 const baseCard = {
   name: "Sol Ring",
@@ -26,6 +18,11 @@ const baseCard = {
   rulings_uri: "r",
   prices: { eur: "1.50", usd: "2.00" },
 } as any;
+
+const printings = [
+  { tcgplayer_id: 1, setName: "Set One", imageUrl: "one.jpg" },
+  { tcgplayer_id: 2, setName: "Set Two", imageUrl: "two.jpg" },
+];
 
 describe("AddCardDialog", () => {
   const mockAddCard = vi.fn();
@@ -76,5 +73,25 @@ describe("AddCardDialog", () => {
     expect(screen.getByText(/Cannot add the commander/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Add to Deck/ }));
     expect(mockAddCard).not.toHaveBeenCalled();
+  });
+
+  it("does not render the printing strip when there is one or zero printings", () => {
+    renderDialog();
+    expect(screen.queryByTestId("printing-thumb")).toBeNull();
+  });
+
+  it("renders one artwork thumbnail per printing with its set caption", () => {
+    (usePrintingsQuery as jest.Mock).mockReturnValue({ data: printings });
+    renderDialog();
+    expect(screen.getAllByTestId("printing-thumb")).toHaveLength(2);
+    expect(screen.getByText("Set One")).toBeInTheDocument();
+    expect(screen.getByText("Set Two")).toBeInTheDocument();
+  });
+
+  it("selects a printing when its artwork is clicked", () => {
+    (usePrintingsQuery as jest.Mock).mockReturnValue({ data: printings });
+    renderDialog();
+    fireEvent.click(screen.getByLabelText("Select printing: Set Two"));
+    expect(useCardByTcgIdQuery).toHaveBeenCalledWith(2);
   });
 });

@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CardFaceView from "@/components/cards/CardFaceView";
 import ManaCost from "@/components/cards/ManaCost";
 import Rulings from "@/components/cards/Ruling";
@@ -78,30 +77,43 @@ export default function AddCardDialog({ card, deckColorIdentity, commanderNames,
         </>
       )}
 
+      {printings && printings.length > 1 && (
+        <div className="mt-4">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Printing — choose artwork</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {printings.map((p) => {
+              const selected = p.tcgplayer_id === selectedTcgId;
+              return (
+                <button
+                  key={p.tcgplayer_id}
+                  type="button"
+                  onClick={() => setSelectedTcgId(p.tcgplayer_id)}
+                  aria-label={`Select printing: ${p.setName}`}
+                  aria-pressed={selected}
+                  className="w-[70px] flex-shrink-0 cursor-pointer text-left"
+                >
+                  <img
+                    src={p.imageUrl}
+                    alt={`${p.setName} printing`}
+                    data-testid="printing-thumb"
+                    className={`h-[98px] w-full rounded-md border-2 ${selected ? "border-primary ring-2 ring-primary/40" : "border-border"}`}
+                  />
+                  <span className={`mt-1 block truncate text-center text-[10px] ${selected ? "text-primary" : "text-muted-foreground"}`}>
+                    {p.setName}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {blockedReason && <p className="mt-3 font-bold text-destructive">{blockedReason}</p>}
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-bold text-primary">
-            {inDeckCount > 0 ? `In deck: ×${inDeckCount}` : "Not in deck"}
-          </span>
-          {printings && printings.length > 1 && (
-            <Select value={String(selectedTcgId)} onValueChange={(v) => setSelectedTcgId(Number(v))}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Printing" />
-              </SelectTrigger>
-              <SelectContent className="max-h-72">
-                <SelectGroup>
-                  {printings.map((p) => (
-                    <SelectItem key={p.tcgplayer_id} value={String(p.tcgplayer_id)}>
-                      {p.setName}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          )}
-        </div>
+        <span className="text-xs font-bold text-primary">
+          {inDeckCount > 0 ? `In deck: ×${inDeckCount}` : "Not in deck"}
+        </span>
         <div className="flex items-center gap-2">
           <div className="inline-flex items-center overflow-hidden rounded-md border border-border">
             <button className="bg-muted px-3 py-1 text-lg" onClick={() => changeQty(-1)} aria-label="decrease quantity">
