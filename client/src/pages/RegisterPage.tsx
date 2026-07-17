@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
+import logo from "../../public/logo.png";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUser } from "@/components/user/useUser";
@@ -24,25 +26,35 @@ export default function RegisterPage() {
   }
 
   return (
-    <form onSubmit={submitHandler} className="w-72 sm:w-90 mx-auto mt-10">
-      <div className="grid gap-4 py-4">
-        {error && <p className="text-red-500 font-bold">{error}</p>}
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </div>
-        <Button type="submit">Register</Button>
-        <p className="text-sm text-center">
-          Already have an account?{" "}
-          <NavLink to="/login" className="underline">
-            Login
-          </NavLink>
-        </p>
-      </div>
-    </form>
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="items-center text-center">
+          <img src={logo} alt="Commander's Toolbox logo" className="mx-auto h-14 w-auto" />
+          <CardTitle className="font-display text-2xl text-primary">Create your account</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={submitHandler} className="grid gap-4">
+            {error && <p className="text-destructive font-bold text-sm">{error}</p>}
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+            <Button type="submit" className="w-full">
+              Register
+            </Button>
+            <p className="text-sm text-center text-muted-foreground">
+              Already have an account?{" "}
+              <NavLink to="/login" className="text-primary underline">
+                Login
+              </NavLink>
+            </p>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
