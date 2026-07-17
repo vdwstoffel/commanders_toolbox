@@ -196,7 +196,7 @@ export default function DeckList({ deck }: DeckListProps) {
             </DropdownMenu>
           </div>
         </div>
-        <div className="w-full rounded-md bg-slate-200/30 px-3 sm:columns-1 md:columns-1 lg:columns-2">
+        <div className="w-full rounded-md bg-muted px-3 sm:columns-1 md:columns-1 lg:columns-2">
           {/* Iterate through each car type then each card in that type */}
           {Object.entries(groupBy === "cmc" ? cardsByMana : CardTypes).map(([heading, cards]) => {
             return cards.length > 0 ? (

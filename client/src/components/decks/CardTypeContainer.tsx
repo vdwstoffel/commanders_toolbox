@@ -12,7 +12,7 @@ interface Props {
 export default function CardTypeContainer({ heading, cards, hoverFunc }: Props) {
   return (
     <div key={heading} className="mb-4 break-inside-avoid-column">
-      <p className="text-lg font-bold border-b-2 border-slate-400/30">{heading}</p>
+      <p className="text-lg font-bold border-b-2 border-border">{heading}</p>
       {cards.map((card) => (
          <div key={card.id} onMouseEnter={() => hoverFunc(card.card.cardImageUrl[0])}>
         <CompactCardInfo key={card.id} cardDetails={card} quantity={card.quantity} />

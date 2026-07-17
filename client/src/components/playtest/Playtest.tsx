@@ -52,16 +52,16 @@ export default function PlayTest() {
   return (
     <div className="mt-4 text-center">
       <div className="flex justify-center gap-2">
-        <button className="rounded-lg bg-slate-950 px-3 py-2 text-stone-100" onClick={drawHand}>
+        <button className="rounded-lg bg-card px-3 py-2 text-card-foreground" onClick={drawHand}>
           Draw Hand
         </button>
         {hand.length < deckById!.length && (
-          <button className="rounded-lg bg-slate-950 px-3 py-2 text-stone-100" onClick={drawCard}>
+          <button className="rounded-lg bg-card px-3 py-2 text-card-foreground" onClick={drawCard}>
             Draw Card
           </button>
         )}
         <button
-          className="rounded-lg bg-slate-950 px-3 py-2 text-stone-100 disabled:cursor-not-allowed disabled:bg-slate-400/30"
+          className="rounded-lg bg-card px-3 py-2 text-card-foreground disabled:cursor-not-allowed disabled:bg-muted"
           onClick={takeMulligan}
           disabled={hand.length === 0 || drawnCard}
         >

@@ -160,7 +160,7 @@ export default function DeckDetails() {
   return (
     <>
       {/* Deck Header */}
-      <div className="bg-stone-800 text-stone-300 text-center py-3 mb-10">
+      <div className="bg-card text-muted-foreground text-center py-3 mb-10">
         <div className="flex justify-center items-center gap-4">
           {isEditDeckName ? (
             <textarea
@@ -168,7 +168,7 @@ export default function DeckDetails() {
               defaultValue={newDeckName}
               onKeyDown={onKeyBoardHandler}
               onChange={editDeckNameHandler}
-              className="m-0 w-fit overflow-hidden bg-slate-500/30 p-1 text-5xl font-bold"
+              className="m-0 w-fit overflow-hidden bg-muted p-1 text-5xl font-bold"
               rows={1}
               cols={newDeckName.length}
               spellCheck={false}
@@ -184,7 +184,7 @@ export default function DeckDetails() {
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <MdDeleteForever className="text-red-700 hover:cursor-pointer text-xl" />
+                <MdDeleteForever className="text-destructive hover:cursor-pointer text-xl" />
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -195,7 +195,7 @@ export default function DeckDetails() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction className="hover:bg-red-700" onClick={deleteDeckHandler}>
+                  <AlertDialogAction className="hover:bg-destructive/90" onClick={deleteDeckHandler}>
                     Delete
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -222,7 +222,7 @@ export default function DeckDetails() {
         ) : (
           <button
             onClick={onThemeClickHandler}
-            className="mx-auto min-w-40 rounded-xl bg-slate-100/30 px-3 py-2 capitalize hover:cursor-pointer"
+            className="mx-auto min-w-40 rounded-xl bg-muted px-3 py-2 capitalize hover:cursor-pointer"
           >
             {deckTheme}
           </button>

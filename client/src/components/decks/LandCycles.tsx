@@ -48,7 +48,7 @@ export default function LandCycles() {
   return (
     <div className="relative grid grid-cols-[1fr_6fr]">
       <div>
-        <div className="sticky top-30 mx-auto ml-5 mt-10 flex-col rounded-lg bg-neutral-700 p-3 text-neutral-200 hidden md:flex">
+        <div className="sticky top-30 mx-auto ml-5 mt-10 flex-col rounded-lg bg-card p-3 text-card-foreground hidden md:flex">
           {TABS.map((tab) => (
             <a key={tab} href={`#${tab}`}>
               {tab}
@@ -70,7 +70,7 @@ export default function LandCycles() {
 
           return (
             <div className="my-10" key={lands.label}>
-              <h1 className="mb-5 rounded-lg bg-neutral-700 text-center text-xl font-bold text-neutral-200" id={lands.label}>
+              <h1 className="mb-5 rounded-lg bg-card text-center text-xl font-bold text-card-foreground" id={lands.label}>
                 {lands.label}
               </h1>
               <ul className="flex flex-wrap content-center justify-center gap-2 hover:cursor-pointer">
