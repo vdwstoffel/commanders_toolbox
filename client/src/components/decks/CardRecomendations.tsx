@@ -20,7 +20,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const { isPending, error, recs } = useEdhRecCommanderStats(commander, theme);
   const { deckById } = useGetDeckById();
-  const { addCard, addingCard } = useAddCardToDeck();
+  const { addCard } = useAddCardToDeck();
   const [selectedCard, setSelectedCard] = useState<MagicCard | undefined>(undefined);
   const [showCardInfoOverlay, setShowCardInfoOverlay] = useState<boolean>(false);
   const [addingCardName, setAddingCardName] = useState<string>("");
@@ -110,7 +110,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
                     <button
                       aria-label={`Add ${card.name}`}
                       className="absolute right-1 top-1 hidden h-7 w-7 items-center justify-center rounded-full bg-white/90 text-lg font-bold text-black group-hover:flex disabled:opacity-50"
-                      disabled={addingCard && addingCardName === card.name}
+                      disabled={addingCardName === card.name}
                       onClick={(e) => {
                         e.stopPropagation();
                         onQuickAdd(card.name);
