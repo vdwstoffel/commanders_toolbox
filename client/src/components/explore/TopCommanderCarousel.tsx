@@ -31,7 +31,7 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
   if (!topCommanderData) return <ErrorMessage msg="No commander data available" />;
 
   return (
-    <div className="flex flex-col mx-20 border border-amber-50">
+    <div className="flex flex-col mx-20 border border-border">
       <Carousel>
         <CarouselContent>
           {topCommanderData.map((card) => {
@@ -40,7 +40,7 @@ export default function TopCommanderCarousel({ period }: TopCommanderProps) {
                 key={card.id}
                 onClick={() => toggleCardInfo(card.cardName)}
                 onKeyDown={(e) => e.key === "Enter" && toggleCardInfo(card.cardName)}
-                className="basis-1/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="basis-1/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
                 tabIndex={0}
                 role="button"
                 aria-label={`View details for ${card.cardName}`}
