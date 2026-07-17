@@ -1,9 +1,8 @@
 package com.mtg_app.service;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,51 +75,53 @@ public class MagicDeckCardService implements MagicDeckCardServiceInterface {
     }
 
     @Override
+    @Transactional
     public void autoFillRemainingDeckWithBasicLands(int deckId, String userId) {
 
         final int MAX_DECK_SIZE = 100;
 
-        // first get the decklist and check how many spots are left
+        MagicDeck deck = this.magicDeckRepository.getDeckByDeckIdAndUserId(deckId, userId);
+        if (deck == null) {
+            throw new RuntimeException("Deck not found for the given user");
+        }
+
+        // Count everything except basic lands - basic lands are recomputed from scratch below
         List<MagicDeckCard> deckListMapping = this.magicDeckCardRepository.getAllCardsByDeckId(deckId);
-        Set<String> excludedNames = Set.of("Island", "Mountain", "Swamp", "Plains", "Forest");
-        int totalNumberOfCardsInDeck = deckListMapping.stream()
-                .filter(card -> !excludedNames.contains(card.getCard().getCardName()))
+        Set<String> basicLandNames = Set.of("Island", "Mountain", "Swamp", "Plains", "Forest");
+        int nonBasicCardCount = deckListMapping.stream()
+                .filter(card -> !basicLandNames.contains(card.getCard().getCardName()))
                 .mapToInt(MagicDeckCard::getQuantity)
                 .sum();
-        int spaceAvailableInDeck = MAX_DECK_SIZE - totalNumberOfCardsInDeck;
+        int spaceAvailableInDeck = MAX_DECK_SIZE - nonBasicCardCount;
 
-        // get a count of each manasymbol in the deck
+        // Remove any basic lands already in the deck so lands from colors that are no
+        // longer present don't linger, and the recomputed counts replace (not stack on)
+        // the existing quantities.
+        List<MagicDeckCard> existingBasics = this.magicDeckCardRepository.getBasicLandsInDeckByDeckId(deckId);
+        for (MagicDeckCard basic : existingBasics) {
+            this.magicDeckCardRepository.deleteCardFromDeck(deckId, basic.getCard().getId());
+        }
+
+        if (spaceAvailableInDeck <= 0) {
+            return;
+        }
+
+        // Percentage of each color across the (non-land) cards in the deck
         ColorDistributionResponse colorDistribution = new MagicCardParser().colorDistribution(deckListMapping);
+        Map<String, Double> landPercentages = new LinkedHashMap<>();
+        landPercentages.put("Plains", colorDistribution.getWhite());
+        landPercentages.put("Island", colorDistribution.getBlue());
+        landPercentages.put("Swamp", colorDistribution.getBlack());
+        landPercentages.put("Mountain", colorDistribution.getRed());
+        landPercentages.put("Forest", colorDistribution.getGreen());
 
-        // Create a HashMap of each color for easy lookup when updating the quantities
-        // of card to add
-        Map<String, Integer> requiredLands = new HashMap<>();
-        requiredLands.put("Plains", (int) Math.round(((colorDistribution.getWhite() / 100) * spaceAvailableInDeck)));
-        requiredLands.put("Island", (int) Math.round(((colorDistribution.getBlue() / 100) * spaceAvailableInDeck)));
-        requiredLands.put("Swamp", (int) Math.round(((colorDistribution.getBlack() / 100) * spaceAvailableInDeck)));
-        requiredLands.put("Mountain", (int) Math.round(((colorDistribution.getRed() / 100) * spaceAvailableInDeck)));
-        requiredLands.put("Forest", (int) Math.round(((colorDistribution.getGreen() / 100) * spaceAvailableInDeck)));
+        // Largest-remainder distribution so the added lands fill the open slots exactly
+        Map<String, Integer> requiredLands = new MagicCardParser().distributeLands(landPercentages, spaceAvailableInDeck);
 
-        // Get all the basic lands that are already in the deck
-        List<MagicDeckCard> basicLands = this.magicDeckCardRepository.getBasicLandsInDeckByDeckId(deckId);
-        MagicDeck deck = this.magicDeckRepository.getDeckByDeckIdAndUserId(deckId, userId);
-
-        // Go through the requireland and check what must be added to the deck
         for (Map.Entry<String, Integer> entry : requiredLands.entrySet()) {
-            // Check if we actually want to add the basic lands to the deck
             if (entry.getValue() > 0) {
-                Optional<MagicDeckCard> alreadyInDeck = basicLands.stream()
-                        .filter(card -> card.getCard().getCardName().equals(entry.getKey())).findFirst();
-
-                if (alreadyInDeck.isPresent()) {
-                    // Set the value back to zero otherwise it will add the recommended value to the
-                    // already existing value
-                    alreadyInDeck.get().setQuantity(0);
-                    this.createOrUpdateDeckCardMapping(alreadyInDeck.get().getCard(), deck, false, entry.getValue());
-                } else {
-                    MagicCard card = this.magicCardRepository.getCardByName(entry.getKey());
-                    this.createOrUpdateDeckCardMapping(card, deck, false, entry.getValue());
-                }
+                MagicCard card = this.magicCardRepository.getCardByName(entry.getKey());
+                this.createOrUpdateDeckCardMapping(card, deck, false, entry.getValue());
             }
         }
     }
