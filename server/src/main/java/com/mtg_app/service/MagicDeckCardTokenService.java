@@ -21,10 +21,10 @@ public class MagicDeckCardTokenService implements MagicDeckCardTokenServiceInter
 
     @Override
     public MagicDeckCardToken createDeckCardTokenMapping(MagicDeckCardToken tokenMapping) {
-        MagicDeckCardToken existing = this.magicDeckCardTokenRepository.findByDeckIdAndCardIdAndTokenId(
+        List<MagicDeckCardToken> existing = this.magicDeckCardTokenRepository.findByDeckIdAndCardIdAndTokenId(
                 tokenMapping.getDeckId(), tokenMapping.getCardId(), tokenMapping.getTokenId());
-        if (existing != null) {
-            return existing;
+        if (!existing.isEmpty()) {
+            return existing.get(0);
         }
         return magicDeckCardTokenRepository.save(tokenMapping);
     }

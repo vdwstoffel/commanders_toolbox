@@ -7,6 +7,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.mtg_app.dao.MagicDeckCardTokenRepository;
@@ -20,7 +22,7 @@ class MagicDeckCardTokenServiceTest {
     @Test
     void createsMappingWhenAbsent() {
         MagicDeckCardToken mapping = new MagicDeckCardToken(1, 2, "tok");
-        when(repo.findByDeckIdAndCardIdAndTokenId(1, 2, "tok")).thenReturn(null);
+        when(repo.findByDeckIdAndCardIdAndTokenId(1, 2, "tok")).thenReturn(List.of());
         when(repo.save(mapping)).thenReturn(mapping);
 
         MagicDeckCardToken result = service.createDeckCardTokenMapping(mapping);
@@ -32,7 +34,7 @@ class MagicDeckCardTokenServiceTest {
     @Test
     void doesNotDuplicateWhenPresent() {
         MagicDeckCardToken existing = new MagicDeckCardToken(1, 2, "tok");
-        when(repo.findByDeckIdAndCardIdAndTokenId(1, 2, "tok")).thenReturn(existing);
+        when(repo.findByDeckIdAndCardIdAndTokenId(1, 2, "tok")).thenReturn(List.of(existing));
 
         MagicDeckCardToken result = service.createDeckCardTokenMapping(new MagicDeckCardToken(1, 2, "tok"));
 
