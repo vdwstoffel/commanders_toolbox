@@ -7,8 +7,10 @@ package com.mtg_app.tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -192,6 +194,60 @@ public class MagicCardParser {
         ColorDistributionResponse response = new ColorDistributionResponse(whitePercentage, bluePercentage,
                 blackPercentage, redPercentage, greenPercentage);
         return response;
+    }
+
+    /**
+     * Distributes a fixed number of land slots across colors proportional to the
+     * given percentages, using the largest-remainder method so the counts always
+     * sum exactly to {@code totalSlots} (when at least one color is present). This
+     * avoids the drift you get from rounding each color independently.
+     *
+     * @param percentages ordered map of land name -> color percentage (need not
+     *                    sum to exactly 100)
+     * @param totalSlots  number of land slots to fill; 0 or negative yields all
+     *                    zeros
+     * @return ordered map of land name -> integer count, summing to
+     *         {@code max(totalSlots, 0)}
+     */
+    public Map<String, Integer> distributeLands(Map<String, Double> percentages, int totalSlots) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        double totalPercentage = percentages.values().stream().mapToDouble(Double::doubleValue).sum();
+
+        // Nothing to fill, or a colorless deck: no basic lands
+        if (totalSlots <= 0 || totalPercentage <= 0) {
+            for (String name : percentages.keySet()) {
+                result.put(name, 0);
+            }
+            return result;
+        }
+
+        // Give each color its floored share, remembering the fractional remainder
+        Map<String, Double> remainders = new LinkedHashMap<>();
+        int assigned = 0;
+        for (Map.Entry<String, Double> entry : percentages.entrySet()) {
+            double exact = (entry.getValue() / totalPercentage) * totalSlots;
+            int base = (int) Math.floor(exact);
+            result.put(entry.getKey(), base);
+            remainders.put(entry.getKey(), exact - base);
+            assigned += base;
+        }
+
+        // Hand the leftover slots to the present colors with the largest remainders
+        List<String> byLargestRemainder = remainders.entrySet().stream()
+                .filter(entry -> percentages.get(entry.getKey()) > 0)
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        int leftover = totalSlots - assigned;
+        int i = 0;
+        while (leftover > 0 && !byLargestRemainder.isEmpty()) {
+            String name = byLargestRemainder.get(i % byLargestRemainder.size());
+            result.put(name, result.get(name) + 1);
+            leftover--;
+            i++;
+        }
+        return result;
     }
 
     /*
