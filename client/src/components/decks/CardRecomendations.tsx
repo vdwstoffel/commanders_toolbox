@@ -3,12 +3,11 @@ import { useState } from "react";
 
 import Tabs from "../ui/CustomTabs";
 
-import { useAddCardToDeck, useEdhRecCommanderStats, useGetDeckById } from "./useDeckQuery";
+import { useEdhRecCommanderStats, useGetDeckById } from "./useDeckQuery";
 import { ScryfallApi, type MagicCard } from "../../api/scryfallApi";
 import Loader from "../ui/Loader";
 import OverlayWrapper from "../ui/OverlayWrapper";
-import FullCardInfo from "../cards/FullCardInfo";
-import { Button } from "../ui/button";
+import AddCardDialog from "./AddCardDialog";
 
 interface Props {
   commander: string[];
@@ -24,8 +23,6 @@ export default function CardRecommendations({ commander, theme }: Props) {
   const [hoveredCardImageUrl, setHoveredCardImageUrl] = useState<string>("");
   const [selectedCard, setSelectedCard] = useState<MagicCard | undefined>(undefined);
   const [showCardInfoOverlay, setShowCardInfoOverlay] = useState<boolean>(false);
-  // Deck Hooks
-  const { addCard } = useAddCardToDeck();
 
   if (isPending) return <Loader />;
   if (error) {
@@ -73,12 +70,6 @@ export default function CardRecommendations({ commander, theme }: Props) {
     setShowCardInfoOverlay(false);
   }
 
-  function addCardToDeckHandler() {
-    if (!selectedCard) return;
-    addCard({ card: selectedCard, quantity: 1 });
-    setShowCardInfoOverlay(false);
-  }
-
   return (
     <div className="3xl:w-1/3 mx-auto mt-10 grid w-2/3 grid-cols-3">
       <Tabs tabs={tabs} direction="col" tabHandler={activeTabHandler} activeTab={activeTabIndex} />
@@ -102,15 +93,15 @@ export default function CardRecommendations({ commander, theme }: Props) {
           })}
       </div>
       {hoveredCardImageUrl && <img src={hoveredCardImageUrl} className="ml-12 h-96 min-w-72 rounded-lg" />}
-      {showCardInfoOverlay && (
+      {showCardInfoOverlay && selectedCard && (
         <OverlayWrapper hideFn={onOverlayClose}>
-          <div className="w-full text-center">
-
-          <Button variant="secondary" className="mx-auto" onClick={addCardToDeckHandler}>
-            Add to Deck
-          </Button>
-          </div>
-          <FullCardInfo cardName={selectedCard!.name} />
+          <AddCardDialog
+            card={selectedCard}
+            deckColorIdentity={deckById?.[0]?.deck.colorIdentity ?? ""}
+            commanderNames={commander}
+            deckCards={deckById ?? []}
+            onClose={onOverlayClose}
+          />
         </OverlayWrapper>
       )}
     </div>

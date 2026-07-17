@@ -1,6 +1,6 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import CardRecommendations from '../CardRecomendations';
-import { useEdhRecCommanderStats, useAddCardToDeck, useGetDeckById } from '../useDeckQuery';
+import { useEdhRecCommanderStats, useGetDeckById } from '../useDeckQuery';
 import { ScryfallApi } from '@/api/scryfallApi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -16,9 +16,13 @@ vi.mock('../ui/CustomTabs', () => ({
     </div>
   ),
 }));
-
-vi.mock('../ui/button', () => ({
-  Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+vi.mock('../AddCardDialog', () => ({
+  default: ({ card, onClose }: any) => (
+    <div data-testid="add-card-dialog">
+      {card.name}
+      <button onClick={onClose}>close</button>
+    </div>
+  ),
 }));
 
 function makeWrapper() {
@@ -29,13 +33,9 @@ function makeWrapper() {
 }
 
 describe('CardRecommendations', () => {
-  const mockAddCard = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAddCardToDeck as jest.Mock).mockReturnValue({ addCard: mockAddCard });
     (useGetDeckById as jest.Mock).mockReturnValue({ deckById: [] });
-    (ScryfallApi.prototype.getCardRulings as jest.Mock).mockResolvedValue([]);
   });
 
   it('should display loader when pending', () => {
@@ -64,26 +64,20 @@ describe('CardRecommendations', () => {
     expect(screen.getByText('80%')).toBeInTheDocument();
   });
 
-  it('should show card info on hover', async () => {
-    const mockRecs = [
-      { header: 'Tab 1', cardviews: [{ name: 'Card A', synergy: 0.8 }] },
-    ];
-    const mockCard: MagicCard = { name: 'Card A', image_uris: { large: 'cardA.jpg' }, prices: { eur: '1.00', usd: '1.20' } } as MagicCard;
+  it('should show card image on hover', async () => {
+    const mockRecs = [{ header: 'Tab 1', cardviews: [{ name: 'Card A', synergy: 0.8 }] }];
+    const mockCard = { name: 'Card A', image_uris: { large: 'cardA.jpg' }, prices: { eur: '1.00', usd: '1.20' } } as any;
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: mockRecs });
     (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCard);
 
     render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
-
     fireEvent.mouseEnter(screen.getByText('Card A'));
-
     await waitFor(() => expect(screen.getByRole('img')).toHaveAttribute('src', 'cardA.jpg'));
   });
 
-  it('should open and close card info overlay on click', async () => {
-    const mockRecs = [
-      { header: 'Tab 1', cardviews: [{ name: 'Card A', synergy: 0.8 }] },
-    ];
-    const mockCard: MagicCard = { name: 'Card A', image_uris: { large: 'cardA.jpg' }, prices: { eur: '1.00', usd: '1.20' }, rulings_uri: 'http://test.com/rulings' } as MagicCard;
+  it('opens the AddCardDialog with the clicked recommendation and closes it', async () => {
+    const mockRecs = [{ header: 'Tab 1', cardviews: [{ name: 'Card A', synergy: 0.8 }] }];
+    const mockCard = { name: 'Card A', image_uris: { large: 'cardA.jpg' }, prices: { eur: '1.00', usd: '1.20' }, rulings_uri: 'r' } as any;
     (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: mockRecs });
     (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCard);
 
@@ -91,30 +85,10 @@ describe('CardRecommendations', () => {
 
     fireEvent.click(screen.getByText('Card A'));
 
-    await waitFor(() => expect(screen.getByTestId('overlay-wrapper')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId('add-card-dialog')).toBeInTheDocument());
+    expect(screen.getByTestId('add-card-dialog')).toHaveTextContent('Card A');
 
-    fireEvent.click(screen.getByTestId('overlay-wrapper')); // Click to hide
-
-    await waitFor(() => expect(screen.queryByTestId('overlay-wrapper')).not.toBeInTheDocument());
-  });
-
-  it('should add card to deck when "Add to Deck" button is clicked', async () => {
-    const mockRecs = [
-      { header: 'Tab 1', cardviews: [{ name: 'Card A', synergy: 0.8 }] },
-    ];
-    const mockCard: MagicCard = { name: 'Card A', image_uris: { large: 'cardA.jpg' }, prices: { eur: '1.00', usd: '1.20' }, rulings_uri: 'http://test.com/rulings' } as MagicCard;
-    (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: mockRecs });
-    (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCard);
-
-    render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
-
-    fireEvent.click(screen.getByText('Card A'));
-
-    await waitFor(() => expect(screen.getByText('Add to Deck')).toBeInTheDocument());
-
-    fireEvent.click(screen.getByText('Add to Deck'));
-
-    expect(mockAddCard).toHaveBeenCalledWith({ card: mockCard, quantity: 1 });
-    expect(screen.queryByTestId('overlay-wrapper')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('close'));
+    await waitFor(() => expect(screen.queryByTestId('add-card-dialog')).not.toBeInTheDocument());
   });
 });
