@@ -1,16 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CompactCardInfo from '../CompactCardInfo';
 import { useParams } from 'react-router-dom';
-import { useRemoveCardFromDeck, useUpdateCardQuantity, useUpdateCardPrinting, useAddCardToDeck, useEdhRecCommanderStats, useGetDeckById } from '../useDeckQuery';
+import { useRemoveCardFromDeck, useUpdateCardQuantity } from '../useDeckQuery';
 import { useUser } from '../../user/useUser';
-import { ScryfallApi } from '@/api/scryfallApi';
 
 vi.mock('react-router-dom', () => ({
   useParams: vi.fn(),
 }));
 vi.mock('../useDeckQuery');
 vi.mock('../../user/useUser');
-vi.mock('@/api/scryfallApi');
 
 vi.mock('../../ui/OverlayWrapper', () => ({ default: ({ children, hideFn }: any) => <div data-testid="overlay-wrapper" onClick={hideFn}>{children}</div> }));
 
@@ -23,12 +21,9 @@ vi.mock('../CardDetailDialog', () => ({
   ),
 }));
 
-
 describe('CompactCardInfo', () => {
   const mockRemoveCard = vi.fn();
   const mockUpdateCardQty = vi.fn();
-  const mockUpdateCardPrinting = vi.fn();
-  const mockAddCard = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -36,15 +31,6 @@ describe('CompactCardInfo', () => {
     (useUser as jest.Mock).mockReturnValue({ idToken: 'mockToken' });
     (useRemoveCardFromDeck as jest.Mock).mockReturnValue({ removeCard: mockRemoveCard });
     (useUpdateCardQuantity as jest.Mock).mockReturnValue({ updateCardQty: mockUpdateCardQty });
-    (useUpdateCardPrinting as jest.Mock).mockReturnValue({ updateCardPrinting: mockUpdateCardPrinting });
-    (useAddCardToDeck as jest.Mock).mockReturnValue({ addCard: mockAddCard });
-    (useEdhRecCommanderStats as jest.Mock).mockReturnValue({ isPending: false, error: false, recs: [] });
-    (useGetDeckById as jest.Mock).mockReturnValue({ deckById: [] });
-    (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue({
-      prices: { eur: '1.00', usd: '1.20' },
-      rulings_uri: 'http://test.com/rulings',
-    });
-    (ScryfallApi.prototype.getCardRulings as jest.Mock).mockResolvedValue([]);
   });
 
   const mockCardDetails = {
