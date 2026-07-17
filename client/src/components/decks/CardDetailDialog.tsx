@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -36,14 +36,13 @@ export default function CardDetailDialog({ cardDetails, quantity, onClose }: Pro
   const { data: printings } = usePrintingsQuery(card?.oracle_id);
 
   const isDifferentPrinting = selectedTcgId !== currentTcgId;
-  const { data: printingCard } = useCardByTcgIdQuery(isDifferentPrinting ? selectedTcgId : undefined);
+  const { data: printingCard, isPending: loadingPrinting } = useCardByTcgIdQuery(isDifferentPrinting ? selectedTcgId : undefined);
 
-  // Commit a printing change once the chosen printing resolves, then close.
-  useEffect(() => {
-    if (!isDifferentPrinting || !printingCard || printingCard.tcgplayer_id !== selectedTcgId) return;
+  function confirmPrintingHandler() {
+    if (!printingCard || printingCard.tcgplayer_id !== selectedTcgId) return;
     updateCardPrinting({ originalId: currentTcgId, newCard: printingCard });
     onClose();
-  }, [isDifferentPrinting, printingCard, selectedTcgId, currentTcgId, updateCardPrinting, onClose]);
+  }
 
   function changeQty(delta: number) {
     if (isCommander) return;
@@ -60,18 +59,20 @@ export default function CardDetailDialog({ cardDetails, quantity, onClose }: Pro
   if (isPending) return <Loader />;
   if (error || !card) return <ErrorMessage msg={error ? error.message : "Failed to fetch card data"} />;
 
-  const eur = card.prices?.eur;
-  const usd = card.prices?.usd;
+  // Preview the selected printing without committing; commit happens on confirm.
+  const displayCard = isDifferentPrinting && printingCard ? printingCard : card;
+  const eur = displayCard.prices?.eur;
+  const usd = displayCard.prices?.usd;
 
   return (
     <div className="w-[min(90vw,700px)]">
-      {isDifferentPrinting ? (
+      {isDifferentPrinting && loadingPrinting ? (
         <Loader />
       ) : (
         <>
-          <CardFaceView card={card} />
+          <CardFaceView card={displayCard} />
           <div className="mt-3 flex items-center gap-3">
-            <ManaCost mana_cost={card.mana_cost} />
+            <ManaCost mana_cost={displayCard.mana_cost} />
             {eur && <span className="rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-bold">&euro; {eur}</span>}
             {usd && <span className="rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-bold">$ {usd}</span>}
           </div>
@@ -82,7 +83,7 @@ export default function CardDetailDialog({ cardDetails, quantity, onClose }: Pro
             >
               {showRulings ? "▾" : "▸"} Rulings
             </button>
-            {showRulings && <Rulings rulingUri={card.rulings_uri} />}
+            {showRulings && <Rulings rulingUri={displayCard.rulings_uri} />}
           </div>
         </>
       )}
@@ -115,6 +116,16 @@ export default function CardDetailDialog({ cardDetails, quantity, onClose }: Pro
               );
             })}
           </div>
+          {isDifferentPrinting && (
+            <div className="mt-3 flex items-center gap-3">
+              <Button onClick={confirmPrintingHandler} disabled={loadingPrinting}>
+                Use this printing
+              </Button>
+              <button className="text-sm text-muted-foreground hover:text-foreground" onClick={() => setSelectedTcgId(currentTcgId)}>
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       )}
 

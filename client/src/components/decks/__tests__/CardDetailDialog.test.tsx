@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import CardDetailDialog from "../CardDetailDialog";
 import { useParams } from "react-router-dom";
 import { useRemoveCardFromDeck, useUpdateCardQuantity, useUpdateCardPrinting } from "../useDeckQuery";
@@ -69,16 +69,34 @@ describe("CardDetailDialog", () => {
     expect(screen.getByLabelText("Select printing: Set Two")).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("commits a printing change and closes once the chosen printing resolves", async () => {
-    const newCard = { tcgplayer_id: 2, name: "Sol Ring 2" } as any;
-    (useCardByTcgIdQuery as jest.Mock).mockReturnValue({ data: newCard });
+  it("previews a selected printing without committing, then commits on confirm", () => {
+    const newCard = { tcgplayer_id: 2, name: "Sol Ring 2", prices: {} } as any;
+    (useCardByTcgIdQuery as jest.Mock).mockReturnValue({ data: newCard, isPending: false });
     renderDialog();
+
+    // Selecting a printing previews it (card face shows the new printing) but does not commit or close.
     fireEvent.click(screen.getByLabelText("Select printing: Set Two"));
     expect(useCardByTcgIdQuery).toHaveBeenCalledWith(2);
-    await waitFor(() => {
-      expect(updateCardPrinting).toHaveBeenCalledWith({ originalId: 1, newCard });
-      expect(onClose).toHaveBeenCalled();
-    });
+    expect(screen.getByText("Sol Ring 2")).toBeInTheDocument();
+    expect(updateCardPrinting).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+
+    // Confirming commits the printing change and closes.
+    fireEvent.click(screen.getByRole("button", { name: /Use this printing/ }));
+    expect(updateCardPrinting).toHaveBeenCalledWith({ originalId: 1, newCard });
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("cancels a printing preview without committing", () => {
+    const newCard = { tcgplayer_id: 2, name: "Sol Ring 2", prices: {} } as any;
+    (useCardByTcgIdQuery as jest.Mock).mockReturnValue({ data: newCard, isPending: false });
+    renderDialog();
+    fireEvent.click(screen.getByLabelText("Select printing: Set Two"));
+    fireEvent.click(screen.getByRole("button", { name: /Cancel/ }));
+    expect(screen.getByText("Sol Ring")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Use this printing/ })).toBeNull();
+    expect(updateCardPrinting).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   it("updates quantity via the + control", () => {
