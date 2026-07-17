@@ -114,7 +114,7 @@ describe('CardRecommendations', () => {
 
     fireEvent.click(screen.getByText('Add to Deck'));
 
-    expect(mockAddCard).toHaveBeenCalledWith(mockCard);
+    expect(mockAddCard).toHaveBeenCalledWith({ card: mockCard, quantity: 1 });
     expect(screen.queryByTestId('overlay-wrapper')).not.toBeInTheDocument();
   });
 });

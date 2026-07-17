@@ -73,12 +73,13 @@ export function useAddCardToDeck() {
   const { idToken } = useUser();
 
   const { isPending: addingCard, mutate: addCard } = useMutation({
-    mutationFn: (cardData: MagicCard) => deckApi.addCardToDeck(deckId!, cardData, idToken),
-    onSuccess: () => {
+    mutationFn: ({ card, quantity }: { card: MagicCard; quantity: number }) =>
+      deckApi.addCardToDeck(deckId!, card, idToken, quantity),
+    onSuccess: (_data, { card, quantity }) => {
       queryClient.invalidateQueries({ queryKey: ["deckById"] });
-      toast("Card added to deck");
+      toast.success(`Added ×${quantity} ${card.name}`);
     },
-    onError: (error) => toast(`Could not add card\n` + error),
+    onError: (error) => toast.error(`Could not add card: ${(error as Error).message}`),
   });
 
   return { addingCard, addCard };

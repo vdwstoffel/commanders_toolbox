@@ -55,9 +55,9 @@ export class BackendDeckApi {
     }
   }
 
-  async addCardToDeck(deckId: number | string, card: MagicCard, idToken: string) {
+  async addCardToDeck(deckId: number | string, card: MagicCard, idToken: string, quantity: number = 1) {
     try {
-      const response = await axios.post(`${this.base_url}/${deckId}/add-card`, card, {
+      const response = await axios.post(`${this.base_url}/${deckId}/add-card?quantity=${quantity}`, card, {
         headers: { Authorization: `Bearer ${idToken}` },
       });
       return response.data;

@@ -131,7 +131,7 @@ describe('LandCycles', () => {
     fireEvent.click(addButton);
 
     await waitFor(() => {
-      expect(mockAddCard).toHaveBeenCalledWith(mockCardDetails);
+      expect(mockAddCard).toHaveBeenCalledWith({ card: mockCardDetails, quantity: 1 });
       expect(screen.queryByTestId('overlay-wrapper')).not.toBeInTheDocument();
     });
   });

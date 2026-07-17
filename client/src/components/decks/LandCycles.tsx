@@ -41,7 +41,7 @@ export default function LandCycles() {
 
   function addCardToDeckHandler() {
     if (!selectedCardScryfallDetails) return;
-    addCard(selectedCardScryfallDetails);
+    addCard({ card: selectedCardScryfallDetails, quantity: 1 });
     setShowOverlay(false);
   }
 

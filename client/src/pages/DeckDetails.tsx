@@ -1,25 +1,23 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import { MdDeleteForever } from "react-icons/md";
-import { FaEye } from "react-icons/fa";
 import { FaFileUpload } from "react-icons/fa";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import DeckList from "@/components/decks/DeckList";
-import { useAddCardToDeck, useDeleteDeck, useGetDeckById, useUpdateDeck } from "@/components/decks/useDeckQuery";
+import { useDeleteDeck, useGetDeckById, useUpdateDeck } from "@/components/decks/useDeckQuery";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
 import CardSearchWithAutoComplete from "@/components/decks/CardSearchWithAutoComplete";
 import type { MagicCard } from "@/api/scryfallApi";
-import { Button } from "@/components/ui/button";
 import TypeAverageVsTotal from "@/components/decks/TypeTotalVsAverage";
 import ShowTokens from "@/components/decks/ShowTokens";
 import CardRecommendations from "@/components/decks/CardRecomendations";
 import LandCycles from "@/components/decks/LandCycles";
 import ColorDistributionPieChart from "@/components/stats/ColorDistributionPieChart";
 import OverlayWrapper from "@/components/ui/OverlayWrapper";
-import FullCardInfo from "@/components/cards/FullCardInfo";
+import AddCardDialog from "@/components/decks/AddCardDialog";
 import { EdhRecApi } from "@/api/edhRecApi";
 import PlayTest from "@/components/playtest/Playtest";
 import toast from "react-hot-toast";
@@ -43,10 +41,8 @@ export default function DeckDetails() {
   const { deckId } = useParams();
   const [cardToSearch, setCardToSearch] = useState<MagicCard | null>(null);
   const { isWaitingForDeck, deckByIdError, deckById } = useGetDeckById();
-  const { addCard } = useAddCardToDeck();
   const { deleteDeck } = useDeleteDeck();
   const { updateDeck } = useUpdateDeck();
-  const [showCardInfoOverlay, setShowCardInfoOverlay] = useState<boolean>(false);
   // When clicking on the deck name edit the deck name
   const [isEditDeckName, setIsEditDeckName] = useState<boolean>(false);
   const [newDeckName, setNewDeckName] = useState<string>("");
@@ -89,35 +85,8 @@ export default function DeckDetails() {
   const commanderName = deckById[0].deck.commander;
   const deckColorIdentity = deckById[0].deck.colorIdentity;
 
-  function addCardToDeckHandler() {
-    if (!cardToSearch) return;
-
-    // Check if the card matches the color identity
-    const cardIdentity = cardToSearch.color_identity;
-    for (const color of cardIdentity) {
-      if (!deckColorIdentity.includes(color)) {
-        toast.error(`${cardToSearch.name} is not in the color identity`);
-        return;
-      }
-    }
-
-    // Check that you cannot add the commander to the deck
-    if (commanderName.includes(cardToSearch.name)) {
-      toast.error("Cannot add commander to deck");
-      return;
-    }
-
-    addCard(cardToSearch);
-    toast.success(`${cardToSearch.name} added to deck`);
-    setCardToSearch(null);
-  }
-
   function deleteDeckHandler() {
     deleteDeck();
-  }
-
-  function toggleCardInfoOverlayHandler() {
-    setShowCardInfoOverlay(!showCardInfoOverlay);
   }
 
   function clickDeckNameHandler() {
@@ -241,17 +210,16 @@ export default function DeckDetails() {
             <TabsTrigger value="landCycles">Land Cycles</TabsTrigger>
           </TabsList>
           <TabsContent value="deckList">
-            <div className="flex justify-center items-center flex-col px-5">
-              <div className="flex items-center gap-2">
-                <CardSearchWithAutoComplete label="Search Card" setValue={setCardToSearch} />
-                <FaEye onClick={toggleCardInfoOverlayHandler} />
-              </div>
-              <Button onClick={addCardToDeckHandler} className="my-5">
-                Add card
-              </Button>
-              {showCardInfoOverlay && cardToSearch && (
-                <OverlayWrapper hideFn={toggleCardInfoOverlayHandler}>
-                  <FullCardInfo cardName={cardToSearch!.name} />
+            <div className="flex flex-col items-center justify-center px-5">
+              <CardSearchWithAutoComplete label="Search Card" setValue={setCardToSearch} />
+              {cardToSearch && (
+                <OverlayWrapper hideFn={() => setCardToSearch(null)}>
+                  <AddCardDialog
+                    card={cardToSearch}
+                    deckColorIdentity={deckColorIdentity}
+                    commanderNames={commanderName}
+                    deckCards={deckById!}
+                  />
                 </OverlayWrapper>
               )}
             </div>

@@ -75,7 +75,7 @@ export default function CardRecommendations({ commander, theme }: Props) {
 
   function addCardToDeckHandler() {
     if (!selectedCard) return;
-    addCard(selectedCard);
+    addCard({ card: selectedCard, quantity: 1 });
     setShowCardInfoOverlay(false);
   }
 
