@@ -9,7 +9,7 @@ interface Props {
 export default function CardInfoContainer({ card_image, name, type_line, oracle_text, flavor_text }: Readonly<Props>) {
   return (
     <div className="flex gap-4 flex-col md:flex-row sm:mx-auto">
-      <div>{card_image ? <img src={card_image} alt={`${name}-img`} className="h-72" /> : <div className="w-52"></div>}</div>
+      <div>{card_image ? <img src={card_image} alt={`${name}-img`} className="h-96" /> : <div className="h-96 w-52"></div>}</div>
 
       <div className="[&>*]:my-3">
         <div>
