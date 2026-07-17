@@ -100,4 +100,11 @@ describe("CardDetailDialog", () => {
     expect(screen.queryByTestId("quantity")).toBeNull();
     expect(screen.queryByRole("button", { name: /Remove from deck/ })).toBeNull();
   });
+
+  it("rulings are hidden until the toggle button is clicked", () => {
+    renderDialog();
+    expect(screen.queryByText("rulings")).toBeNull();
+    fireEvent.click(screen.getByText(/Rulings/));
+    expect(screen.getByText("rulings")).toBeInTheDocument();
+  });
 });

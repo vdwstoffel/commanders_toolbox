@@ -30,6 +30,7 @@ export default function CardDetailDialog({ cardDetails, quantity, onClose }: Pro
 
   const [selectedTcgId, setSelectedTcgId] = useState<number>(currentTcgId);
   const [qty, setQty] = useState<number>(quantity);
+  const [showRulings, setShowRulings] = useState(false);
 
   const { data: card, isPending, error } = useCardQuery(cardDetails.card.cardName);
   const { data: printings } = usePrintingsQuery(card?.oracle_id);
@@ -75,7 +76,13 @@ export default function CardDetailDialog({ cardDetails, quantity, onClose }: Pro
             {usd && <span className="rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-bold">$ {usd}</span>}
           </div>
           <div className="mt-3">
-            <Rulings rulingUri={card.rulings_uri} />
+            <button
+              className="text-sm text-muted-foreground hover:text-foreground"
+              onClick={() => setShowRulings((s) => !s)}
+            >
+              {showRulings ? "▾" : "▸"} Rulings
+            </button>
+            {showRulings && <Rulings rulingUri={card.rulings_uri} />}
           </div>
         </>
       )}
