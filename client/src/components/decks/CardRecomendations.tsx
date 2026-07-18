@@ -68,13 +68,13 @@ export default function CardRecommendations({ commander, theme }: Props) {
   }
 
   return (
-    <div className="mx-auto mt-10 flex max-w-7xl gap-6 px-4">
+    <div className="mx-auto mt-10 flex max-w-[110rem] gap-6 px-4">
       <Tabs tabs={tabs} direction="col" tabHandler={activeTabHandler} activeTab={activeTabIndex} />
-      <div className="max-h-[70vh] flex-1 overflow-auto">
+      <div className="max-h-[70vh] flex-1 overflow-auto pr-2 [scrollbar-color:#404040_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-700 hover:[&::-webkit-scrollbar-thumb]:bg-neutral-600 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-2">
         {allInDeck ? (
           <p className="mt-10 text-center text-sm text-neutral-400">All recommended cards are already in your deck.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
             {sortedCards.map((card) => {
               const inDeck = cardsInDeck?.includes(card.name);
               return (
