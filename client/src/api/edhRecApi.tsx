@@ -77,8 +77,10 @@ export class EdhRecApi {
    * @param themeOrTribe
    */
   async getThemeOrTribeOverview(themeOrTribe: string) {
+    // EDHREC renamed the "kindred"/"tribes" overview endpoint to "typal"
+    const slug = themeOrTribe === "kindred" || themeOrTribe === "tribes" ? "typal" : themeOrTribe;
     try {
-      const response = await axios.get<EdhRecCollectionsInterface>(`${this.tags_url}/${themeOrTribe}.json`);
+      const response = await axios.get<EdhRecCollectionsInterface>(`${this.tags_url}/${slug}.json`);
       return response.data.container.json_dict.cardlists[0].cardviews;
     } catch (err) {
       axiosErrorWrapper(err as AxiosError);

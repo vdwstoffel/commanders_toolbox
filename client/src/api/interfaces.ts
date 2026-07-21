@@ -4,8 +4,8 @@ export interface Token {
     "tokenImageUri": string,
     "typeLine": string,
     "oracleText": string,
-    "power": number,
-    "toughness": number
+    "power": string,
+    "toughness": string
 }
 
 export interface MagicCardInterface {

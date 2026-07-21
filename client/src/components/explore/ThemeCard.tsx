@@ -4,13 +4,14 @@ interface ThemeCardProps {
 }
 
 export default function ThemeCard({ themeName, onClickFn }: ThemeCardProps) {
-
   return (
-    <div
+    <button
+      type="button"
       onClick={onClickFn}
-      className="border border-border p-1 cursor-pointer text-center hover:bg-primary hover:text-primary-foreground text-sm bg-card rounded-2xl m-1"
+      title={themeName}
+      className="w-full truncate rounded-2xl border border-border bg-card px-3 py-2 text-center text-sm transition hover:-translate-y-0.5 hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
       {themeName}
-    </div>
+    </button>
   );
 }

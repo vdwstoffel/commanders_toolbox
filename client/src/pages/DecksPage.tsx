@@ -28,10 +28,12 @@ export default function DecksPage() {
   return (
     <div className="text-center mt-10">
       <Button onClick={() => navigate("/decks/new-deck")}>Create a Deck</Button>
-      <div className="mt-10 grid place-items-center gap-6 sm:grid-cols-2 md:grid-cols-4 px-3 py-2">
-        {deckData.map((deck) => {
-          return <DeckBox key={deck.deckId} deckId={deck.deckId} deckName={deck.deckName} deckImage={deck.deckImageUri} />;
-        })}
+      <div className="mt-10 flex flex-wrap justify-center gap-6 px-6 py-2">
+        {deckData.map((deck) => (
+          <div key={deck.deckId} className="w-64">
+            <DeckBox deckId={deck.deckId} deckName={deck.deckName} deckImage={deck.deckImageUri} />
+          </div>
+        ))}
       </div>
     </div>
   );

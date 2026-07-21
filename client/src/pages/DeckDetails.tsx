@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { MdDeleteForever } from "react-icons/md";
+import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { FaFileUpload } from "react-icons/fa";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,15 +9,13 @@ import DeckList from "@/components/decks/DeckList";
 import { useDeleteDeck, useGetDeckById, useUpdateDeck } from "@/components/decks/useDeckQuery";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Loader from "@/components/ui/Loader";
-import CardSearchWithAutoComplete from "@/components/decks/CardSearchWithAutoComplete";
-import type { MagicCard } from "@/api/scryfallApi";
 import TypeAverageVsTotal from "@/components/decks/TypeTotalVsAverage";
 import ShowTokens from "@/components/decks/ShowTokens";
 import CardRecommendations from "@/components/decks/CardRecomendations";
 import LandCycles from "@/components/decks/LandCycles";
 import ColorDistributionPieChart from "@/components/stats/ColorDistributionPieChart";
+import ManaCurveChart from "@/components/stats/ManaCurveChart";
 import OverlayWrapper from "@/components/ui/OverlayWrapper";
-import AddCardDialog from "@/components/decks/AddCardDialog";
 import { EdhRecApi } from "@/api/edhRecApi";
 import PlayTest from "@/components/playtest/Playtest";
 import toast from "react-hot-toast";
@@ -37,9 +35,11 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 
 const edhRecApi = new EdhRecApi();
 
+// Stronger active-tab accent than the shadcn default subtle highlight
+const tabAccent = "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground";
+
 export default function DeckDetails() {
   const { deckId } = useParams();
-  const [cardToSearch, setCardToSearch] = useState<MagicCard | null>(null);
   const { isWaitingForDeck, deckByIdError, deckById } = useGetDeckById();
   const { deleteDeck } = useDeleteDeck();
   const { updateDeck } = useUpdateDeck();
@@ -48,33 +48,10 @@ export default function DeckDetails() {
   const [newDeckName, setNewDeckName] = useState<string>("");
   const [isEditTheme, setIsEditTheme] = useState<boolean>(false);
   const [themes, setThemes] = useState<string[]>([""]);
-  const deckNameInputRef = useRef<HTMLTextAreaElement>(null);
-  const themeSelectRef = useRef<HTMLSelectElement>(null);
+  // Set when Enter/Escape already handled the edit, so the following blur doesn't re-save
+  const nameEditHandledRef = useRef<boolean>(false);
   // State for showing the fileupload
   const [showFileUpload, setShowFileUpload] = useState<boolean>(false);
-
-  // Check if the click happened on the deckName input ref
-  useEffect(() => {
-    function deckNameClickHandler(e: MouseEvent) {
-      if (deckNameInputRef.current && !deckNameInputRef.current.contains(e.target as Node)) {
-        if (!newDeckName) return; // early return if no deck name is specified
-        updateDeck({ deckName: newDeckName });
-        setIsEditDeckName(false);
-      }
-    }
-    document.addEventListener("mousedown", deckNameClickHandler, false);
-    return () => document.removeEventListener("mousedown", deckNameClickHandler);
-  }, [deckId, newDeckName, updateDeck]);
-
-  useEffect(() => {
-    function themeSelectHandler(e: MouseEvent) {
-      if (themeSelectRef.current && !themeSelectRef.current.contains(e.target as Node)) {
-        setIsEditTheme(false);
-      }
-    }
-    document.addEventListener("mousedown", themeSelectHandler, false);
-    return () => document.removeEventListener("mousedown", themeSelectHandler);
-  }, []);
 
   if (isWaitingForDeck) return <Loader />;
   if (deckByIdError) return <ErrorMessage msg={`There was an error loading deck with deckId: ${deckId}`} />;
@@ -84,6 +61,7 @@ export default function DeckDetails() {
   const deckTheme = deckById[0].deck.theme;
   const commanderName = deckById[0].deck.commander;
   const deckColorIdentity = deckById[0].deck.colorIdentity;
+  const commanderImage = deckById.find((card) => card.commander)?.card.cardImageUrl?.[0];
 
   function deleteDeckHandler() {
     deleteDeck();
@@ -94,18 +72,38 @@ export default function DeckDetails() {
     setIsEditDeckName(true);
   }
 
-  function editDeckNameHandler(e: ChangeEvent<HTMLTextAreaElement>) {
-    setNewDeckName(e.target.value);
+  function saveDeckName() {
+    const trimmed = newDeckName.trim();
+    if (trimmed && trimmed !== deckName) {
+      updateDeck({ deckName: trimmed });
+    }
+    setIsEditDeckName(false);
   }
 
-  function onKeyBoardHandler(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === "Escape" || e.key === "Enter") {
-      setNewDeckName(deckName);
-      setIsEditDeckName(false);
+  function cancelDeckNameEdit() {
+    setNewDeckName(deckName);
+    setIsEditDeckName(false);
+  }
 
-      updateDeck({ deckName: newDeckName });
-      setIsEditDeckName(false);
+  function onDeckNameKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      nameEditHandledRef.current = true;
+      saveDeckName();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      nameEditHandledRef.current = true;
+      cancelDeckNameEdit();
     }
+  }
+
+  function onDeckNameBlur() {
+    // Enter/Escape already resolved the edit; don't double-handle on the resulting blur
+    if (nameEditHandledRef.current) {
+      nameEditHandledRef.current = false;
+      return;
+    }
+    saveDeckName();
   }
 
   async function onThemeClickHandler() {
@@ -129,31 +127,39 @@ export default function DeckDetails() {
   return (
     <>
       {/* Deck Header */}
-      <div className="bg-card text-muted-foreground text-center py-3 mb-10">
-        <div className="flex justify-center items-center gap-4">
-          {isEditDeckName ? (
-            <textarea
-              ref={deckNameInputRef}
-              defaultValue={newDeckName}
-              onKeyDown={onKeyBoardHandler}
-              onChange={editDeckNameHandler}
-              className="m-0 w-fit overflow-hidden bg-muted p-1 text-5xl font-bold"
-              rows={1}
-              cols={newDeckName.length}
-              spellCheck={false}
-              onFocus={(e) => e.target.select()}
-            />
-          ) : (
-            <button className="p-1 text-5xl font-bold hover:cursor-pointer" onClick={clickDeckNameHandler}>
-              {deckName}
+      <div className="relative mb-10 overflow-hidden text-center text-muted-foreground">
+        {commanderImage && (
+          <img
+            aria-hidden
+            src={commanderImage}
+            alt=""
+            className="absolute inset-0 h-full w-full scale-110 object-cover object-[center_20%] opacity-25 blur-2xl"
+          />
+        )}
+        <div aria-hidden className="absolute inset-0 bg-card/85" />
+        <div className="relative flex flex-col items-center gap-3 px-16 py-8">
+          {/* Header actions — pinned to the top-right so the title stays centered */}
+          <div className="absolute right-3 top-3 flex items-center gap-1">
+            <button
+              type="button"
+              aria-label="Import cards from file"
+              title="Import cards from file"
+              className="rounded-md p-2 text-muted-foreground transition hover:cursor-pointer hover:bg-muted hover:text-foreground"
+              onClick={() => setShowFileUpload(true)}
+            >
+              <FaFileUpload />
             </button>
-          )}
-          <div className="flex flex-col justify-center gap-1 items-center">
-            <FaFileUpload className="text-sm hover:cursor-pointer" onClick={() => setShowFileUpload(true)} />
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <MdDeleteForever className="text-destructive hover:cursor-pointer text-xl" />
+                <button
+                  type="button"
+                  aria-label="Delete deck"
+                  title="Delete deck"
+                  className="rounded-md p-2 text-destructive transition hover:cursor-pointer hover:bg-destructive/10"
+                >
+                  <MdDeleteForever className="text-lg" />
+                </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -171,7 +177,38 @@ export default function DeckDetails() {
               </AlertDialogContent>
             </AlertDialog>
           </div>
-        </div>
+
+          {/* Deck name */}
+          {isEditDeckName ? (
+            <input
+              autoFocus
+              value={newDeckName}
+              onChange={(e) => setNewDeckName(e.target.value)}
+              onKeyDown={onDeckNameKeyDown}
+              onBlur={onDeckNameBlur}
+              onFocus={(e) => e.target.select()}
+              spellCheck={false}
+              aria-label="Deck name"
+              className="w-full max-w-2xl rounded-md bg-muted p-1 text-center text-5xl font-bold text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+            />
+          ) : (
+            <button
+              className="group flex items-center gap-2 rounded-md px-2 py-1 text-5xl font-bold text-foreground hover:cursor-pointer"
+              onClick={clickDeckNameHandler}
+              title="Rename deck"
+            >
+              {deckName}
+              <MdEdit className="text-2xl opacity-0 transition group-hover:opacity-60" aria-hidden />
+            </button>
+          )}
+
+          {deckColorIdentity && (
+            <div className="flex justify-center gap-1">
+              {deckColorIdentity.split("").map((c) => (
+                <img key={c} src={`https://svgs.scryfall.io/card-symbols/${c}.svg`} alt={c} title={c} className="h-6 w-6" />
+              ))}
+            </div>
+          )}
 
         {isEditTheme ? (
           <Select onValueChange={(e) => setNewThemeHandler(e)}>
@@ -191,39 +228,39 @@ export default function DeckDetails() {
         ) : (
           <button
             onClick={onThemeClickHandler}
+            title="Change theme"
             className="mx-auto min-w-40 rounded-xl bg-muted px-3 py-2 capitalize hover:cursor-pointer"
           >
-            {deckTheme}
+            {deckTheme?.replace(/-/g, " ")}
           </button>
         )}
-        <TypeAverageVsTotal />
+          <TypeAverageVsTotal />
+        </div>
       </div>
 
       <div className="flex w-full flex-col gap-6 my-10">
         <Tabs defaultValue="deckList">
           <TabsList className="mx-auto mb-10 overflow-auto max-w-full">
-            <TabsTrigger value="deckList">Deck List</TabsTrigger>
-            <TabsTrigger value="tokens">Tokens</TabsTrigger>
-            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
-            <TabsTrigger value="playTest">Play Test</TabsTrigger>
-            <TabsTrigger value="landCycles">Land Cycles</TabsTrigger>
+            <TabsTrigger className={tabAccent} value="deckList">
+              Deck List
+            </TabsTrigger>
+            <TabsTrigger className={tabAccent} value="tokens">
+              Tokens
+            </TabsTrigger>
+            <TabsTrigger className={tabAccent} value="recommendations">
+              Recommendations
+            </TabsTrigger>
+            <TabsTrigger className={tabAccent} value="stats">
+              Stats
+            </TabsTrigger>
+            <TabsTrigger className={tabAccent} value="playTest">
+              Play Test
+            </TabsTrigger>
+            <TabsTrigger className={tabAccent} value="landCycles">
+              Land Cycles
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="deckList">
-            <div className="flex flex-col items-center justify-center px-5">
-              <CardSearchWithAutoComplete label="Search Card" setValue={setCardToSearch} />
-              {cardToSearch && (
-                <OverlayWrapper hideFn={() => setCardToSearch(null)}>
-                  <AddCardDialog
-                    card={cardToSearch}
-                    deckColorIdentity={deckColorIdentity}
-                    commanderNames={commanderName}
-                    deckCards={deckById!}
-                    onClose={() => setCardToSearch(null)}
-                  />
-                </OverlayWrapper>
-              )}
-            </div>
             <DeckList deck={deckById!} />
           </TabsContent>
           <TabsContent value="tokens">
@@ -233,7 +270,10 @@ export default function DeckDetails() {
             <CardRecommendations commander={deckById![0].deck.commander} theme={deckTheme} />
           </TabsContent>
           <TabsContent value="stats">
-            <ColorDistributionPieChart />
+            <div className="mx-auto mt-4 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+              <ColorDistributionPieChart />
+              <ManaCurveChart />
+            </div>
           </TabsContent>
           <TabsContent value="playTest">
             <PlayTest />

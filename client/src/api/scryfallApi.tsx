@@ -38,22 +38,28 @@ export class ScryfallApi {
   }
 
   async getAllPrintings(oracleId: string): Promise<PrintingData[]> {
-    const response: { data: { data: MagicCard[] } } = await axios.get(
-      this.base_url + `/cards/search?order=released&q=oracleid%3A${oracleId}&unique=prints`
-    );
-
-    // {oracleId, setName, cardImage
     const printings: PrintingData[] = [];
-    for (const card of response.data.data) {
-      if (!card.tcgplayer_id) continue;
+    // Scryfall paginates search results at 175 cards/page. Heavily-reprinted cards (e.g. basic
+    // lands have 900+ printings) span many pages — follow next_page so older sets aren't dropped.
+    let nextUrl: string | null =
+      this.base_url + `/cards/search?order=released&dir=asc&q=oracleid%3A${oracleId}&unique=prints`;
+    let page = 0;
 
-      const cardInfo = {
-        tcgplayer_id: card.tcgplayer_id,
-        setName: card.set_name,
-        imageUrl: card.image_uris ? card.image_uris.large : card.card_faces![0].image_uris.large,
-      };
+    while (nextUrl && page < 15) {
+      const response: { data: { data: MagicCard[]; has_more?: boolean; next_page?: string } } = await axios.get(nextUrl);
 
-      printings.push(cardInfo);
+      for (const card of response.data.data) {
+        if (!card.tcgplayer_id) continue;
+
+        printings.push({
+          tcgplayer_id: card.tcgplayer_id,
+          setName: card.set_name,
+          imageUrl: card.image_uris ? card.image_uris.large : card.card_faces![0].image_uris.large,
+        });
+      }
+
+      nextUrl = response.data.has_more ? response.data.next_page ?? null : null;
+      page++;
     }
 
     return printings;

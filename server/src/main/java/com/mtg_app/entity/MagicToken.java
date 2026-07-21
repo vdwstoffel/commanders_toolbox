@@ -15,15 +15,16 @@ public class MagicToken {
     private String tokenImageUri;
     private String typeLine;
     private String oracleText;
-    private int power;
-    private int toughness;
+    // Power/toughness can be non-numeric (e.g. "*", "1+*", "X"), so keep them as strings.
+    private String power;
+    private String toughness;
 
     public MagicToken() {
 
     }
 
     public MagicToken(String magicTokenId, String tokenName, String tokenImageUri, String typeLine, String oracleText,
-            int power, int toughness) {
+            String power, String toughness) {
         this.magicTokenId = magicTokenId;
         this.tokenName = tokenName;
         this.tokenImageUri = tokenImageUri;
@@ -73,19 +74,19 @@ public class MagicToken {
         this.oracleText = oracleText;
     }
 
-    public int getPower() {
+    public String getPower() {
         return power;
     }
 
-    public void setPower(int power) {
+    public void setPower(String power) {
         this.power = power;
     }
 
-    public int getToughness() {
+    public String getToughness() {
         return toughness;
     }
 
-    public void setToughness(int toughness) {
+    public void setToughness(String toughness) {
         this.toughness = toughness;
     }
 

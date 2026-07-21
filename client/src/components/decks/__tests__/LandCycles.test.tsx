@@ -27,8 +27,13 @@ vi.mock('../../ui/OverlayWrapper', () => ({
     </div>
   ),
 }));
-vi.mock('../../cards/FullCardInfo', () => ({
-  default: ({ cardName }: { cardName: string }) => <div data-testid="full-card-info">{cardName}</div>,
+vi.mock('../AddCardDialog', () => ({
+  default: ({ card, onClose }: { card: { name: string }; onClose: () => void }) => (
+    <div data-testid="add-card-dialog">
+      <span>{card.name}</span>
+      <button onClick={onClose}>Close</button>
+    </div>
+  ),
 }));
 vi.mock('../../ui/Loader', () => ({
     default: () => <div data-testid="loader">Loading...</div>,
@@ -98,7 +103,7 @@ describe('LandCycles', () => {
     expect(screen.getByTestId('magic-card-image-image-b.jpg')).toBeInTheDocument();
   });
 
-  it('should show overlay with card details on card click', async () => {
+  it('should show overlay with the add-card dialog on card click', async () => {
     const mockCardDetails = { name: 'Land B' };
     (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCardDetails);
     (getDeckColorIdentity as jest.Mock).mockReturnValue('U');
@@ -109,12 +114,11 @@ describe('LandCycles', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('overlay-wrapper')).toBeInTheDocument();
-      expect(screen.getByText('Add to deck')).toBeInTheDocument();
-      expect(screen.getByTestId('full-card-info')).toHaveTextContent('Land B');
+      expect(screen.getByTestId('add-card-dialog')).toHaveTextContent('Land B');
     });
   });
 
-  it('should add card to deck and close overlay on button click', async () => {
+  it('should close the overlay when the dialog requests close', async () => {
     const mockCardDetails = { name: 'Land B' };
     (ScryfallApi.prototype.getCardByName as jest.Mock).mockResolvedValue(mockCardDetails);
     (getDeckColorIdentity as jest.Mock).mockReturnValue('U');
@@ -124,15 +128,13 @@ describe('LandCycles', () => {
     fireEvent.click(landBImage.parentElement!);
 
     await waitFor(() => {
-      expect(screen.getByTestId('overlay-wrapper')).toBeInTheDocument();
+      expect(screen.getByTestId('add-card-dialog')).toBeInTheDocument();
     });
 
-    const addButton = screen.getByText('Add to deck');
-    fireEvent.click(addButton);
+    fireEvent.click(screen.getByText('Close'));
 
     await waitFor(() => {
-      expect(mockAddCard).toHaveBeenCalledWith({ card: mockCardDetails, quantity: 1 });
-      expect(screen.queryByTestId('overlay-wrapper')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('add-card-dialog')).not.toBeInTheDocument();
     });
   });
 });

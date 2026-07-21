@@ -74,7 +74,7 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
   }
 
   return (
-    <div className="grid gap-4 w-auto grid-cols-[0.5fr_10fr_5fr_0.5fr] hover:cursor-pointer items-center">
+    <div className="grid w-auto grid-cols-[0.5fr_10fr_5fr_0.5fr] items-center gap-4 rounded px-1 hover:cursor-pointer hover:bg-foreground/5">
       {inEditMode ? (
         <input
           ref={inputRef}
@@ -91,9 +91,9 @@ export default function CompactCardInfo({ cardDetails, quantity }: CompactCardIn
         </p>
       )}
       <p onClick={toggleShowCardInfoHandler}>{card.cardName}</p>
-      <div className="flex w-3 justify-start gap-0.5">
+      <div className="flex flex-wrap items-center justify-start gap-0.5">
         {cleanedUris.map((uri: string, idx: number) =>
-          uri != "//" ? <img key={idx} src={uri} alt="manaSymbol" /> : <span key={idx}>//</span>
+          uri != "//" ? <img key={idx} src={uri} alt="manaSymbol" className="h-3.5 w-3.5" /> : <span key={idx}>//</span>
         )}
       </div>
 

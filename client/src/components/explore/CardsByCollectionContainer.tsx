@@ -19,15 +19,26 @@ export default function CardByCollectionContainer({ cardCollection }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap gap-4 justify-center my-5">
+    <div className="my-5 flex flex-wrap items-start justify-center gap-4">
       {cardCollection?.map((card, idx) => {
         if (card.length === 1) {
           return (
-            <MagicCardImage
+            <div
               key={card[0].name + idx}
-              imageUrl={card[0].cardImage}
-              clickFunction={() => imageClickHandler([card[0].name])}
-            />
+              role="button"
+              tabIndex={0}
+              aria-label={`View ${card[0].name}`}
+              onClick={() => imageClickHandler([card[0].name])}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  imageClickHandler([card[0].name]);
+                }
+              }}
+              className="cursor-pointer rounded-xl transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              <MagicCardImage imageUrl={card[0].cardImage} />
+            </div>
           );
         } else {
           return (

@@ -9,6 +9,7 @@ import { useAddCardToDeck } from "./useDeckQuery";
 import { useCardByTcgIdQuery, usePrintingsQuery } from "@/hooks/useScryfallQuery";
 import type { MagicCard } from "@/api/scryfallApi";
 import type { DeckCardDetails } from "@/api/backendDeckApi";
+import PrintingSelector from "./PrintingSelector";
 
 interface Props {
   card: MagicCard;
@@ -80,34 +81,7 @@ export default function AddCardDialog({ card, deckColorIdentity, commanderNames,
       )}
 
       {printings && printings.length > 1 && (
-        <div className="mt-4">
-          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Printing — choose artwork</p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {printings.map((p) => {
-              const selected = p.tcgplayer_id === selectedTcgId;
-              return (
-                <button
-                  key={p.tcgplayer_id}
-                  type="button"
-                  onClick={() => setSelectedTcgId(p.tcgplayer_id)}
-                  aria-label={`Select printing: ${p.setName}`}
-                  aria-pressed={selected}
-                  className="w-[70px] flex-shrink-0 cursor-pointer text-left"
-                >
-                  <img
-                    src={p.imageUrl}
-                    alt={`${p.setName} printing`}
-                    data-testid="printing-thumb"
-                    className={`h-[98px] w-full rounded-md border-2 ${selected ? "border-primary ring-2 ring-primary/40" : "border-border"}`}
-                  />
-                  <span className={`mt-1 block truncate text-center text-[10px] ${selected ? "text-primary" : "text-muted-foreground"}`}>
-                    {p.setName}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <PrintingSelector printings={printings} selectedTcgId={selectedTcgId} onSelect={setSelectedTcgId} />
       )}
 
       {blockedReason && <p className="mt-3 font-bold text-destructive">{blockedReason}</p>}

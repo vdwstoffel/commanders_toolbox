@@ -20,7 +20,7 @@ describe('DeckBox', () => {
     );
 
     expect(screen.getByText('Test Deck')).toBeInTheDocument();
-    const img = screen.getByAltText('mtgCard-img');
+    const img = screen.getByAltText('Test Deck');
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute('src', 'single_image.jpg');
     expect(screen.getByRole('link')).toHaveAttribute('href', '/decks/123');
@@ -37,11 +37,10 @@ describe('DeckBox', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Test Deck [Partner]')).toBeInTheDocument();
-    const images = screen.getAllByAltText('mtgCard-img');
-    expect(images).toHaveLength(2);
-    expect(images[0]).toHaveAttribute('src', 'image1.jpg');
-    expect(images[1]).toHaveAttribute('src', 'image2.jpg');
+    expect(screen.getByText('Test Deck')).toBeInTheDocument();
+    expect(screen.getByText('Partner')).toBeInTheDocument();
+    expect(screen.getByAltText('Test Deck')).toHaveAttribute('src', 'image1.jpg');
+    expect(screen.getByAltText('Test Deck partner')).toHaveAttribute('src', 'image2.jpg');
     expect(screen.getByRole('link')).toHaveAttribute('href', '/decks/123');
   });
 });

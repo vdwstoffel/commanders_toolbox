@@ -38,8 +38,8 @@ public class MagicTokenService implements MagicTokenServiceInterface {
             String image = tokenData.getImage_uris().getLarge();
             String typeLine = tokenData.getType_line();
             String oracleText = tokenData.getOracle_text();
-            int power = tokenData.getPower();
-            int toughness = tokenData.getToughness();
+            String power = tokenData.getPower();
+            String toughness = tokenData.getToughness();
 
             MagicToken newToken = new MagicToken(id, name, image, typeLine, oracleText, power, toughness);
             return magicTokenRepository.save(newToken);

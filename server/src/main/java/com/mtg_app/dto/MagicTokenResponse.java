@@ -15,8 +15,9 @@ public class MagicTokenResponse {
     private ImageUris image_uris;
     private String type_line;
     private String oracle_text;
-    private int power;
-    private int toughness;
+    // Power/toughness can be non-numeric (e.g. "*", "1+*", "X"), so keep them as strings.
+    private String power;
+    private String toughness;
 
     public String getId() {
         return id;
@@ -38,11 +39,11 @@ public class MagicTokenResponse {
         return oracle_text;
     }
 
-    public int getPower() {
+    public String getPower() {
         return power;
     }
 
-    public int getToughness() {
+    public String getToughness() {
         return toughness;
     }
 

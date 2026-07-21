@@ -132,13 +132,13 @@ export function useGetCommandersByColor(color: ColorIdentity) {
   };
 }
 
-export function useGetThemesOverview(overview: "themes" | "kindred") {
+export function useGetThemesOverview(overview: "themes" | "typal") {
   const {
     isPending: isPendingThemesOverview,
     error: themesOverviewError,
     data: themesOverview,
   } = useQuery({
-    queryKey: ["themes"],
+    queryKey: ["themes", overview],
     queryFn: () => edhRecApi.getThemeOrTribeOverview(overview),
   });
 
@@ -147,7 +147,7 @@ export function useGetThemesOverview(overview: "themes" | "kindred") {
 
 export function useGetCardsByTheme(theme: string) {
   const { data: cardsByThemeEdh, error: cardsByThemeErrorEdh } = useQuery({
-    queryKey: ["cardsByTheme"],
+    queryKey: ["cardsByTheme", theme],
     queryFn: () => edhRecApi.getThemeOrTribeCards(theme),
   });
 

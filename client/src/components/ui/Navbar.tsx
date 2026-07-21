@@ -13,7 +13,7 @@ const navigation = [
 const subMenu = [
   { name: "Color", href: "/explore/color" },
   { name: "Theme", href: "/explore/themes" },
-  { name: "Kindred", href: "/explore/kindred" },
+  { name: "Typal", href: "/explore/typal" },
 ];
 
 function classNames(...classes: (string | undefined | null | false)[]): string {

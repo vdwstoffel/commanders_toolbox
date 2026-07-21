@@ -41,11 +41,12 @@ function makeWrapper() {
 
 describe('CardRecommendations', () => {
   const addCard = vi.fn();
+  const addCardAsync = vi.fn().mockResolvedValue(undefined);
 
   beforeEach(() => {
     vi.clearAllMocks();
     (useGetDeckById as jest.Mock).mockReturnValue({ deckById: [] });
-    (useAddCardToDeck as jest.Mock).mockReturnValue({ addCard, addingCard: false });
+    (useAddCardToDeck as jest.Mock).mockReturnValue({ addCard, addCardAsync, addingCard: false });
   });
 
   it('should display loader when pending', () => {
@@ -72,7 +73,8 @@ describe('CardRecommendations', () => {
     render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
 
     expect(screen.getByRole('tabs')).toBeInTheDocument();
-    expect(screen.getByText('Tab 1')).toBeInTheDocument();
+    // Tab labels include the count of not-yet-in-deck cards
+    expect(screen.getByText('Tab 1 (1)')).toBeInTheDocument();
     expect(screen.getByText('Card A')).toBeInTheDocument();
     expect(screen.getByText('56%')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Card A' })).toHaveAttribute(
@@ -81,7 +83,7 @@ describe('CardRecommendations', () => {
     );
   });
 
-  it('dims cards already in the deck and shows an "In deck" badge', () => {
+  it('hides cards already in the deck', () => {
     const mockRecs = [
       {
         header: 'Tab 1',
@@ -96,8 +98,8 @@ describe('CardRecommendations', () => {
       deckById: [{ card: { cardName: 'Card A' }, deck: { colorIdentity: '' } }],
     });
     render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
-    // Card B is not in the deck, so the grid renders; Card A shows the "In deck" badge.
-    expect(screen.getByText('In deck')).toBeInTheDocument();
+    // Card A is in the deck, so it is filtered out; only Card B remains.
+    expect(screen.queryByText('Card A')).not.toBeInTheDocument();
     expect(screen.getByText('Card B')).toBeInTheDocument();
   });
 
@@ -110,7 +112,7 @@ describe('CardRecommendations', () => {
     render(<CardRecommendations commander={['commander1']} theme="theme1" />, { wrapper: makeWrapper() });
     fireEvent.click(screen.getByRole('button', { name: 'Add Card A' }));
 
-    await waitFor(() => expect(addCard).toHaveBeenCalledWith({ card: mockCard, quantity: 1 }));
+    await waitFor(() => expect(addCardAsync).toHaveBeenCalledWith({ card: mockCard, quantity: 1 }));
     expect(screen.queryByTestId('add-card-dialog')).not.toBeInTheDocument();
   });
 

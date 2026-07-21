@@ -51,12 +51,12 @@ export default function ColorDistributionPieChart() {
   ];
 
   return (
-    <Card className="flex flex-col w-auto max-w-72 mx-auto">
+    <Card className="flex w-full flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-center">Mana Color Distribution</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
+        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px] max-w-[250px]">
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Pie data={chartData} dataKey="value" nameKey="color" />
